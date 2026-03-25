@@ -375,7 +375,7 @@ const ForteUploadScreen = ({onComplete, onSkip}) => {
         method:"POST", headers:{"Content-Type":"application/json"},
         body: JSON.stringify({
           model:"claude-sonnet-4-20250514", max_tokens:500,
-          system:"Extract Forte profile scores from this report. Return ONLY valid JSON: {"green":{"dom":0,"ext":0,"pat":0,"con":0},"red":{"dom":0,"ext":0,"pat":0,"con":0},"blue":{"dom":0,"ext":0,"pat":0,"con":0}}. Scores range -36 to +36.",
+          system:'Extract Forte profile scores from this report. Return ONLY valid JSON with no extra text: {"green":{"dom":0,"ext":0,"pat":0,"con":0},"red":{"dom":0,"ext":0,"pat":0,"con":0},"blue":{"dom":0,"ext":0,"pat":0,"con":0}}. Scores are integers from -36 to +36.',
           messages:[{ role:"user", content:[
             { type:mediaType==="application/pdf"?"document":"image", source:{type:"base64",media_type:mediaType,data:base64} },
             { type:"text", text:"Extract all 12 Forte scores from the three graphs. Return only the JSON." }
