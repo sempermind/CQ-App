@@ -105,7 +105,7 @@ Step 2: Revisit and refine their Legacy.
 Step 3: Build their complete Communication Action Plan. Tag: <COACH_INSIGHT>COMPLETE ACTION PLAN: [summary]</COACH_INSIGHT>
 
 ARTIFACT TAGS (embed hidden in response when appropriate):
-- <CAPTURE_LEGACY>their exact legacy words</CAPTURE_LEGACY>
+- <CAPTURE_LEGACY>their exact legacy words</CAPTURE_LEGACY> -- after capturing, tell them: "I just saved that to your Insights Journal -- tap 'My CQ' in the top right any time to see everything we capture together."
 - <CAPTURE_CATALYST>catalyst description</CAPTURE_CATALYST>
 - <SHOW_FORTE_UPLOAD/>
 - <MODULE_ADVANCE n="2"/> (adjust n for each module)
@@ -611,7 +611,10 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
       setTyping(false);
 
       artifacts.forEach(a=>{
-        if(a.type==="capture_legacy"){ legacyRef.current=a.value; setLegacy(a.value); setPanelDot(true); }
+        if(a.type==="capture_legacy"){ 
+          legacyRef.current=a.value; setLegacy(a.value); setPanelDot(true);
+          setTimeout(()=>addMsg("coach","",{type:"legacy", text:a.value}),400);
+        }
         if(a.type==="capture_catalyst"){ catalystRef.current=a.value; setCatalyst(a.value); setPanelDot(true); }
         if(a.type==="show_forte_upload"){ setTimeout(()=>setShowForteUpload(true),400); }
         if(a.type==="module_advance"){ setCurrentModule(a.n); }
