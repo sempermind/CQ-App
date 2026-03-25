@@ -50,6 +50,8 @@ PACING RULES:
 - If a participant gives a short or deflecting answer, probe once more with genuine curiosity, then move forward
 - Always close a topic with a bridge: "Hold onto that -- because it connects directly to what we are about to look at."
 
+FORMATTING -- CRITICAL: Never use asterisks, markdown bold, bullet points, or headers. Plain conversational sentences only. One blank line max between paragraphs.
+
 CORE RULES:
 - One question at a time. Never stack multiple questions.
 - Empathy before advancement. Acknowledge the human moment before moving to the next topic.
@@ -143,6 +145,10 @@ function parseAIResponse(text) {
   if (moduleMatch) { artifacts.push({ type:"module_advance", n:parseInt(moduleMatch[1]) }); clean = clean.replace(moduleMatch[0],""); }
   const insightMatch = clean.match(/<COACH_INSIGHT>([\s\S]*?)<\/COACH_INSIGHT>/);
   if (insightMatch) { artifacts.push({ type:"coach_insight", value:insightMatch[1].trim() }); clean = clean.replace(insightMatch[0],""); }
+  // Strip markdown the AI sometimes adds
+  clean = clean.replace(/\*\*([^*]+)\*\*/g, '$1');
+  clean = clean.replace(/\*([^*]+)\*/g, '$1');
+  clean = clean.replace(/\n{3,}/g, '\n\n');
   return { text: clean.trim(), artifacts };
 }
 
@@ -323,6 +329,140 @@ const GenCardArtifact = ({onCoachTalk}) => {
       <div style={{display:"flex",gap:8,padding:"12px 16px"}}>
         <button onClick={()=>onCoachTalk(card)} style={{flex:1,padding:10,border:"none",borderRadius:11,fontSize:13,fontWeight:700,cursor:"pointer",background:C.navy,color:C.white}}>Talk to Coach</button>
         <button onClick={()=>setIdx(i=>i+1)} style={{flex:1,padding:10,border:"none",borderRadius:11,fontSize:13,fontWeight:700,cursor:"pointer",background:"rgba(36,65,105,.08)",color:C.navy}}>Next Card</button>
+      </div>
+    </div>
+  );
+};
+
+
+// ── FORTE UPLOAD SCREEN ──────────────────────────────────────────────────────
+const FORTE_COLORS_UPLOAD = { green:{ label:"Primary Profile", color:"#f4bc2d", text:"#244169" }, red:{ label:"Adapting Profile", color:"#f08b35", text:"#fff" }, blue:{ label:"Current Perceiver", color:"#5878bd", text:"#fff" } };
+
+function scoreToLabel(dim, score) {
+  const s = parseInt(score); const abs = Math.abs(s);
+  const labels = {
+    Dominance:    s>0?(abs>=20?"Strong Dominant":abs>=10?"Dominant":"Slightly Dominant"):(abs>=20?"Non-Dominant":abs>=10?"Slightly Non-Dom":"Balanced"),
+    Extroversion: s>0?(abs>=20?"Strong Extrovert":abs>=10?"Extrovert":"Slightly Extroverted"):(abs>=20?"Strong Introvert":abs>=10?"Introvert":"Ambivert"),
+    Patience:     s>0?(abs>=20?"Highly Patient":abs>=10?"Patient":"Slightly Patient"):(abs>=20?"Highly Impatient":abs>=10?"Impatient":"Slightly Impatient"),
+    Conformity:   s>0?(abs>=20?"Strong Conformist":abs>=10?"Conformist":"Slightly Conformist"):(abs>=20?"Non-Conformist":abs>=10?"Slightly Non-Con":"Balanced"),
+  };
+  return labels[dim] || "";
+}
+
+function scoreToPct(score) { return Math.round(((parseInt(score)+36)/72)*100); }
+
+function buildForteDataFromScores(scores) {
+  const dims = ["Dominance","Extroversion","Patience","Conformity"];
+  const build = arr => ({ scores:arr.map(String), labels:dims.map((dim,i)=>scoreToLabel(dim,arr[i])), pcts:arr.map(s=>scoreToPct(s)) });
+  return { green:build(scores.green), red:build(scores.red), blue:build(scores.blue) };
+}
+
+const ForteUploadScreen = ({onComplete, onSkip}) => {
+  const [mode, setMode] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [extracted, setExtracted] = useState(null);
+  const [error, setError] = useState(null);
+  const fileRef = useRef(null);
+  const dims = ["Dominance","Extroversion","Patience","Conformity"];
+
+  const handleFile = async(file) => {
+    if(!file) return;
+    setError(null); setUploading(true);
+    try {
+      const base64 = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(",")[1]); r.onerror=()=>rej(new Error("Read failed")); r.readAsDataURL(file); });
+      const mediaType = file.type||"application/pdf";
+      const resp = await fetch("/api/chat", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+          model:"claude-sonnet-4-20250514", max_tokens:500,
+          system:"Extract Forte profile scores from this report. Return ONLY valid JSON: {"green":{"dom":0,"ext":0,"pat":0,"con":0},"red":{"dom":0,"ext":0,"pat":0,"con":0},"blue":{"dom":0,"ext":0,"pat":0,"con":0}}. Scores range -36 to +36.",
+          messages:[{ role:"user", content:[
+            { type:mediaType==="application/pdf"?"document":"image", source:{type:"base64",media_type:mediaType,data:base64} },
+            { type:"text", text:"Extract all 12 Forte scores from the three graphs. Return only the JSON." }
+          ]}]
+        })
+      });
+      const data = await resp.json();
+      if(!resp.ok) throw new Error(data.error||"Extraction failed");
+      const text = data.content[0].text.trim();
+      const json = JSON.parse(text.replace(/```json|```/g,"").trim());
+      setExtracted({ green:[json.green.dom,json.green.ext,json.green.pat,json.green.con], red:[json.red.dom,json.red.ext,json.red.pat,json.red.con], blue:[json.blue.dom,json.blue.ext,json.blue.pat,json.blue.con] });
+    } catch(err) { setError("Could not read those scores. Try uploading a screenshot of page 3 instead."); }
+    finally { setUploading(false); }
+  };
+
+  return (
+    <div style={{position:"absolute",inset:0,background:"#f5f0e8",zIndex:300,display:"flex",flexDirection:"column",overflowY:"auto"}}>
+      <div style={{background:"#244169",padding:"16px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+        <div>
+          <div style={{fontSize:15,fontWeight:800,color:"#fff"}}>Your Forte Profile</div>
+          <div style={{fontSize:11,color:"rgba(255,255,255,.5)",marginTop:2}}>Upload your report to unlock real coaching</div>
+        </div>
+        <button onClick={onSkip} style={{background:"rgba(255,255,255,.12)",border:"none",borderRadius:8,padding:"6px 12px",cursor:"pointer",fontSize:12,fontWeight:700,color:"rgba(255,255,255,.6)"}}>Skip for now</button>
+      </div>
+      <div style={{flex:1,padding:"20px 18px"}}>
+        {!mode&&!extracted&&!uploading&&(
+          <>
+            <p style={{fontSize:13,color:"#244169",lineHeight:1.6,marginBottom:20,opacity:.8}}>Your Forte report unlocks everything. Upload page 3 of your report -- a screenshot works great.</p>
+            <button onClick={()=>{setMode("upload");setTimeout(()=>fileRef.current?.click(),100);}} style={{width:"100%",padding:"16px 18px",background:"#244169",border:"none",borderRadius:14,cursor:"pointer",marginBottom:12,display:"flex",alignItems:"center",gap:14,textAlign:"left"}}>
+              <div style={{width:40,height:40,borderRadius:10,background:"rgba(244,188,45,.15)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:20}}>📄</div>
+              <div><div style={{fontSize:14,fontWeight:800,color:"#fff"}}>Upload my Forte report</div><div style={{fontSize:12,color:"rgba(255,255,255,.5)",marginTop:2}}>PDF or screenshot of page 3</div></div>
+            </button>
+            <input ref={fileRef} type="file" accept=".pdf,image/*" style={{display:"none"}} onChange={e=>handleFile(e.target.files[0])} />
+            <button onClick={()=>setMode("link")} style={{width:"100%",padding:"16px 18px",background:"#fff",border:"1.5px solid rgba(36,65,105,.12)",borderRadius:14,cursor:"pointer",display:"flex",alignItems:"center",gap:14,textAlign:"left"}}>
+              <div style={{width:40,height:40,borderRadius:10,background:"rgba(36,65,105,.06)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:20}}>🔗</div>
+              <div><div style={{fontSize:14,fontWeight:800,color:"#244169"}}>I have not taken it yet</div><div style={{fontSize:12,color:"#385988",opacity:.7,marginTop:2}}>Get the link and come back</div></div>
+            </button>
+          </>
+        )}
+        {mode==="link"&&(
+          <div style={{textAlign:"center",paddingTop:10}}>
+            <div style={{fontSize:30,marginBottom:16}}>📋</div>
+            <div style={{fontSize:15,fontWeight:800,color:"#244169",marginBottom:10}}>Take the Forte Assessment</div>
+            <div style={{fontSize:13,color:"#385988",lineHeight:1.6,marginBottom:20}}>It takes about 7 minutes. When done, come back and upload page 3.</div>
+            <div style={{background:"#fff",borderRadius:12,padding:"14px 16px",marginBottom:20,border:"1px solid rgba(36,65,105,.1)"}}>
+              <div style={{fontSize:11,fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",color:"#f08b35",marginBottom:6}}>Your assessment</div>
+              <div style={{fontSize:13,color:"#244169",fontWeight:600}}>forteinstitute.com</div>
+              <div style={{fontSize:12,color:"#385988",opacity:.6,marginTop:4}}>Ask your program coordinator for your access link</div>
+            </div>
+            <button onClick={()=>setMode("upload")} style={{width:"100%",padding:14,background:"#244169",border:"none",borderRadius:12,cursor:"pointer",fontSize:14,fontWeight:800,color:"#fff"}}>I have my report -- upload it</button>
+            <button onClick={onSkip} style={{width:"100%",marginTop:10,padding:12,background:"transparent",border:"none",cursor:"pointer",fontSize:13,color:"#385988",opacity:.6}}>Continue without it for now</button>
+          </div>
+        )}
+        {uploading&&(
+          <div style={{textAlign:"center",padding:"40px 0"}}>
+            <div style={{width:40,height:40,border:"3px solid rgba(36,65,105,.15)",borderTopColor:"#244169",borderRadius:"50%",animation:"spin .8s linear infinite",margin:"0 auto 16px"}} />
+            <div style={{fontSize:14,fontWeight:700,color:"#244169"}}>Reading your Forte report...</div>
+          </div>
+        )}
+        {error&&(
+          <div style={{background:"rgba(231,90,43,.08)",border:"1px solid rgba(231,90,43,.2)",borderRadius:12,padding:"14px 16px",marginBottom:16}}>
+            <div style={{fontSize:13,fontWeight:700,color:"#e75a2b",marginBottom:6}}>Upload issue</div>
+            <div style={{fontSize:12.5,color:"#244169",lineHeight:1.5}}>{error}</div>
+            <button onClick={()=>{setError(null);setMode(null);}} style={{marginTop:10,padding:"8px 14px",background:"#244169",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:700,color:"#fff"}}>Try again</button>
+          </div>
+        )}
+        {extracted&&!uploading&&(
+          <>
+            <div style={{fontSize:14,fontWeight:800,color:"#244169",marginBottom:4}}>Got your scores</div>
+            <div style={{fontSize:12.5,color:"#385988",marginBottom:16,opacity:.8}}>Check these look right before we continue.</div>
+            {Object.entries(FORTE_COLORS_UPLOAD).map(([key,{label,color,text}])=>(
+              <div key={key} style={{background:"#fff",borderRadius:12,padding:"12px 14px",marginBottom:10,boxShadow:"0 1px 6px rgba(0,0,0,.06)"}}>
+                <div style={{display:"inline-block",background:color,borderRadius:6,padding:"3px 10px",fontSize:10,fontWeight:800,color:text,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>{label}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 16px"}}>
+                  {dims.map((dim,i)=>(
+                    <div key={dim} style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <span style={{fontSize:12,color:"#385988"}}>{dim}</span>
+                      <span style={{fontSize:13,fontWeight:800,color:"#244169"}}>{extracted[key][i]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <button onClick={()=>{ onComplete(buildForteDataFromScores(extracted)); }} style={{width:"100%",padding:15,background:"#244169",border:"none",borderRadius:14,cursor:"pointer",fontSize:15,fontWeight:800,color:"#fff",marginTop:8}}>These look right -- let us go</button>
+            <button onClick={()=>{setExtracted(null);setMode(null);}} style={{width:"100%",marginTop:8,padding:12,background:"transparent",border:"none",cursor:"pointer",fontSize:13,color:"#385988",opacity:.6}}>Try uploading again</button>
+          </>
+        )}
       </div>
     </div>
   );
@@ -692,6 +832,19 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
       </div>
 
       <MyCQPanel open={panelOpen} onClose={()=>setPanelOpen(false)} legacy={legacy} catalyst={catalyst} insights={insights} currentModule={currentModule} />
+      {showForteUpload && (
+        <ForteUploadScreen
+          onComplete={(fd)=>{
+            setForteData(fd); setShowForteUpload(false);
+            setTimeout(()=>addMsg("coach","",{type:"forte"}),200);
+            setTimeout(()=>{
+              setTyping(true);
+              setTimeout(()=>{ setTyping(false); addMsg("coach","Got it -- I can see your full profile now. Before I walk you through what I see, I want to hear from you first. When you looked at your results -- what was your first reaction?"); },1000);
+            },500);
+          }}
+          onSkip={()=>{ setShowForteUpload(false); addMsg("coach","No problem -- you can upload it any time from the My CQ panel. Let us keep going."); }}
+        />
+      )}
     </div>
   );
 };
