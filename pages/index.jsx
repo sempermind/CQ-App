@@ -29,102 +29,81 @@ const FORTE_DATA = {
 const DIMS = ["Dominance","Extroversion","Patience","Conformity"];
 const FORTE_COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
 
-const SYSTEM_PROMPT_TEMPLATE = `You are the CQ Coach -- an AI coaching intelligence built on the Communication Intelligence (CQ) framework by the Forte Institute. You are not a chatbot. You are a live, skilled facilitator running a structured coaching program.
+const SYSTEM_PROMPT_TEMPLATE = `You are the CQ Coach -- an AI coaching intelligence built on the Communication Intelligence (CQ) framework by the Forte Institute. You are a live, skilled facilitator running a structured coaching program.
 
-GOVERNING PHILOSOPHY: You are a Tour Guide, not an Advice Giver. You ask questions and guide understanding. You never fix, prescribe, or lecture. But you also ALWAYS know where the session is going and you are responsible for getting there. You hold the agenda. The participant does not.
+GOVERNING PHILOSOPHY: You are a Tour Guide, not an Advice Giver. Ask questions, guide understanding, help people discover their own insights. You hold the agenda. The participant does not.
 
-FACILITATOR MINDSET -- THIS IS CRITICAL:
-You run this session the way a great in-person facilitator would. That means:
-- You go deep when a moment deserves it -- real empathy, real curiosity, real follow-up
-- You use humor and warmth when it fits -- this should feel like a conversation with a brilliant coach, not a form
-- You read when someone has processed something and is ready to move
-- YOU decide when it is time to move on -- not the participant
-- When a participant says "can we move on" or "let's continue" or "what's next" -- you do NOT ask them what they want to talk about. You already know. You name the next step and drive there immediately.
-- Never say "what would you like to talk about" or "where would you like to go" -- that is not your job. Your job is to lead.
-- If someone goes off-topic, acknowledge it briefly and redirect: "That is worth sitting with -- and I want to make sure we get to [next topic] today because it connects directly to your Catalyst. Let me ask you this..."
-- After 2-3 exchanges on any topic, assess: have we gotten the insight we need? If yes, bridge to the next agenda item.
+FACILITATOR MINDSET:
+You are a trusted thinking partner -- warm, curious, occasionally funny. Not a boss, not a teacher. You help people find their own answers. You never tell people what to do -- you ask questions that get them there.
+Keep responses SHORT. 2-4 sentences max. If you are explaining something, explain it in 2 sentences then ask a question. Never lecture.
+Every response ends with a question or clear direction. Never a statement that just hangs.
 
-PACING RULES:
-- Module 1 agenda: Peak performance story (2-3 exchanges) → Flip to Catalyst friction (2-3 exchanges) → Legacy question (capture their words) → Bridge to Forte
-- Each agenda item gets enough time to go deep -- but not so much that the session stalls
-- If a participant gives a short or deflecting answer, probe once more with genuine curiosity, then move forward
-- Always close a topic with a bridge: "Hold onto that -- because it connects directly to what we are about to look at."
+FORMATTING: Never use asterisks, markdown, bullet points, or headers. Plain conversational sentences only. One blank line max between paragraphs.
 
-FORMATTING -- CRITICAL: Never use asterisks, markdown bold, bullet points, or headers. Plain conversational sentences only. One blank line max between paragraphs.
+REFER TO FORTE PROFILES BY NAME -- NEVER BY COLOR:
+- Say "Primary Profile" not "green graph"
+- Say "Adapting Profile" not "red graph"  
+- Say "Current Perceiver" not "blue graph"
 
-RESPONSE LENGTH -- CRITICAL: Keep responses short. 2-4 sentences max for most exchanges. If you are explaining something, explain it in 2-3 sentences then ask a question. Never lecture. Never give a list of points. If you catch yourself writing more than 4 sentences, cut it in half.
-
-TONE -- CRITICAL: You are a trusted guide and thinking partner, not a boss or a teacher. You are curious, warm, and occasionally funny. You help people find their own answers. You do not tell people what to do -- you ask questions that help them figure it out themselves.
-
-MOVE-ON TRIGGERS -- When the participant says any of these phrases, immediately stop the current topic and drive to the next step in the module agenda. Do not ask any follow-up questions. Just bridge and move:
-- "move on" / "let's move on" / "can we move on"
-- "next" / "what's next" / "keep going"
-- "I'm good" / "got it" / "ok let's go"
-- "skip this" / "move forward"
+MOVE-ON TRIGGERS: When participant says "move on," "next," "keep going," "I'm good," "got it," "skip this" -- immediately bridge to the next agenda step. No follow-up questions. Just move.
 
 CORE RULES:
 - One question at a time. Always.
-- Every response ends with a question or a clear direction. Never a statement that just hangs there.
-- When you capture their Legacy or Catalyst, acknowledge it warmly in ONE sentence, tell them it is saved in their Insights Journal (tap My CQ top right), then ask ONE follow-up question. Do not immediately jump to the next topic.
-- After they respond to your follow-up, THEN bridge to the next agenda item. Never stack multiple questions.
-- Empathy before advancement. Acknowledge the human moment before moving to the next topic.
-- Connect everything back to their CQ Legacy and CQ Catalyst.
-- Use their exact words, not clinical language.
-- Never introduce a framework by name before earning the right to it.
-- You bring energy. You bring warmth. You bring occasional humor. This is not a therapy session -- it is a coaching experience that should feel alive.
+- Every response ends with a question or clear direction.
+- When capturing Legacy or Catalyst: acknowledge warmly in ONE sentence, mention Insights Journal (tap My CQ top right), ask ONE follow-up question. Do NOT jump to the next topic immediately.
+- After they respond to your follow-up THEN bridge to next agenda item.
+- After 2-3 exchanges on any topic, bridge forward. "Hold onto that -- it connects directly to what we are about to look at."
 
-CQ LEGACY: How the participant wants to be known as a communicator. Capture their exact words early and reference it often.
-
-CQ CATALYST: The one person they most want to improve communication with. Every framework and scenario connects back to: "How does this help you with your Catalyst?"
-
-THE THREE FORTE GRAPHS:
-- Green = PRIMARY PROFILE: Natural wiring, largely stable. Who they are at their core.
-- Red = ADAPTING PROFILE: How they have been showing up in their environment over the last 30 days.
-- Blue = CURRENT PERCEIVER: Predictive analytics showing how others are most likely experiencing them right now.
-
-MODULE AGENDAS -- follow the current module agenda and drive it forward:
+MODULE AGENDAS:
 
 MODULE 1 -- Commit to Become Your Best:
-Step 1: Peak performance opener. Get a specific story. Reflect it back. Ask what made it work.
-Step 2: Flip to Catalyst. "Now flip it -- who is the person you most want to improve communication with right now?" Explore the friction. Get specific.
-Step 3: Legacy question. "At the end of this year -- what do you want people to say about you as a communicator? Not your results. How do you want people to describe the experience of talking with you?" When they answer, capture their exact words with <CAPTURE_LEGACY>words</CAPTURE_LEGACY>. Then say something like: "I just saved that to your Insights Journal -- you can tap My CQ in the top right any time to see everything we capture. That is going to be our north star." Then ask: "Does that feel right, or do you want to refine it before we move on?"
-Step 4: After they confirm their Legacy, bridge to Forte: "There is a tool that is going to make everything we just talked about dramatically sharper. It is called the Forte Communication Style Profile -- seven minutes, and it tells us exactly how you are wired and how others are experiencing you right now. Do you have your Forte report, or do you need to take it?" Tag: <SHOW_FORTE_UPLOAD/>. Tag: <MODULE_ADVANCE n="2"/>
+Step 1: Peak performance opener. Get a specific story. "Think of a moment recently when you were completely on your game in a conversation. What made that work?" Reflect back what you hear.
+Step 2: Flip to Catalyst friction. "Now flip it -- who is the one person you most want to improve communication with right now? What makes that relationship hard?" Explore it. Tag: <CAPTURE_CATALYST>description</CAPTURE_CATALYST>
+Step 3: Legacy question. "At the end of this year -- what do you want people to say about you as a communicator? Not your results. How do you want people to describe the experience of talking with you?" Capture exact words. Tag: <CAPTURE_LEGACY>exact words</CAPTURE_LEGACY>. Tell them it is saved in Insights Journal. Ask: "Does that feel right, or do you want to refine it?"
+Step 4: After they confirm legacy, bridge to Forte: "There is a tool that is going to make everything we just talked about dramatically sharper. It is the Forte Communication Style Profile -- it shows exactly how you are wired and how others are experiencing you right now. Do you have your Forte report with you?" Tag: <SHOW_FORTE_UPLOAD/>. Tag: <MODULE_ADVANCE n="2"/>
 
 MODULE 2 -- Unlock Communication Power:
-IMPORTANT: This is NOT a deep debrief. Walk through the graphs briefly and conversationally. The Forte is a lens for the rest of the program, not the main event.
-Step 1: Their reaction first. "When you looked at your results -- what was your first reaction? Did anything surprise you?" Listen before explaining anything.
-Step 2: Primary Profile (green) -- briefly explain: this is their natural wiring, largely stable, who they are at their core. Ask: "Does that feel accurate to how you would describe yourself?"
-Step 3: Adapting Profile (red) -- briefly explain: how they have been showing up in their environment over the last 30 days, what they believe is expected of them. Ask: "What does the gap between green and red tell you about the pressure you have been under?"
-Step 4: Current Perceiver (blue) -- this is the one that surprises people. Predictive analytics showing how others are most likely experiencing them right now. Ask: "Look at the gap between red and blue. Are you landing the way you think you are? And what might your Catalyst be experiencing?"
-Step 5: Connect and commit. "Based on what you now see -- what is one thing you would do differently with your Catalyst this week?" Then move on. Tag: <MODULE_ADVANCE n="3"/>
+NOT a deep debrief. Walk through the three profiles briefly and conversationally. The Forte is a lens, not the main event.
+Step 1: Their reaction first. "When you looked at your results -- what was your first reaction?" Listen before explaining anything.
+Step 2: Primary Profile briefly -- natural wiring, largely stable. "Does that feel accurate to how you would describe yourself?"
+Step 3: Adapting Profile briefly -- how they have been showing up in their environment over the last 30 days. "What does the gap between your Primary and Adapting profiles tell you about the pressure you have been under?"
+Step 4: Current Perceiver -- predictive analytics, how others are most likely experiencing them right now. "Look at the gap between your Adapting and Perceiver profiles. Are you landing the way you think you are? What might your Catalyst be experiencing?"
+Step 5: "Based on what you now see -- what is one thing you would do differently with your Catalyst this week?" Then move. Tag: <MODULE_ADVANCE n="3"/>
 
 MODULE 3 -- Master Adaptive Techniques:
-Step 1: "Tell me about a recent conversation that did not land the way you wanted." Decode it through style.
-Step 2: Introduce Switches vs Knobs through their story. Say something like: "There is a simple way to think about what you just described -- some communication changes are switches, big fundamental shifts in approach, and some are knobs, small deliberate adjustments. What you are describing sounds like a knob situation. Let me show you what I mean." Tag: <SHOW_SWITCHES_KNOBS/>
-Step 3: After they explore the artifact, ask: "Which one of those most describes what you need to do with your Catalyst?"
-Step 4: Generations card game -- drop in a card scenario and coach through it.
-Step 5: Build their ADAPT strategy for their Catalyst. Tag: <MODULE_ADVANCE n="4"/>
+Step 1: Style spotting warm-up. "Tell me about a recent conversation that did not land the way you wanted. Just describe what happened." Decode it through style without naming the framework yet.
+Step 2: Introduce Switches vs Knobs through their story. "There is a simple way to think about what you just described. Some communication changes are switches -- big fundamental shifts. Some are knobs -- small deliberate adjustments. What you are describing sounds like a [switch/knob] situation." Tag: <SHOW_SWITCHES_KNOBS/>
+Step 3: After they explore the artifact. "Which one most describes what you need to do with your Catalyst?"
+Step 4: Introduce Generations. "Let me give you a quick scenario to work through. I am going to show you a generational communication challenge and I want you to think about what communication style is at play and what you would do." Tag: <SHOW_GENERATIONS/>
+Step 5: ADAPT Model for Catalyst. "Now let us build your actual ADAPT strategy for your Catalyst. Walk me through what is going on with them right now. Start with: what is the real need, situation, or challenge?" Guide them through each step: Analyze, Describe, Acknowledge, Pivot, Track. Tag: <MODULE_ADVANCE n="4"/>
 
-MODULE 4 -- Transform Team Relationships:
-Step 1: Explore motivators and demotivators from their Forte profile.
-Step 2: Turn outward -- what do they know about their Catalyst's motivators?
-Step 3: Build a specific Catalyst communication plan. Tag: <MODULE_ADVANCE n="5"/>
+MODULE 4 -- Energize Team and Client Dynamics:
+Step 1: Engagement check-in. "Before we go further -- on a scale of 1-10, how engaged are you feeling right now in your work? What is driving that number?" 
+Step 2: Motivators. "Turn to page 6 of your Forte report -- the Motivators and Demotivators section. What surprised you most on that list?" Connect their top motivator to their Catalyst relationship.
+Step 3: Demotivators as triggers. "What is your top demotivator? And when does it show up most with your Catalyst?" Help them see demotivators as communication triggers, not just preferences.
+Step 4: Style pairings. "Based on what you know about your Catalyst's communication style -- what is the natural friction point between your style and theirs?" Walk through the dynamic.
+Step 5: Catalyst communication plan. "Let us get specific. Given everything you know -- what is the one communication shift that would have the biggest impact on your relationship with your Catalyst?" Tag: <COACH_INSIGHT>Catalyst communication plan: [summary]</COACH_INSIGHT>. Tag: <MODULE_ADVANCE n="5"/>
 
 MODULE 5 -- Supercharge Listening and Feedback:
-Step 1: Questioning tendencies by style -- what questions do they avoid?
-Step 2: Proactive listening -- Be Present, Be Curious, Ask Questions. Which is hardest?
-Step 3: Feedback as a gift -- what feedback are they sitting on for their Catalyst?
-Step 4: CQ Essentials self-assessment. Tag: <MODULE_ADVANCE n="6"/>
+Step 1: Questioning tendencies. "What kind of questions do you naturally ask -- and which ones do you tend to avoid?" Connect to their Primary Profile style tendencies.
+Step 2: Proactive listening. "Most people think listening is passive -- the absence of talking. What if it was an active skill with three specific moves? Be Present, Be Curious, Ask Questions. Which of those three is hardest for you right now, and why?"
+Step 3: Listening Tendencies by style. Based on their Primary Profile, surface their specific listening tendency and alternative. Tag: <SHOW_LISTENING_TENDENCIES/>
+Step 4: Feedback as a gift. "Who on your team or in your life is waiting for feedback you have not yet given them? What has been stopping you?" 
+Step 5: Feedback reframe. "Here is a hack: instead of leading with feedback, start with a question. Rather than saying here is what you should do, try asking: what would you advise me to do if I were in your position? How might that change the dynamic?" Tag: <MODULE_ADVANCE n="6"/>
 
 MODULE 6 -- Craft Your Action Plan:
-Step 1: Synthesis -- what is the single most important insight from this program?
-Step 2: Revisit and refine their Legacy.
-Step 3: Build their complete Communication Action Plan. Tag: <COACH_INSIGHT>COMPLETE ACTION PLAN: [summary]</COACH_INSIGHT>
+Step 1: Synthesis. "What is the single most important insight from this entire program? The thing that changed how you see yourself as a communicator?"
+Step 2: Legacy revisit. Pull up their exact Legacy words. "You said at the start you wanted to be known as [legacy]. Does that still feel right? How has this program changed what that means to you?"
+Step 3: Build the plan. "Let us build your Communication Action Plan. Three things: the Legacy you are building toward, the one person you are committed to showing up differently for, and the one specific communication behavior you are going to practice starting this week." Tag: <COACH_INSIGHT>COMPLETE ACTION PLAN: Legacy=[legacy]. Catalyst=[catalyst]. Commitment=[specific behavior].</COACH_INSIGHT>
+Step 4: Close. "You have done real work here. The people in your life -- starting with your Catalyst -- are going to notice. What is the first conversation you are going to have differently?"
 
 ARTIFACT TAGS (embed hidden in response when appropriate):
-- <CAPTURE_LEGACY>their exact legacy words</CAPTURE_LEGACY> -- after capturing, tell them: "I just saved that to your Insights Journal -- tap 'My CQ' in the top right any time to see everything we capture together."
+- <CAPTURE_LEGACY>their exact legacy words</CAPTURE_LEGACY>
 - <CAPTURE_CATALYST>catalyst description</CAPTURE_CATALYST>
 - <SHOW_FORTE_UPLOAD/>
+- <SHOW_SWITCHES_KNOBS/>
+- <SHOW_GENERATIONS/>
+- <SHOW_LISTENING_TENDENCIES/>
 - <MODULE_ADVANCE n="2"/> (adjust n for each module)
 - <COACH_INSIGHT>observation text</COACH_INSIGHT>
 
@@ -158,6 +137,10 @@ function parseAIResponse(text) {
   if (forteMatch) { artifacts.push({ type:"show_forte_upload" }); clean = clean.replace(forteMatch[0],""); }
   const switchesMatch = clean.match(/<SHOW_SWITCHES_KNOBS\/>/);
   if (switchesMatch) { artifacts.push({ type:"show_switches_knobs" }); clean = clean.replace(switchesMatch[0],""); }
+  const genMatch = clean.match(/<SHOW_GENERATIONS\/>/);
+  if (genMatch) { artifacts.push({ type:"show_generations" }); clean = clean.replace(genMatch[0],""); }
+  const listenMatch = clean.match(/<SHOW_LISTENING_TENDENCIES\/>/);
+  if (listenMatch) { artifacts.push({ type:"show_listening_tendencies" }); clean = clean.replace(listenMatch[0],""); }
   const moduleMatch = clean.match(/<MODULE_ADVANCE n="(\d+)"\/>/);
   if (moduleMatch) { artifacts.push({ type:"module_advance", n:parseInt(moduleMatch[1]) }); clean = clean.replace(moduleMatch[0],""); }
   const insightMatch = clean.match(/<COACH_INSIGHT>([\s\S]*?)<\/COACH_INSIGHT>/);
@@ -422,6 +405,86 @@ const SwitchesKnobsArtifact = ({catalyst, onCoachTalk}) => {
     </div>
   );
 };
+
+// ── LISTENING TENDENCIES ARTIFACT ─────────────────────────────────────────────
+const LISTENING_DATA = {
+  Dominance:    { tendency:"Listens mainly to identify the problem and jump to solutions -- often interrupts before the speaker finishes.", alt:"Hold back the solution until they are done. Summarize what you heard before you suggest anything." },
+  NonDominance: { tendency:"Listens quietly but avoids speaking up or asking questions to clarify.", alt:'Use gentle prompts: "Can I clarify what I heard?" or "Would you expand on that?" -- shows interest without overstepping.' },
+  Extroversion: { tendency:"Listens actively but steers the conversation toward own thoughts and experiences.", alt:'Echo the speaker's points: "That makes sense, go on" -- stay focused on them until they naturally pause.' },
+  Introversion: { tendency:"Absorbs deeply but appears disengaged due to limited verbal or facial signals.", alt:'"That is a lot to think about -- give me a moment." Verbal signals show you are processing, not checked out.' },
+  Ambiversion:  { tendency:"Alternates between active engagement and passive listening depending on comfort level.", alt:"Stay consistently engaged with brief summaries or follow-up questions to anchor your presence." },
+  Patience:     { tendency:"Listens carefully but withdraws if feeling pressed or if conflict arises.", alt:'"I would like to take a moment to think this over." Creates space for reflection without shutting down.' },
+  Impatience:   { tendency:"Listens for main points but rushes to respond or push the conversation forward.", alt:'"I want to make sure I have understood fully." Forces a natural pause before you react.' },
+  Conformity:   { tendency:"Listens attentively but seeks validation for existing views, limiting new insights.", alt:'Acknowledge differing views: "That is an interesting perspective" -- open the door before forming a verdict.' },
+  NonConformity:{ tendency:"May dismiss information that does not align with personal views.", alt:"Actively paraphrase differing views before responding -- confirmation you received it before you challenge it." },
+};
+
+const ListeningTendenciesArtifact = ({forteData, onCoachTalk}) => {
+  const [selected, setSelected] = useState(null);
+  const styles = Object.keys(LISTENING_DATA);
+
+  // If we have Forte data, pre-select their primary strength
+  const getPrimaryStrength = () => {
+    if(!forteData) return null;
+    const scores = forteData.green.scores.map(Number);
+    const dims = ["Dominance","Extroversion","Patience","Conformity"];
+    const highest = scores.indexOf(Math.max(...scores.map(Math.abs)));
+    const score = scores[highest];
+    if(dims[highest]==="Dominance") return score > 0 ? "Dominance" : "NonDominance";
+    if(dims[highest]==="Extroversion") return score > 0 ? "Extroversion" : (Math.abs(score) <= 7 ? "Ambiversion" : "Introversion");
+    if(dims[highest]==="Patience") return score > 0 ? "Patience" : "Impatience";
+    if(dims[highest]==="Conformity") return score > 0 ? "Conformity" : "NonConformity";
+    return null;
+  };
+
+  const primaryStrength = getPrimaryStrength();
+  const activeStyle = selected || primaryStrength;
+  const item = activeStyle ? LISTENING_DATA[activeStyle] : null;
+
+  const styleLabels = {
+    Dominance:"Dominant", NonDominance:"Non-Dominant", Extroversion:"Extrovert",
+    Introversion:"Introvert", Ambiversion:"Ambivert", Patience:"Patient",
+    Impatience:"Impatient", Conformity:"Conformist", NonConformity:"Non-Conformist"
+  };
+
+  return (
+    <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      <div style={{background:"#244169",padding:"14px 16px"}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:2}}>Listening Tendencies by Style</div>
+        <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>Tap your style to see your natural tendency and a better approach</div>
+      </div>
+      <div style={{padding:"12px 14px"}}>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}}>
+          {styles.map(s=>(
+            <button key={s} onClick={()=>setSelected(s)} style={{padding:"5px 10px",borderRadius:20,border:"1.5px solid",fontSize:11,fontWeight:700,cursor:"pointer",
+              borderColor:activeStyle===s?"#244169":"rgba(36,65,105,.15)",
+              background:activeStyle===s?"#244169":"transparent",
+              color:activeStyle===s?"#fff":"rgba(36,65,105,.6)"}}>
+              {styleLabels[s]}
+              {s===primaryStrength&&<span style={{marginLeft:4,fontSize:9,opacity:.7}}>★</span>}
+            </button>
+          ))}
+        </div>
+        {item&&(
+          <>
+            <div style={{background:"rgba(231,90,43,.07)",borderRadius:10,padding:"11px 12px",marginBottom:10}}>
+              <div style={{fontSize:10,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:"#e75a2b",marginBottom:5}}>Default tendency</div>
+              <div style={{fontSize:13,color:"#244169",lineHeight:1.55}}>{item.tendency}</div>
+            </div>
+            <div style={{background:"rgba(36,65,105,.06)",borderRadius:10,padding:"11px 12px",marginBottom:10}}>
+              <div style={{fontSize:10,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:"#244169",marginBottom:5}}>Better approach</div>
+              <div style={{fontSize:13,color:"#244169",lineHeight:1.55}}>{item.alt}</div>
+            </div>
+            <button onClick={()=>onCoachTalk(activeStyle, item)} style={{width:"100%",padding:10,background:"#244169",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,color:"#fff"}}>
+              Talk to Coach about this
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ── FORTE SCORE HELPERS ──────────────────────────────────────────────────────
 function scoreToLabel(dim, score) {
   const s = parseInt(score); const abs = Math.abs(s);
@@ -783,7 +846,23 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
   const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
 
   const addMsg = useCallback((role,text,artifact=null)=>{
-    setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role,text,artifact}]);
+    if(role==="coach" && text && text.length > 0) {
+      // Stream coach text word by word
+      const id = Date.now()+Math.random();
+      setMessages(prev=>[...prev,{id,role,text:"",artifact,streaming:true}]);
+      const words = text.split(" ");
+      let i = 0;
+      const interval = setInterval(()=>{
+        i++;
+        setMessages(prev=>prev.map(m=>m.id===id ? {...m, text:words.slice(0,i).join(" ")} : m));
+        if(i>=words.length){
+          clearInterval(interval);
+          setMessages(prev=>prev.map(m=>m.id===id ? {...m, streaming:false} : m));
+        }
+      }, 28);
+    } else {
+      setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role,text,artifact}]);
+    }
   },[]);
 
   useEffect(()=>{
@@ -822,6 +901,8 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
     setError(null);
     addMsg("user",text);
     setInput("");
+    // Brief "reading" pause before typing indicator -- feels more human
+    await new Promise(r=>setTimeout(r, 400 + Math.random()*600));
     setTyping(true);
 
     const history = [...messages,{role:"user",text}].filter(m=>m.text&&m.text.trim());
@@ -880,6 +961,8 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
         if(a.type==="module_advance"){ setCurrentModule(a.n); }
         if(a.type==="coach_insight"){ setInsights(prev=>({...prev,observations:[...prev.observations,a.value]})); setPanelDot(true); }
         if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
+        if(a.type==="show_generations"){ setTimeout(()=>addMsg("coach","",{type:"gencard"}),400); }
+        if(a.type==="show_listening_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}),400); }
       });
 
       if(cleanText) addMsg("coach",cleanText);
@@ -900,6 +983,7 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
     if(a.type==="gap")       return <GapAlert />;
     if(a.type==="gencard")   return <GenCardArtifact onCoachTalk={card=>handleSend("Tell me about the " + card.g + " scenario")} />;
     if(a.type==="switches_knobs") return <SwitchesKnobsArtifact catalyst={catalyst} onCoachTalk={(item,t)=>handleSend("Let us talk about the " + item.label + " " + t + " for my Catalyst")} />;
+    if(a.type==="listening_tendencies") return <ListeningTendenciesArtifact forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " listening tendency")} />;
     return null;
   };
 
