@@ -14,12 +14,7 @@ const LEVEL_DATA = {
 
 const MOD_NAMES = ["","Commit to Become Your Best","Unlock and Amplify Communication Power","Master Adaptive Communication Techniques","Transform Team Relationships","Supercharge Listening and Feedback","Craft Your Action Plan"];
 
-const GEN_CARDS = [
-  { g:"Gen Z",      t:"Alex sends voice notes instead of emails. When you ask for a follow-up in writing, they seem confused about why that matters.",           h:"What communication style is at play -- and what does Alex actually need?" },
-  { g:"Millennial", t:"Jordan wants to know the why behind every decision before committing. In your last meeting they challenged the process in front of the whole team.", h:"Is this resistance -- or something else entirely?" },
-  { g:"Gen X",      t:"Sam just does the work. Never asks for feedback. Never volunteers in meetings. You cannot tell if they are engaged or checked out.",      h:"What does Sam need from you that you might not be giving?" },
-  { g:"Boomer",     t:"Pat sends a formal memo for something you would handle in a Slack message. When you respond informally, they seem offended.",             h:"What is the real communication gap here?" },
-];
+// GEN_CARDS replaced by GENERATIONS array in GenCardArtifact
 
 const FORTE_DATA = {
   green: { scores:["3","20","1","19"],  labels:["Non-Dominant","Strong Extrovert","Highly Impatient","Non-Conformist"],              pcts:[8,56,3,53]  },
@@ -60,7 +55,7 @@ MODULE 1 -- Commit to Become Your Best:
 Step 1: Peak performance opener. Get a specific story. "Think of a moment recently when you were completely on your game in a conversation. What made that work?" Reflect back what you hear.
 Step 2: Flip to Catalyst friction. "Now flip it -- who is the one person you most want to improve communication with right now? What makes that relationship hard?" Explore it. Tag: <CAPTURE_CATALYST>description</CAPTURE_CATALYST>
 Step 3: Legacy question. "At the end of this year -- what do you want people to say about you as a communicator? Not your results. How do you want people to describe the experience of talking with you?" Capture exact words. Tag: <CAPTURE_LEGACY>exact words</CAPTURE_LEGACY>. Tell them it is saved in Insights Journal. Ask: "Does that feel right, or do you want to refine it?"
-Step 4: After they confirm legacy, bridge to Forte: "There is a tool that is going to make everything we just talked about dramatically sharper. It is the Forte Communication Style Profile -- it shows exactly how you are wired and how others are experiencing you right now. Do you have your Forte report with you?" Tag: <SHOW_FORTE_UPLOAD/>. Tag: <MODULE_ADVANCE n="2"/>
+Step 4: After they confirm legacy, take a breath. Say something like: "That is it. That is the north star for everything we are going to do together. I want you to hold onto that -- because every framework, every tool, every conversation we have from here is going to connect back to it." Pause. Then: "Now I want to give you something that is going to make that legacy feel a lot more achievable. It is called the Forte Communication Style Profile. Seven minutes. It shows you exactly how you are wired as a communicator, how you have been adapting to your environment, and -- this is the one that surprises people -- how others are most likely experiencing you right now. It is the mirror most people never get to look into. Do you have your Forte report with you, or do you need to take the assessment first?" ONLY after they respond to that question, tag: <SHOW_FORTE_UPLOAD/>. Tag: <MODULE_ADVANCE n="2"/>
 
 MODULE 2 -- Unlock Communication Power:
 NOT a deep debrief. Walk through the three profiles briefly and conversationally. The Forte is a lens, not the main event.
@@ -72,9 +67,9 @@ Step 5: "Based on what you now see -- what is one thing you would do differently
 
 MODULE 3 -- Master Adaptive Techniques:
 Step 1: Style spotting warm-up. "Tell me about a recent conversation that did not land the way you wanted. Just describe what happened." Decode it through style without naming the framework yet.
-Step 2: Introduce Switches vs Knobs through their story. "There is a simple way to think about what you just described. Some communication changes are switches -- big fundamental shifts. Some are knobs -- small deliberate adjustments. What you are describing sounds like a [switch/knob] situation." Tag: <SHOW_SWITCHES_KNOBS/>
+Step 2: Introduce Switches vs Knobs through their story. Do not announce the framework -- arrive at it through their story: "What you just described is fascinating because there are two completely different types of communication adjustments. Some situations require a switch -- a fundamental change in your whole approach, like going from formal to informal, or from directive to collaborative. Other situations just need a knob turned -- a small, precise adjustment like slowing your pace, adding more empathy, or asking more questions instead of giving answers. The difference matters because most people try to make a switch when all they needed was a knob -- and vice versa. Let me show you something." Tag: <SHOW_SWITCHES_KNOBS/>. After they explore: "Which one landed for you -- and is it a switch or a knob situation with your Catalyst?"
 Step 3: After they explore the artifact. "Which one most describes what you need to do with your Catalyst?"
-Step 4: Introduce Generations. "Let me give you a quick scenario to work through. I am going to show you a generational communication challenge and I want you to think about what communication style is at play and what you would do." Tag: <SHOW_GENERATIONS/>
+Step 4: Introduce Generations. Set it up properly before dropping the artifact: "Here is something I want you to experience. Every generation communicates differently -- not better or worse, just differently. And most communication breakdowns in the workplace are not about personality clashes -- they are about generational gaps we have never been taught to recognize. I am going to show you an interactive tool with five generations represented. Each one has real scenarios drawn from workplace experiences. Your job is to explore their perspective -- not judge it -- and think about how you would adapt your communication. The goal is empathy and strategy, not stereotyping. Ready?" Tag: <SHOW_GENERATIONS/>. After they explore: "Which generation do you work with most in your current role -- and which scenario hit closest to home for you?"
 Step 5: ADAPT Model for Catalyst. "Now let us build your actual ADAPT strategy for your Catalyst. Walk me through what is going on with them right now. Start with: what is the real need, situation, or challenge?" Guide them through each step: Analyze, Describe, Acknowledge, Pivot, Track. Tag: <MODULE_ADVANCE n="4"/>
 
 MODULE 4 -- Energize Team and Client Dynamics:
@@ -316,19 +311,127 @@ const GapAlert = () => (
   </div>
 );
 
+const GENERATIONS = [
+  {
+    id:"traditionalists", icon:"🎖️", label:"Traditionalists", years:"1922–1945",
+    context:"Shaped by the Great Depression and WWII. Value loyalty, hard work, and respect for authority. Prefer formal communication and face-to-face interaction.",
+    scenarios:[
+      { title:"Experience", situation:"You are worried that your extensive experience is undervalued in a company focused on new trends.", impact:"Sometimes I feel like my years of problem-solving and relationship building are overlooked in favor of the latest methodologies.", reflection:"What experiences have shaped this perspective? What wisdom might we be missing?" },
+      { title:"Connection", situation:"You feel isolated because many of your colleagues are much younger and have different interests.", impact:"I miss the deeper workplace connections I used to have. It is harder to find common ground now.", reflection:"How might this impact their sense of belonging? What stories would you like to hear?" },
+      { title:"Stability", situation:"You are frustrated with frequent restructuring that disrupts established relationships.", impact:"The constant changes make it harder to maintain the meaningful connections that make work fulfilling.", reflection:"What values and traditions matter most to them? What can we learn from their perspective on change?" },
+    ]
+  },
+  {
+    id:"boomers", icon:"👨‍👩‍👧‍👦", label:"Baby Boomers", years:"1946–1964",
+    context:"The largest generation in the workforce for decades. Value hard work, competition, and professional achievement. Prefer direct communication and phone or in-person meetings over digital tools.",
+    scenarios:[
+      { title:"Recognition", situation:"You worry about age discrimination and being perceived as out of touch with current trends.", impact:"I have adapted to so many changes throughout my career, but now it feels like my adaptability goes unnoticed.", reflection:"How has their journey of continuous adaptation shaped their perspective? What strengths have they developed?" },
+      { title:"Value", situation:"You feel that younger colleagues dismiss your contributions because they prioritize speed over accuracy.", impact:"There is wisdom in taking time to consider all angles. I worry that valuable lessons from experience are being overlooked.", reflection:"What experiences have taught them the value of thoroughness? What insights might they offer?" },
+      { title:"Growth", situation:"You feel pressured by the expectation to constantly upskill and adapt to new technologies.", impact:"It is not just about learning new tools -- it is about feeling valued for all the knowledge I already bring.", reflection:"How might we better appreciate both new and established knowledge? What unique perspectives do they offer?" },
+    ]
+  },
+  {
+    id:"genx", icon:"📺", label:"Generation X", years:"1965–1980",
+    context:"The independent, self-reliant generation. Skeptical of institutions, highly adaptable, and entrepreneurial. Value work-life balance and direct communication. Often the bridge between Boomers and Millennials.",
+    scenarios:[
+      { title:"Balance", situation:"You worry that your work-life balance is skewed, with too much demanded by both work and family.", impact:"I am caught between caring for my children and aging parents while trying to maintain my career trajectory.", reflection:"How does this sandwich generation experience shape their workplace needs? What strengths have they developed?" },
+      { title:"Recognition", situation:"You feel your contributions are overshadowed by the focus on younger workers.", impact:"We have quietly kept things running through major transitions, but sometimes feel invisible in the process.", reflection:"What unique perspectives do they bring from bridging multiple generations? What would they like others to understand?" },
+      { title:"Security", situation:"You are concerned about job security in a volatile economic climate.", impact:"Having seen multiple economic cycles, I worry about maintaining stability for my family's future.", reflection:"How have their experiences with economic changes shaped their outlook? What wisdom might they share?" },
+    ]
+  },
+  {
+    id:"millennials", icon:"💿", label:"Millennials", years:"1981–2000",
+    context:"The most educated generation in history. Value purpose, collaboration, and feedback. Comfortable with technology but crave human connection. Expect frequent communication and transparency from leadership.",
+    scenarios:[
+      { title:"Financial Pressure", situation:"You feel overwhelmed by student loan debt and its impact on your financial future.", impact:"It feels like I am working harder than ever but still cannot achieve the milestones my parents had at my age.", reflection:"How does this financial pressure affect their workplace choices? What dreams and aspirations matter most to them?" },
+      { title:"Purpose", situation:"You are stressed about finding work that aligns with your values and offers real career growth.", impact:"I want to make a meaningful impact while also growing professionally, but it often feels like I have to choose.", reflection:"What values drive their career decisions? How do they define success differently?" },
+      { title:"Growth", situation:"You worry that your need for feedback and mentorship is perceived as needing constant support.", impact:"I want to learn and grow, but sometimes feeling uncertain is interpreted as lacking confidence.", reflection:"How might their desire for growth be a strength? What perspectives do they bring to learning?" },
+    ]
+  },
+  {
+    id:"genz", icon:"📱", label:"Generation Z", years:"2001–2020",
+    context:"Digital natives who have never known a world without smartphones. Value authenticity, mental health, and flexibility. Prefer real-time digital communication and expect employers to take a stand on social issues.",
+    scenarios:[
+      { title:"Connection", situation:"You feel overwhelmed by the pressure to always be connected and available online.", impact:"The line between work and personal life is so blurred -- it is exhausting trying to maintain boundaries.", reflection:"How does constant connectivity affect their wellbeing? What wisdom might they offer about digital boundaries?" },
+      { title:"Wellbeing", situation:"You are concerned about mental health and want more support from your employer.", impact:"I want to bring my whole self to work, including discussing mental health openly, but worry about being judged.", reflection:"What insights do they bring about workplace wellbeing? How might their openness benefit the workplace?" },
+      { title:"Innovation", situation:"You are frustrated by rigid corporate structures that inhibit innovation and flexibility.", impact:"I see so many possibilities for positive change, but traditional hierarchies make it hard to be heard.", reflection:"What fresh perspectives do they bring to workplace culture? What changes do they envision?" },
+    ]
+  },
+];
+
+const GEN_COLORS = ["#5878bd","#244169","#385988","#f08b35","#e75a2b"];
+
 const GenCardArtifact = ({onCoachTalk}) => {
-  const [idx,setIdx] = useState(0);
-  const card = GEN_CARDS[idx % GEN_CARDS.length];
+  const [activeGen, setActiveGen] = useState(0);
+  const [flipped, setFlipped] = useState(false);
+  const [activeScenario, setActiveScenario] = useState(0);
+  const gen = GENERATIONS[activeGen];
+  const scenario = gen.scenarios[activeScenario];
+
+  const selectGen = (i) => { setActiveGen(i); setFlipped(false); setActiveScenario(0); };
+
   return (
     <div style={{margin:"6px 14px",background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
-      <div style={{padding:"14px 16px 10px",borderBottom:"1px solid rgba(36,65,105,.06)"}}>
-        <div style={{fontSize:10,fontWeight:800,letterSpacing:".12em",textTransform:"uppercase",color:C.orange,marginBottom:5}}>{card.g}</div>
-        <div style={{fontSize:13.5,fontWeight:600,color:C.navy,lineHeight:1.5}}>{card.t}</div>
-        <div style={{fontSize:12,color:"#8a8378",fontStyle:"italic",marginTop:6}}>{card.h}</div>
+      {/* Header */}
+      <div style={{background:C.navy,padding:"14px 16px"}}>
+        <div style={{fontSize:13,fontWeight:800,color:C.white,marginBottom:2}}>Unlock the Generations</div>
+        <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>Tap a generation to explore their perspective. Flip the card to see the scenario.</div>
       </div>
-      <div style={{display:"flex",gap:8,padding:"12px 16px"}}>
-        <button onClick={()=>onCoachTalk(card)} style={{flex:1,padding:10,border:"none",borderRadius:11,fontSize:13,fontWeight:700,cursor:"pointer",background:C.navy,color:C.white}}>Talk to Coach</button>
-        <button onClick={()=>setIdx(i=>i+1)} style={{flex:1,padding:10,border:"none",borderRadius:11,fontSize:13,fontWeight:700,cursor:"pointer",background:"rgba(36,65,105,.08)",color:C.navy}}>Next Card</button>
+
+      {/* Generation selector tabs */}
+      <div style={{display:"flex",overflowX:"auto",gap:0,borderBottom:"1px solid rgba(36,65,105,.08)"}}>
+        {GENERATIONS.map((g,i)=>(
+          <button key={g.id} onClick={()=>selectGen(i)} style={{flex:"0 0 auto",padding:"10px 14px",border:"none",cursor:"pointer",fontSize:11,fontWeight:800,borderBottom:`2px solid ${activeGen===i?GEN_COLORS[i]:"transparent"}`,color:activeGen===i?GEN_COLORS[i]:"rgba(36,65,105,.4)",background:"transparent",whiteSpace:"nowrap"}}>
+            {g.icon} {g.label.split(" ")[0]}
+          </button>
+        ))}
+      </div>
+
+      {/* Card area */}
+      <div style={{padding:"14px 16px"}}>
+        {/* Generation context */}
+        {!flipped&&(
+          <div style={{marginBottom:14}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+              <span style={{fontSize:28}}>{gen.icon}</span>
+              <div>
+                <div style={{fontSize:15,fontWeight:800,color:C.navy}}>{gen.label}</div>
+                <div style={{fontSize:11,color:"rgba(36,65,105,.5)",fontWeight:600}}>{gen.years}</div>
+              </div>
+            </div>
+            <div style={{fontSize:13,color:C.navy,lineHeight:1.6,opacity:.8,marginBottom:14}}>{gen.context}</div>
+            <div style={{fontSize:12,fontWeight:700,color:GEN_COLORS[activeGen],marginBottom:8,textTransform:"uppercase",letterSpacing:".08em"}}>Scenarios</div>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {gen.scenarios.map((s,i)=>(
+                <button key={i} onClick={()=>{setActiveScenario(i);setFlipped(true);}} style={{padding:"10px 12px",borderRadius:10,border:`1.5px solid ${activeScenario===i?"rgba(36,65,105,.3)":"rgba(36,65,105,.1)"}`,cursor:"pointer",textAlign:"left",background:"rgba(36,65,105,.03)"}}>
+                  <div style={{fontSize:13,fontWeight:700,color:C.navy}}>{s.title}</div>
+                  <div style={{fontSize:11.5,color:"rgba(36,65,105,.5)",marginTop:2,lineHeight:1.4}}>{s.situation.substring(0,60)}...</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Flipped scenario view */}
+        {flipped&&(
+          <div>
+            <button onClick={()=>setFlipped(false)} style={{display:"flex",alignItems:"center",gap:5,background:"none",border:"none",cursor:"pointer",fontSize:12,fontWeight:700,color:"rgba(36,65,105,.5)",marginBottom:12}}>
+              ← Back to {gen.label}
+            </button>
+            <div style={{display:"inline-block",background:GEN_COLORS[activeGen],borderRadius:6,padding:"3px 10px",fontSize:10,fontWeight:800,color:"#fff",letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>{scenario.title}</div>
+            <div style={{fontSize:13.5,fontWeight:600,color:C.navy,lineHeight:1.55,marginBottom:12}}>{scenario.situation}</div>
+            <div style={{background:"rgba(36,65,105,.05)",borderLeft:`3px solid ${GEN_COLORS[activeGen]}`,padding:"10px 12px",borderRadius:"0 10px 10px 0",marginBottom:12}}>
+              <div style={{fontSize:12,fontStyle:"italic",color:"rgba(36,65,105,.7)",lineHeight:1.55}}>"{scenario.impact}"</div>
+            </div>
+            <div style={{background:"rgba(244,188,45,.1)",borderRadius:10,padding:"10px 12px",marginBottom:12}}>
+              <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:4}}>Reflection</div>
+              <div style={{fontSize:12.5,color:C.navy,lineHeight:1.55}}>{scenario.reflection}</div>
+            </div>
+            <button onClick={()=>onCoachTalk(gen, scenario)} style={{width:"100%",padding:10,background:C.navy,border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,color:C.white}}>
+              Talk to Coach about this
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
