@@ -409,8 +409,8 @@ const SwitchesKnobsArtifact = ({catalyst, onCoachTalk}) => {
 // ── LISTENING TENDENCIES ARTIFACT ─────────────────────────────────────────────
 const LISTENING_DATA = {
   Dominance:    { tendency:"Listens mainly to identify the problem and jump to solutions -- often interrupts before the speaker finishes.", alt:"Hold back the solution until they are done. Summarize what you heard before you suggest anything." },
-  NonDominance: { tendency:"Listens quietly but avoids speaking up or asking questions to clarify.", alt:'Use gentle prompts: "Can I clarify what I heard?" or "Would you expand on that?" -- shows interest without overstepping.' },
-  Extroversion: { tendency:"Listens actively but steers the conversation toward own thoughts and experiences.", alt:'Echo the speaker's points: "That makes sense, go on" -- stay focused on them until they naturally pause.' },
+  NonDominance: { tendency:"Listens quietly but avoids speaking up or asking questions to clarify.", alt:"Use gentle prompts like 'Can I clarify what I heard?' or 'Would you expand on that?' -- shows interest without overstepping." },
+  Extroversion: { tendency:"Listens actively but steers the conversation toward own thoughts and experiences.", alt:"Echo the speaker back: 'That makes sense, go on' -- keep the focus on them until they naturally pause." },
   Introversion: { tendency:"Absorbs deeply but appears disengaged due to limited verbal or facial signals.", alt:'"That is a lot to think about -- give me a moment." Verbal signals show you are processing, not checked out.' },
   Ambiversion:  { tendency:"Alternates between active engagement and passive listening depending on comfort level.", alt:"Stay consistently engaged with brief summaries or follow-up questions to anchor your presence." },
   Patience:     { tendency:"Listens carefully but withdraws if feeling pressed or if conflict arises.", alt:'"I would like to take a moment to think this over." Creates space for reflection without shutting down.' },
