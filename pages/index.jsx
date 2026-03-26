@@ -247,16 +247,26 @@ ARTIFACT TAGS (embed hidden in response when appropriate):
 - <COACH_INSIGHT>observation text</COACH_INSIGHT>
 
 Current participant profile:
+Name: {participantName}
 Level: {levelName}
 Legacy: {legacy}
 Catalyst: {catalyst}
 Forte Profile: {forteData}
 Current Module: {currentModule}
 
+USE THEIR NAME: Address the participant by their first name naturally throughout the session -- especially at the opening, when capturing something meaningful, and at moments of insight. Do not overdo it -- use it the way a good coach would, 3-5 times per session feels right.
+
+OPENING MESSAGE PERSONALIZATION BY LEVEL:
+- Individual Contributor: Warm and encouraging. "Hey [name] -- welcome. Let us start somewhere real..." Focus on peer relationships, proving yourself, finding your voice.
+- Manager / Team Lead: Acknowledge the weight of the role. "Hey [name] -- glad you are here. Leading people is the hardest communication challenge there is..." Focus on team dynamics and holding people accountable while maintaining trust.
+- Senior Leader / Director: Peer-level, direct. "Hey [name] -- I appreciate you making the time..." Focus on influence at scale, the gap between intent and impact, culture-setting through communication.
+- Executive / C-Suite: Strategic and direct. "[Name] -- let us get straight to it..." Focus on legacy, organizational communication, the responsibility that comes with the role.
+
 {levelCoaching}`;
 
 function buildSystemPrompt(profile) {
   return SYSTEM_PROMPT_TEMPLATE
+    .replace("{participantName}", profile.participantName || "the participant")
     .replace("{levelName}", profile.levelName || "Not selected")
     .replace("{legacy}", profile.legacy || "Not yet defined")
     .replace("{catalyst}", profile.catalyst || "Not yet identified")
@@ -1206,6 +1216,8 @@ const HomeScreen = ({onStart}) => (
 
 const LevelScreen = ({onSelect}) => {
   const [sel,setSel] = useState(null);
+  const [name,setName] = useState("");
+  const canProceed = sel && name.trim().length > 0;
   const levels = [
     {n:1,title:"Individual Contributor",  sub:"Building influence, peer relationships, proving yourself"},
     {n:2,title:"Manager / Team Lead",      sub:"People manager, team dynamics, holding others accountable"},
@@ -1215,15 +1227,29 @@ const LevelScreen = ({onSelect}) => {
   return (
     <div style={{flex:1,background:C.gold,overflowY:"auto",display:"flex",flexDirection:"column"}}>
       <div style={{padding:"28px 22px 30px"}}>
-        <div style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:18}}>
+        <div style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:20}}>
           <div style={{width:44,height:44,borderRadius:12,background:C.gold,border:"2px solid rgba(36,65,105,.15)",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
             <Logo size={30} />
           </div>
           <div style={{background:"rgba(255,255,255,.65)",borderRadius:"4px 18px 18px 18px",padding:"14px 16px",fontSize:14.5,color:C.navy,lineHeight:1.6,fontWeight:500,maxWidth:280}}>
-            Before we start -- one quick question so I can make this as relevant as possible for you.<br/><br/>
-            Where do you operate in your organization right now?
+            Before we start -- two quick questions so I can make this as personal as possible for you.
           </div>
         </div>
+
+        {/* Name field */}
+        <div style={{marginBottom:18}}>
+          <div style={{fontSize:12,fontWeight:800,color:C.navy,opacity:.6,letterSpacing:".08em",textTransform:"uppercase",marginBottom:8}}>First, what is your first name?</div>
+          <input
+            value={name}
+            onChange={e=>setName(e.target.value)}
+            placeholder="Your first name..."
+            maxLength={30}
+            style={{width:"100%",padding:"13px 16px",background:"rgba(255,255,255,.75)",border:"1.5px solid rgba(36,65,105,.15)",borderRadius:12,fontSize:15,color:C.navy,fontFamily:"inherit",outline:"none"}}
+          />
+        </div>
+
+        {/* Level selector */}
+        <div style={{fontSize:12,fontWeight:800,color:C.navy,opacity:.6,letterSpacing:".08em",textTransform:"uppercase",marginBottom:8}}>Where do you operate in your organization?</div>
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
           {levels.map(({n,title,sub})=>(
             <div key={n} onClick={()=>setSel(n)} style={{background:sel===n?C.navy:"rgba(255,255,255,.5)",border:`1.5px solid ${sel===n?C.navy:"rgba(36,65,105,.12)"}`,borderRadius:16,padding:"14px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:12,userSelect:"none",transition:"all .2s"}}>
@@ -1236,14 +1262,14 @@ const LevelScreen = ({onSelect}) => {
           ))}
         </div>
         <div style={{paddingTop:20}}>
-          <button disabled={!sel} onClick={()=>onSelect(sel)} style={{width:"100%",padding:16,background:C.navy,color:C.white,border:"none",borderRadius:14,fontSize:15,fontWeight:800,cursor:sel?"pointer":"not-allowed",opacity:sel?1:.35,boxShadow:"0 4px 18px rgba(36,65,105,.3)"}}>Begin My Journey</button>
+          <button disabled={!canProceed} onClick={()=>onSelect(sel, name.trim())} style={{width:"100%",padding:16,background:C.navy,color:C.white,border:"none",borderRadius:14,fontSize:15,fontWeight:800,cursor:canProceed?"pointer":"not-allowed",opacity:canProceed?1:.35,boxShadow:"0 4px 18px rgba(36,65,105,.3)"}}>Begin My Journey</button>
         </div>
       </div>
     </div>
   );
 };
 
-const CoachScreen = ({level,savedState,onSave,onReset}) => {
+const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const [messages,      setMessages]      = useState([]);
   const [input,         setInput]         = useState("");
   const [typing,        setTyping]        = useState(false);
@@ -1337,6 +1363,7 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
     const profile = {
       levelName: levelInfo.name,
       levelCoaching: levelInfo.coaching,
+      participantName: participantName || "the participant",
       legacy: legacyRef.current,
       catalyst: catalystRef.current,
       forteData: forteData ? "Primary Profile -- Dom:" + forteData.green.scores[0] + ", Ext:" + forteData.green.scores[1] + ", Pat:" + forteData.green.scores[2] + ", Con:" + forteData.green.scores[3] : "Not yet uploaded",
@@ -1477,19 +1504,20 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
 };
 
 export default function App() {
-  const [screen,     setScreen]    = useState("home");
-  const [level,      setLevel]     = useState(null);
-  const [restored,   setRestored]  = useState(false);
-  const [savedState, setSavedState]= useState(null);
+  const [screen,         setScreen]       = useState("home");
+  const [level,          setLevel]         = useState(null);
+  const [participantName,setParticipantName]= useState("");
+  const [restored,       setRestored]      = useState(false);
+  const [savedState,     setSavedState]    = useState(null);
 
   useEffect(()=>{
     loadSession().then(s=>{
-      if(s?.screen==="coach"&&s?.messages?.length>0){setScreen("coach");setLevel(s.level||null);setSavedState(s);}
+      if(s?.screen==="coach"&&s?.messages?.length>0){setScreen("coach");setLevel(s.level||null);setParticipantName(s.participantName||"");setSavedState(s);}
       setRestored(true);
     });
   },[]);
 
-  const handleReset = async()=>{await clearSession();setScreen("home");setLevel(null);setSavedState(null);};
+  const handleReset = async()=>{await clearSession();setScreen("home");setLevel(null);setParticipantName("");setSavedState(null);};
 
   if(!restored) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:"#1c1c2e"}}><style>{STYLES}</style><div style={{width:36,height:36,border:"3px solid rgba(244,188,45,.2)",borderTopColor:C.gold,borderRadius:"50%",animation:"spin .8s linear infinite"}} /></div>;
 
@@ -1506,8 +1534,8 @@ export default function App() {
             </div>
           </div>
           {screen==="home"  && <HomeScreen  onStart={s=>{const next=s==="level"?"level":"coach";setScreen(next);}} />}
-          {screen==="level" && <LevelScreen onSelect={l=>{setLevel(l);setScreen("coach");}} />}
-          {screen==="coach" && <CoachScreen level={level} savedState={savedState} onSave={s=>saveSession({screen:"coach",level,...s})} onReset={handleReset} />}
+          {screen==="level" && <LevelScreen onSelect={(l,n)=>{setLevel(l);setParticipantName(n);setScreen("coach");}} />}
+          {screen==="coach" && <CoachScreen level={level} participantName={participantName} savedState={savedState} onSave={s=>saveSession({screen:"coach",level,participantName,...s})} onReset={handleReset} />}
         </div>
       </div>
     </>
