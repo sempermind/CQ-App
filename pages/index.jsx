@@ -1323,13 +1323,45 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
       if(savedState.insights) setInsights(savedState.insights);
       if(savedState.forteData) setForteData(savedState.forteData);
     } else {
-      const timer = setTimeout(()=>{
+      // Generate personalized opening via API using name and level
+      const timer = setTimeout(async ()=>{
         setTyping(true);
-        setTimeout(()=>{
+        const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
+        const name = participantName || "there";
+        const openingPrompt = `This is the very first message of the session. The participant's name is ${name} and they are a ${levelInfo.name}. Welcome them warmly and personally by name. Use the level-appropriate opening style from your instructions. Then ask the peak performance opening question. Keep it to 3-4 sentences max. Do not explain what the program is -- just open with warmth and go straight into the first question.`;
+        try {
+          const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: "claude-sonnet-4-20250514",
+              max_tokens: 300,
+              system: buildSystemPrompt({
+                participantName: name,
+                levelName: levelInfo.name,
+                levelCoaching: levelInfo.coaching,
+                legacy: "",
+                catalyst: "",
+                forteData: "Not yet uploaded",
+                currentModule: 1,
+              }),
+              messages: [{ role: "user", content: openingPrompt }]
+            })
+          });
+          const json = await res.json();
+          const aiText = json.content?.[0]?.text;
           setTyping(false);
-          addMsg("coach","Hey -- welcome. I want to start differently than most things you have tried before.\n\nNo assessments yet. No frameworks. Just one question.\n\nThink of a moment recently when you were completely on your game in a conversation. You walked away feeling like you nailed it. What made that work?");
-        },1200);
-      },700);
+          if(aiText) {
+            const { text:cleanText } = parseAIResponse(aiText);
+            addMsg("coach", cleanText);
+          } else {
+            addMsg("coach", "Hey " + name + " -- welcome. Before we dive into anything, I want to start with one question. Think of a moment recently when you were completely on your game in a conversation. What made that work?");
+          }
+        } catch(err) {
+          setTyping(false);
+          addMsg("coach", "Hey " + name + " -- welcome. Before we dive into anything, I want to start with one question. Think of a moment recently when you were completely on your game in a conversation. What made that work?");
+        }
+      }, 700);
       return ()=>clearTimeout(timer);
     }
   },[]);
