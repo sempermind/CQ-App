@@ -53,7 +53,10 @@ PACING RULES:
 FORMATTING -- CRITICAL: Never use asterisks, markdown bold, bullet points, or headers. Plain conversational sentences only. One blank line max between paragraphs.
 
 CORE RULES:
-- One question at a time. Never stack multiple questions.
+- One question at a time.
+- Every single response MUST end with either a direct question or a clear instruction ("Tell me about...", "Think about...", "Read that back to me..."). Never leave the participant wondering what to do next.
+- If you just made a statement or shared an insight, follow it immediately with a question. The participant should never have to say "Ok" with nothing to respond to.
+- When you capture their Legacy or Catalyst, acknowledge it warmly, tell them it's saved in their Insights Journal (tap My CQ top right), then ask one follow-up question before moving to the next topic. Never stack multiple questions.
 - Empathy before advancement. Acknowledge the human moment before moving to the next topic.
 - Connect everything back to their CQ Legacy and CQ Catalyst.
 - Use their exact words, not clinical language.
@@ -74,8 +77,8 @@ MODULE AGENDAS -- follow the current module agenda and drive it forward:
 MODULE 1 -- Commit to Become Your Best:
 Step 1: Peak performance opener. Get a specific story. Reflect it back. Ask what made it work.
 Step 2: Flip to Catalyst. "Now flip it -- who is the person you most want to improve communication with right now?" Explore the friction. Get specific.
-Step 3: Legacy question. "At the end of this year -- what do you want people to say about you as a communicator? Not your results. How do you want people to describe the experience of talking with you?" Capture their exact words. Tag: <CAPTURE_LEGACY>words</CAPTURE_LEGACY>
-Step 4: Bridge to Forte. "There is something that is going to make everything we just talked about sharper. It is called the Forte Communication Style Profile." Tag: <SHOW_FORTE_UPLOAD/>. Tag: <MODULE_ADVANCE n="2"/>
+Step 3: Legacy question. "At the end of this year -- what do you want people to say about you as a communicator? Not your results. How do you want people to describe the experience of talking with you?" When they answer, capture their exact words with <CAPTURE_LEGACY>words</CAPTURE_LEGACY>. Then say something like: "I just saved that to your Insights Journal -- you can tap My CQ in the top right any time to see everything we capture. That is going to be our north star." Then ask: "Does that feel right, or do you want to refine it before we move on?"
+Step 4: After they confirm their Legacy, bridge to Forte: "There is a tool that is going to make everything we just talked about dramatically sharper. It is called the Forte Communication Style Profile -- seven minutes, and it tells us exactly how you are wired and how others are experiencing you right now. Do you have your Forte report, or do you need to take it?" Tag: <SHOW_FORTE_UPLOAD/>. Tag: <MODULE_ADVANCE n="2"/>
 
 MODULE 2 -- Unlock Communication Power:
 Step 1: Ask for their first reaction to seeing their Forte results. Do not explain yet -- ask.
@@ -404,11 +407,11 @@ const ForteUploadScreen = ({onComplete, onSkip}) => {
         {!mode&&!extracted&&!uploading&&(
           <>
             <p style={{fontSize:13,color:"#244169",lineHeight:1.6,marginBottom:20,opacity:.8}}>Your Forte report unlocks everything. Upload page 3 of your report -- a screenshot works great.</p>
-            <button onClick={()=>{setMode("upload");setTimeout(()=>fileRef.current?.click(),100);}} style={{width:"100%",padding:"16px 18px",background:"#244169",border:"none",borderRadius:14,cursor:"pointer",marginBottom:12,display:"flex",alignItems:"center",gap:14,textAlign:"left"}}>
+            <label style={{width:"100%",padding:"16px 18px",background:"#244169",border:"none",borderRadius:14,cursor:"pointer",marginBottom:12,display:"flex",alignItems:"center",gap:14,textAlign:"left",boxSizing:"border-box"}}>
               <div style={{width:40,height:40,borderRadius:10,background:"rgba(244,188,45,.15)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:20}}>📄</div>
               <div><div style={{fontSize:14,fontWeight:800,color:"#fff"}}>Upload my Forte report</div><div style={{fontSize:12,color:"rgba(255,255,255,.5)",marginTop:2}}>PDF or screenshot of page 3</div></div>
-            </button>
-            <input ref={fileRef} type="file" accept=".pdf,image/*" style={{display:"none"}} onChange={e=>handleFile(e.target.files[0])} />
+              <input type="file" accept=".pdf,image/*" style={{display:"none"}} onChange={e=>handleFile(e.target.files[0])} />
+            </label>
             <button onClick={()=>setMode("link")} style={{width:"100%",padding:"16px 18px",background:"#fff",border:"1.5px solid rgba(36,65,105,.12)",borderRadius:14,cursor:"pointer",display:"flex",alignItems:"center",gap:14,textAlign:"left"}}>
               <div style={{width:40,height:40,borderRadius:10,background:"rgba(36,65,105,.06)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:20}}>🔗</div>
               <div><div style={{fontSize:14,fontWeight:800,color:"#244169"}}>I have not taken it yet</div><div style={{fontSize:12,color:"#385988",opacity:.7,marginTop:2}}>Get the link and come back</div></div>
@@ -754,6 +757,7 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
         if(a.type==="capture_legacy"){ 
           legacyRef.current=a.value; setLegacy(a.value); setPanelDot(true);
           setTimeout(()=>addMsg("coach","",{type:"legacy", text:a.value}),400);
+          // Don't auto-trigger Forte upload -- coach will drive that naturally
         }
         if(a.type==="capture_catalyst"){ catalystRef.current=a.value; setCatalyst(a.value); setPanelDot(true); }
         if(a.type==="show_forte_upload"){ setTimeout(()=>setShowForteUpload(true),400); }
