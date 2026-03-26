@@ -27,7 +27,7 @@ const FORTE_DATA = {
   blue:  { scores:["4","13","10","12"], labels:["Perceived Non-Dom","Perceived Extrovert","Perceived Impatient","Perceived Non-Conform"], pcts:[11,36,28,33] },
 };
 const DIMS = ["Dominance","Extroversion","Patience","Conformity"];
-const FORTE_COLORS = { green:C.gold, red:C.orange, blue:C.blue };
+const FORTE_COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
 
 const SYSTEM_PROMPT_TEMPLATE = `You are the CQ Coach -- an AI coaching intelligence built on the Communication Intelligence (CQ) framework by the Forte Institute. You are not a chatbot. You are a live, skilled facilitator running a structured coaching program.
 
@@ -52,11 +52,21 @@ PACING RULES:
 
 FORMATTING -- CRITICAL: Never use asterisks, markdown bold, bullet points, or headers. Plain conversational sentences only. One blank line max between paragraphs.
 
+RESPONSE LENGTH -- CRITICAL: Keep responses short. 2-4 sentences max for most exchanges. If you are explaining something, explain it in 2-3 sentences then ask a question. Never lecture. Never give a list of points. If you catch yourself writing more than 4 sentences, cut it in half.
+
+TONE -- CRITICAL: You are a trusted guide and thinking partner, not a boss or a teacher. You are curious, warm, and occasionally funny. You help people find their own answers. You do not tell people what to do -- you ask questions that help them figure it out themselves.
+
+MOVE-ON TRIGGERS -- When the participant says any of these phrases, immediately stop the current topic and drive to the next step in the module agenda. Do not ask any follow-up questions. Just bridge and move:
+- "move on" / "let's move on" / "can we move on"
+- "next" / "what's next" / "keep going"
+- "I'm good" / "got it" / "ok let's go"
+- "skip this" / "move forward"
+
 CORE RULES:
-- One question at a time.
-- Every single response MUST end with either a direct question or a clear instruction ("Tell me about...", "Think about...", "Read that back to me..."). Never leave the participant wondering what to do next.
-- If you just made a statement or shared an insight, follow it immediately with a question. The participant should never have to say "Ok" with nothing to respond to.
-- When you capture their Legacy or Catalyst, acknowledge it warmly, tell them it's saved in their Insights Journal (tap My CQ top right), then ask one follow-up question before moving to the next topic. Never stack multiple questions.
+- One question at a time. Always.
+- Every response ends with a question or a clear direction. Never a statement that just hangs there.
+- When you capture their Legacy or Catalyst, acknowledge it warmly in ONE sentence, tell them it is saved in their Insights Journal (tap My CQ top right), then ask ONE follow-up question. Do not immediately jump to the next topic.
+- After they respond to your follow-up, THEN bridge to the next agenda item. Never stack multiple questions.
 - Empathy before advancement. Acknowledge the human moment before moving to the next topic.
 - Connect everything back to their CQ Legacy and CQ Catalyst.
 - Use their exact words, not clinical language.
@@ -90,9 +100,10 @@ Step 5: Connect and commit. "Based on what you now see -- what is one thing you 
 
 MODULE 3 -- Master Adaptive Techniques:
 Step 1: "Tell me about a recent conversation that did not land the way you wanted." Decode it through style.
-Step 2: Introduce Switches vs Knobs through their story -- not as a framework announcement.
-Step 3: Generations card game activity.
-Step 4: Build their ADAPT strategy for their Catalyst together. Tag: <MODULE_ADVANCE n="4"/>
+Step 2: Introduce Switches vs Knobs through their story. Say something like: "There is a simple way to think about what you just described -- some communication changes are switches, big fundamental shifts in approach, and some are knobs, small deliberate adjustments. What you are describing sounds like a knob situation. Let me show you what I mean." Tag: <SHOW_SWITCHES_KNOBS/>
+Step 3: After they explore the artifact, ask: "Which one of those most describes what you need to do with your Catalyst?"
+Step 4: Generations card game -- drop in a card scenario and coach through it.
+Step 5: Build their ADAPT strategy for their Catalyst. Tag: <MODULE_ADVANCE n="4"/>
 
 MODULE 4 -- Transform Team Relationships:
 Step 1: Explore motivators and demotivators from their Forte profile.
@@ -145,6 +156,8 @@ function parseAIResponse(text) {
   if (catalystMatch) { artifacts.push({ type:"capture_catalyst", value:catalystMatch[1].trim() }); clean = clean.replace(catalystMatch[0],""); }
   const forteMatch = clean.match(/<SHOW_FORTE_UPLOAD\/>/);
   if (forteMatch) { artifacts.push({ type:"show_forte_upload" }); clean = clean.replace(forteMatch[0],""); }
+  const switchesMatch = clean.match(/<SHOW_SWITCHES_KNOBS\/>/);
+  if (switchesMatch) { artifacts.push({ type:"show_switches_knobs" }); clean = clean.replace(switchesMatch[0],""); }
   const moduleMatch = clean.match(/<MODULE_ADVANCE n="(\d+)"\/>/);
   if (moduleMatch) { artifacts.push({ type:"module_advance", n:parseInt(moduleMatch[1]) }); clean = clean.replace(moduleMatch[0],""); }
   const insightMatch = clean.match(/<COACH_INSIGHT>([\s\S]*?)<\/COACH_INSIGHT>/);
@@ -283,8 +296,8 @@ const ForteGraph = ({forteData}) => {
   const d = data[tab];
   const tabStyle = t => ({padding:"5px 12px",borderRadius:16,fontSize:12,fontWeight:700,cursor:"pointer",border:"1.5px solid",
     borderColor:tab===t?"transparent":"rgba(36,65,105,.15)",
-    color:tab===t?(t==="green"?C.navy:C.white):"rgba(36,65,105,.5)",
-    background:tab===t?(t==="green"?C.gold:t==="red"?C.orange:C.blue):"transparent"});
+    color:tab===t?C.white:"rgba(36,65,105,.5)",
+    background:tab===t?(t==="green"?"#2e7d32":t==="red"?"#c0392b":"#1565c0"):"transparent"});
   return (
     <div style={{margin:"6px 14px",padding:16,background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)"}}>
       <div style={{fontSize:13,fontWeight:800,color:C.navy,marginBottom:12}}>Your Forte Profile</div>
@@ -339,6 +352,76 @@ const GenCardArtifact = ({onCoachTalk}) => {
 };
 
 
+
+// ── SWITCHES AND KNOBS ARTIFACT ───────────────────────────────────────────────
+const SwitchesKnobsArtifact = ({catalyst, onCoachTalk}) => {
+  const [selected, setSelected] = useState(null);
+  const [type, setType] = useState(null);
+
+  const SWITCHES = [
+    { id:"formal",    label:"Formal vs. Informal",         desc:"Creating distance when you need connection.",        tip:"Switch to a more conversational tone. Drop the professional armor for a moment and talk like a human." },
+    { id:"directive", label:"Directive vs. Collaborative", desc:"Your instructions land as micromanagement.",         tip:"Switch from telling to asking. Try: 'What do you think the best approach would be here?'" },
+    { id:"facts",     label:"Facts-Focused vs. Story-Based",desc:"Data-heavy delivery is losing the room.",           tip:"Wrap your key point in a real story. One vivid example does more than ten data points." },
+    { id:"passive",   label:"Active vs. Passive",          desc:"People are unclear on what you actually need.",      tip:"Switch to stating expectations directly. Clarity is a kindness." },
+    { id:"technical", label:"Technical vs. Plain Language", desc:"Jargon is creating a gap instead of credibility.", tip:"Switch to the language your audience already uses. If they would not say it, do not say it." },
+  ];
+
+  const KNOBS = [
+    { id:"pace",    label:"Pace",           desc:"How fast you move through a conversation.",  low:"Slow it down -- you are rushing past the moments that matter.",      high:"Pick up the pace -- they are ready to move and you are holding them back." },
+    { id:"detail",  label:"Detail Level",   desc:"How much context and background you give.",  low:"Add more context -- they need the 'why' before they can hear the 'what'.", high:"Cut the detail -- bottom line first, then offer to elaborate." },
+    { id:"empathy", label:"Empathy",        desc:"How much emotional acknowledgment you offer.", low:"Lean in more -- acknowledge what they are carrying before you problem-solve.", high:"Balance warmth with directness -- they may need action more than validation right now." },
+    { id:"volume",  label:"Directness",     desc:"How blunt or diplomatic you are.",           low:"Be more direct -- they may be waiting for you to just say what you mean.", high:"Soften the delivery -- the message is right but the packaging is too sharp." },
+    { id:"questions",label:"Questions",     desc:"How often you ask vs. tell.",                low:"Ask more and tell less -- you might be solving problems they need to solve themselves.", high:"Less questions, more clarity -- they may need direction, not more reflection." },
+  ];
+
+  const isSwitch = type==="switch";
+  const item = selected ? (isSwitch ? SWITCHES : KNOBS).find(x=>x.id===selected) : null;
+
+  return (
+    <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      <div style={{background:"#244169",padding:"14px 16px"}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:2}}>Switches and Knobs</div>
+        <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>
+          {catalyst ? `What needs to change with ${catalyst}?` : "What needs to change?"}
+        </div>
+      </div>
+      <div style={{padding:"12px 14px"}}>
+        <div style={{display:"flex",gap:8,marginBottom:12}}>
+          <button onClick={()=>{setType("switch");setSelected(null);}} style={{flex:1,padding:"8px 10px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:800,background:type==="switch"?"#244169":"rgba(36,65,105,.08)",color:type==="switch"?"#fff":"#244169"}}>
+            Switches — big changes
+          </button>
+          <button onClick={()=>{setType("knob");setSelected(null);}} style={{flex:1,padding:"8px 10px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:800,background:type==="knob"?"#f08b35":"rgba(36,65,105,.08)",color:type==="knob"?"#fff":"#244169"}}>
+            Knobs — small tweaks
+          </button>
+        </div>
+        {!type&&<div style={{fontSize:12.5,color:"#8a8378",fontStyle:"italic",textAlign:"center",padding:"8px 0"}}>Choose switches for major changes or knobs for fine-tuning.</div>}
+        {type&&(
+          <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:12}}>
+            {(isSwitch?SWITCHES:KNOBS).map(x=>(
+              <button key={x.id} onClick={()=>setSelected(x.id)} style={{padding:"10px 12px",borderRadius:10,border:`1.5px solid ${selected===x.id?(isSwitch?"#244169":"#f08b35"):"rgba(36,65,105,.12)"}`,cursor:"pointer",textAlign:"left",background:selected===x.id?(isSwitch?"rgba(36,65,105,.06)":"rgba(240,139,53,.06)"):"#fff"}}>
+                <div style={{fontSize:13,fontWeight:700,color:"#244169"}}>{x.label}</div>
+                <div style={{fontSize:11.5,color:"#8a8378",marginTop:2}}>{x.desc}</div>
+              </button>
+            ))}
+          </div>
+        )}
+        {item&&(
+          <div style={{background:isSwitch?"rgba(36,65,105,.06)":"rgba(240,139,53,.08)",borderRadius:12,padding:"12px 14px",marginBottom:10}}>
+            <div style={{fontSize:11,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:isSwitch?"#244169":"#f08b35",marginBottom:6}}>
+              {isSwitch?"Switch this":"Adjust this knob"}
+            </div>
+            <div style={{fontSize:13,color:"#244169",lineHeight:1.55}}>{isSwitch?item.tip:item.low}</div>
+          </div>
+        )}
+        {item&&(
+          <button onClick={()=>onCoachTalk(item, type)} style={{width:"100%",padding:10,background:"#244169",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,color:"#fff"}}>
+            Talk to Coach about this
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
 // ── FORTE SCORE HELPERS ──────────────────────────────────────────────────────
 function scoreToLabel(dim, score) {
   const s = parseInt(score); const abs = Math.abs(s);
@@ -361,9 +444,9 @@ function buildForteDataFromScores(scores) {
 const ForteUploadScreen = ({onComplete, onSkip}) => {
   const dims = ["Dominance","Extroversion","Patience","Conformity"];
   const graphs = [
-    { key:"green", label:"Primary Profile", color:"#f4bc2d", textColor:"#244169", hint:"Green graph — your natural wiring" },
-    { key:"red",   label:"Adapting Profile", color:"#f08b35", textColor:"#fff",    hint:"Red graph — how you have been showing up lately" },
-    { key:"blue",  label:"Current Perceiver", color:"#5878bd", textColor:"#fff",   hint:"Blue graph — how others are likely experiencing you" },
+    { key:"green", label:"Primary Profile",   color:"#2e7d32", textColor:"#fff", hint:"Green graph — your natural wiring" },
+    { key:"red",   label:"Adapting Profile",  color:"#c0392b", textColor:"#fff", hint:"Red graph — how you have been showing up lately" },
+    { key:"blue",  label:"Current Perceiver", color:"#1565c0", textColor:"#fff", hint:"Blue graph — how others are likely experiencing you" },
   ];
   const [step, setStep] = useState(0); // 0=intro, 1=green, 2=red, 3=blue, 4=confirm
   const [scores, setScores] = useState({ green:["","","",""], red:["","","",""], blue:["","","",""] });
@@ -790,9 +873,13 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
           // Don't auto-trigger Forte upload -- coach will drive that naturally
         }
         if(a.type==="capture_catalyst"){ catalystRef.current=a.value; setCatalyst(a.value); setPanelDot(true); }
-        if(a.type==="show_forte_upload"){ setTimeout(()=>setShowForteUpload(true),400); }
+        if(a.type==="show_forte_upload"){ 
+          // Show the Forte entry screen after a brief delay so the coach message renders first
+          setTimeout(()=>setShowForteUpload(true),1800); 
+        }
         if(a.type==="module_advance"){ setCurrentModule(a.n); }
         if(a.type==="coach_insight"){ setInsights(prev=>({...prev,observations:[...prev.observations,a.value]})); setPanelDot(true); }
+        if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
       });
 
       if(cleanText) addMsg("coach",cleanText);
@@ -812,6 +899,7 @@ const CoachScreen = ({level,savedState,onSave,onReset}) => {
     if(a.type==="forte")     return <ForteGraph forteData={forteData} />;
     if(a.type==="gap")       return <GapAlert />;
     if(a.type==="gencard")   return <GenCardArtifact onCoachTalk={card=>handleSend("Tell me about the " + card.g + " scenario")} />;
+    if(a.type==="switches_knobs") return <SwitchesKnobsArtifact catalyst={catalyst} onCoachTalk={(item,t)=>handleSend("Let us talk about the " + item.label + " " + t + " for my Catalyst")} />;
     return null;
   };
 
