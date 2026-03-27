@@ -12,7 +12,7 @@ const LEVEL_DATA = {
   4: { name:"Executive / C-Suite",       coaching:"Strategic and direct. Explore legacy, culture, and systemic communication patterns. Challenge at the highest level." },
 };
 
-const MOD_NAMES = ["","Commit to Become Your Best","Unlock and Amplify Communication Power","Master Adaptive Communication Techniques","Transform Team Relationships","Supercharge Listening and Feedback","Craft Your Action Plan"];
+const MOD_NAMES = ["","Commit to Become Your Best","Unlock Your Communication Power","Master Adaptive Techniques","Transform Your Team and Client Relationships","Supercharge Your Listening and Feedback Skills","Create Your Personal Communication Strategy and Action Plan"];
 
 // GEN_CARDS replaced by GENERATIONS array in GenCardArtifact
 
@@ -25,6 +25,9 @@ const DIMS = ["Dominance","Extroversion","Patience","Conformity"];
 const FORTE_COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
 
 const SYSTEM_PROMPT_TEMPLATE = `You are the CQ Coach -- an AI coaching intelligence built on the Communication Intelligence (CQ) framework by the Forte Institute. You are a live, skilled facilitator running a structured coaching program with one participant.
+
+YOUR NAME AND IDENTITY:
+You are Hoop -- the AI persona of the CQ Coach, built on the Communication Intelligence framework created by C.D. "Hoop" Morgan and the Forte Institute. You go by Hoop. In your opening message, introduce yourself: "I am Hoop, your Communication Intelligence guide for this program." Keep it brief -- one sentence, then move into the session.
 
 YOUR VOICE AND ROLE:
 You are a warm, curious, occasionally funny thinking partner. Not a boss, not a lecturer. You help people discover insights through conversation -- you never dump information on them. You teach through questions, stories, and reflection. Think of a great classroom facilitator who makes every person feel like the session was designed just for them.
@@ -123,6 +126,7 @@ Frame it fully before dropping the artifact: "Every generation has a distinct co
 Explain what they will do: "I am going to show you an interactive card game with five generations represented -- Traditionalists through Gen Z. Each generation has three real workplace scenarios drawn from their lived experience. Your job is to explore their perspective with empathy, not judgment. Pick the generation you work with most, read their scenarios, and tell me which one feels most relevant to a challenge you are actually facing."
 Tag: <SHOW_GENERATIONS/>
 Debrief: "Which scenario hit closest to home? And what does it tell you about your Catalyst -- or someone else you work with regularly?"
+Then drop a reflection: Tag: <SHOW_REFLECTION section="Generational Dynamics" q1="Which generation do you find most challenging to communicate with -- and what is one thing you now understand about why?" q2="What is one adjustment you will make this week based on what you just explored?"/>
 Bridge: "Adapting across generations is a skill. Adapting in the moment -- in any conversation, with any person -- requires a framework. That is what we are building next."
 
 SECTION 3: Balancing Empathy
@@ -250,6 +254,7 @@ ARTIFACT TAGS (embed hidden in response when appropriate):
 - <SHOW_GENERATIONS/>
 - <SHOW_LISTENING_TENDENCIES/>
 - <SHOW_CRISIS_CHALLENGE/>
+- <SHOW_REFLECTION section="Section Name" q1="First reflection question" q2="Optional second question"/> -- use at the end of each major section to capture participant insight before bridging to the next topic
 - <SHOW_PROFICIENCY_RATING topic="Balancing Empathy"/> -- use the exact topic name from the list below before starting that section. Topics: "Bringing Your Best", "Balancing Empathy", "Earning Trust", "Non-Verbal Communication", "Virtual Communication", "ADAPT Model", "Got Questions", "Proactive Listening", "Feedback", "Clear Consistent Communication"
 - <MODULE_ADVANCE n="2"/> (adjust n for each module)
 - <COACH_INSIGHT>observation text</COACH_INSIGHT>
@@ -311,6 +316,8 @@ function parseAIResponse(text) {
   if (profMatch) { artifacts.push({ type:"show_proficiency_rating", topic:profMatch[1] }); clean = clean.replace(profMatch[0],""); }
   const adaptPlanMatch = clean.match(/<SHOW_ADAPT_PLANNER\/>/);
   if (adaptPlanMatch) { artifacts.push({ type:"show_adapt_planner" }); clean = clean.replace(adaptPlanMatch[0],""); }
+  const reflectMatch = clean.match(/<SHOW_REFLECTION section="([^"]+)" q1="([^"]+)"(?:\s+q2="([^"]+)")?\s*\/>/);
+  if (reflectMatch) { artifacts.push({ type:"show_reflection", section:reflectMatch[1], q1:reflectMatch[2], q2:reflectMatch[3]||"" }); clean = clean.replace(reflectMatch[0],""); }
   const moduleMatch = clean.match(/<MODULE_ADVANCE n="(\d+)"\/>/);
   if (moduleMatch) { artifacts.push({ type:"module_advance", n:parseInt(moduleMatch[1]) }); clean = clean.replace(moduleMatch[0],""); }
   const insightMatch = clean.match(/<COACH_INSIGHT>([\s\S]*?)<\/COACH_INSIGHT>/);
@@ -1240,6 +1247,56 @@ const ADAPTPlanner = ({catalyst, onComplete}) => {
     </div>
   );
 };
+
+// ── SECTION REFLECTION ARTIFACT ───────────────────────────────────────────────
+const SectionReflection = ({question1, question2, sectionTitle, onSave}) => {
+  const [r1, setR1] = useState("");
+  const [r2, setR2] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    if(!r1.trim()) return;
+    onSave(sectionTitle, question1, r1, question2, r2);
+    setSaved(true);
+  };
+
+  return (
+    <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      <div style={{background:`linear-gradient(135deg, ${C.navy}, #385988)`,padding:"14px 16px"}}>
+        <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:3}}>Section Reflection</div>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>{sectionTitle}</div>
+      </div>
+      {saved ? (
+        <div style={{padding:"20px 16px",textAlign:"center"}}>
+          <div style={{fontSize:24,marginBottom:8}}>✓</div>
+          <div style={{fontSize:14,fontWeight:700,color:C.navy,marginBottom:4}}>Saved to your Insights Journal</div>
+          <div style={{fontSize:12.5,color:"rgba(36,65,105,.5)"}}>Tap My CQ to review your reflections anytime.</div>
+        </div>
+      ) : (
+        <div style={{padding:"14px 16px"}}>
+          <div style={{marginBottom:14}}>
+            <div style={{fontSize:13,fontWeight:700,color:C.navy,lineHeight:1.5,marginBottom:8}}>{question1}</div>
+            <textarea value={r1} onChange={e=>setR1(e.target.value)} rows={3}
+              placeholder="Your reflection..."
+              style={{width:"100%",padding:"10px 12px",border:"1.5px solid rgba(36,65,105,.15)",borderRadius:10,fontSize:13,color:C.navy,fontFamily:"inherit",resize:"vertical",outline:"none",lineHeight:1.5}} />
+          </div>
+          {question2&&(
+            <div style={{marginBottom:14}}>
+              <div style={{fontSize:13,fontWeight:700,color:C.navy,lineHeight:1.5,marginBottom:8}}>{question2}</div>
+              <textarea value={r2} onChange={e=>setR2(e.target.value)} rows={3}
+                placeholder="Your reflection..."
+                style={{width:"100%",padding:"10px 12px",border:"1.5px solid rgba(36,65,105,.15)",borderRadius:10,fontSize:13,color:C.navy,fontFamily:"inherit",resize:"vertical",outline:"none",lineHeight:1.5}} />
+            </div>
+          )}
+          <button onClick={handleSave} disabled={!r1.trim()}
+            style={{width:"100%",padding:12,background:r1.trim()?C.navy:"rgba(36,65,105,.2)",border:"none",borderRadius:11,cursor:r1.trim()?"pointer":"not-allowed",fontSize:13,fontWeight:800,color:"#fff"}}>
+            Save to Insights Journal
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 // ── PROFICIENCY RATING ARTIFACT ───────────────────────────────────────────────
 const PROFICIENCY_DATA = {"Bringing Your Best": ["I have the basics covered -- communication and adaptability. Is there more?", "I apply proven strategies to bring my best. They seem to work in most situations.", "I have personalized strategies that leverage my communication strengths. I continually adapt to improve on bringing my best to work."], "Balancing Empathy": ["I can confuse empathy with sympathy and I am not sure how it translates into productivity.", "I understand empathy is important for constructive relationships with colleagues and clients. I try to see things from others perspectives.", "I actively seek to understand the thoughts and emotions of others and to adapt my behavior from their perspective. I can describe the positive impact empathy has on relationships and business outcomes."], "Earning Trust": ["Either you have trust or you don't. Is there more than that?", "I am aware of how having trust (or not) impacts relationships and teams at work. I want people to trust me and to be confident in granting trust.", "I work to earn the trust of others and grant trust when it is earned. When trust is broken, I focus on regaining trust and then maintaining it."], "Non-Verbal Communication": ["I know that non-verbal communication exists but I rarely think about it.", "I understand how much of communication is non-verbal and I try to be aware of my own signals and those of others.", "I actively manage my non-verbal signals to ensure my body and presence match my message. I can read others signals accurately in real time."], "Virtual Communication": ["I have the basics covered or I can use help in connecting and communicating remotely.", "I understand the differences between remote and in-person communication. I attempt to communicate more effectively online.", "I exercise patience when it comes to working with others remotely. I take responsibility for how I can adapt to maximize my productivity and that of the team."], "ADAPT Model": ["I primarily practice one-way communication. I rarely adapt my message based on the receiver.", "I tend to listen as much as I speak. I like to check that the receiver understands my message.", "I recognize I am primarily responsible for the intent of my message being understood. I proactively work to ensure my intended message is aligned with the receivers understanding."], "Got Questions": ["I ask questions in the course of communicating and do not give it much thought.", "I regularly ask questions in conversations and in writing that result in the answers I am looking for.", "I ask questions that make others think in new ways and that promote good relationships, teamwork and innovation."], "Proactive Listening": ["I have not really thought about listening, but I can distinguish between hearing someone and listening to someone.", "I am aware of the impact of listening and not listening. I have tried to listen and it is not always easy and I have learned more about listening through reading, a class or a conversation with others.", "I understand why listening is an essential CQ skill that you can evolve. I can describe the impact of listening at work and I have specific actions that I take based on my CQ strengths and those of others to improve listening."], "Feedback": ["I am not comfortable receiving or giving feedback.", "I follow the rules and policies when it comes to feedback.", "I look forward to and act on feedback I receive. I ask for feedback when appropriate and I offer constructive feedback to others when I believe it would be useful."], "Clear Consistent Communication": ["I primarily practice one-way communication. I rarely adapt my message based on the receiver.", "I tend to listen as much as I speak. I like to check that the receiver understands my message.", "I recognize I am primarily responsible for the intent of my message being understood. I proactively work to ensure my intended message is aligned with the receivers understanding."]};
 
@@ -1282,7 +1339,17 @@ const ProficiencyRating = ({topic, onComplete}) => {
     </div>
   );
 };
-const MyCQPanel = ({open,onClose,legacy,catalyst,insights,currentModule}) => {
+const NotesTab = ({notes, onSave}) => (
+  <div>
+    <div style={{fontSize:12.5,color:"#888",lineHeight:1.55,marginBottom:10,fontStyle:"italic"}}>Capture anything you want to remember -- insights, ideas, questions, commitments.</div>
+    <textarea value={notes} onChange={e=>onSave(e.target.value)}
+      placeholder="Type your notes here..."
+      rows={14}
+      style={{width:"100%",padding:"12px 14px",border:"1.5px solid rgba(36,65,105,.15)",borderRadius:12,fontSize:13,color:"#244169",fontFamily:"inherit",resize:"vertical",outline:"none",lineHeight:1.6,background:"#faf9f6"}} />
+  </div>
+);
+
+const MyCQPanel = ({open,onClose,legacy,catalyst,insights,currentModule,notes,setNotes}) => {
   const [tab,setTab] = useState("journal");
   const TabBtn = ({t,label}) => (
     <button onClick={()=>setTab(t)} style={{flex:1,padding:"11px 8px",border:"none",cursor:"pointer",fontSize:12,fontWeight:700,
@@ -1313,6 +1380,7 @@ const MyCQPanel = ({open,onClose,legacy,catalyst,insights,currentModule}) => {
         <div style={{display:"flex",background:C.cream,flexShrink:0,borderBottom:"1px solid rgba(36,65,105,.1)"}}>
           <TabBtn t="journal" label="Insights Journal" />
           <TabBtn t="plan"    label="Action Plan" />
+          <TabBtn t="notes"   label="My Notes" />
         </div>
         <div style={{flex:1,overflowY:"auto",padding:"14px 16px"}}>
           {tab==="journal"&&<>
@@ -1320,6 +1388,17 @@ const MyCQPanel = ({open,onClose,legacy,catalyst,insights,currentModule}) => {
             <Card label="How I want to be known" content={legacy?`"${legacy}"`:null} empty="Your coach will help you define this in Module 01" />
             <SectionTitle>My CQ Catalyst</SectionTitle>
             <Card label="The relationship I am building toward" content={catalyst||null} empty="Your coach will identify this with you in Module 01" />
+            <SectionTitle>Section Reflections</SectionTitle>
+            {(insights.reflections||[]).length>0
+              ? (insights.reflections||[]).map((r,i)=>(
+                  <div key={i} style={{background:C.cream,borderRadius:14,padding:"13px 14px",marginBottom:10}}>
+                    <div style={{fontSize:10,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:C.navy,marginBottom:3}}>{r.section}</div>
+                    <div style={{fontSize:11,color:"rgba(36,65,105,.4)",marginBottom:6}}>{r.date}</div>
+                    <div style={{fontSize:12,color:C.navy,fontWeight:700,marginBottom:4}}>{r.q1}</div>
+                    <div style={{fontSize:13,color:C.navy,lineHeight:1.5,marginBottom:r.r2?8:0,fontStyle:"italic"}}>{r.r1}</div>
+                    {r.r2&&<><div style={{fontSize:12,color:C.navy,fontWeight:700,marginBottom:4,marginTop:8}}>{r.q2}</div><div style={{fontSize:13,color:C.navy,lineHeight:1.5,fontStyle:"italic"}}>{r.r2}</div></>}
+                  </div>))
+              : <Card label="Section reflections" content={null} empty="Your reflections from each section will appear here." />}
             <SectionTitle>Coach Observations</SectionTitle>
             {insights.observations.length>0
               ? insights.observations.map((obs,i)=>(
@@ -1338,6 +1417,7 @@ const MyCQPanel = ({open,onClose,legacy,catalyst,insights,currentModule}) => {
               ["Active Commitments",null,"Added after each module"]].map(([label,content,empty])=>(
               <Card key={label} label={label} content={content} empty={empty} />))}
           </>}
+          {tab==="notes"&&<NotesTab notes={notes} onSave={setNotes} />}
         </div>
       </div>
     </>
@@ -1405,12 +1485,12 @@ const MicButton = ({onTranscript}) => {
 
 
 const MODULE_PREVIEWS = [
-  { n:"01", title:"Commit to Become Your Best", sub:"Peak performance, Legacy, Catalyst", detail:"You will identify what it looks and feels like when you are at your best as a communicator, define your CQ Legacy -- how you want to be known -- and name your CQ Catalyst, the one relationship you most want to transform through this program." },
-  { n:"02", title:"Unlock Communication Power",  sub:"Forte Profile, your three graphs",   detail:"You will explore your Forte Communication Style Profile -- your natural wiring, how you are adapting to your environment, and how others are most likely experiencing you right now. This is the intelligence that makes everything else in the program more precise." },
-  { n:"03", title:"Master Adaptive Techniques",  sub:"ADAPT, Generations, Empathy",         detail:"You will learn to read communication styles in others, navigate generational differences, balance empathy with effectiveness, and use the five-step ADAPT model to approach any conversation -- planned or sideways -- with intention and skill." },
-  { n:"04", title:"Energize Team Dynamics",       sub:"Motivators, Style Pairings, Crisis",  detail:"You will discover what actually motivates and demotivates you and the people around you, learn how different communication style pairings create friction and synergy, and stress-test everything in the Crisis Navigation Challenge." },
-  { n:"05", title:"Supercharge Listening",        sub:"Proactive listening, Feedback",        detail:"You will replace passive listening with a three-part active practice, discover your natural questioning tendencies and how to expand them, and learn to give and receive feedback as a gift -- the insight others cannot access on their own." },
-  { n:"06", title:"Craft Your Action Plan",       sub:"Legacy, commitments, next steps",      detail:"You will synthesize everything from the program into a personal Communication Action Plan -- your Legacy, your commitment to your Catalyst, and the one specific behavior you will practice from this day forward." },
+  { n:"01", title:"Commit to Become Your Best",                            sub:"Peak performance, Legacy, Catalyst",         detail:"You will identify what it looks and feels like when you are at your best as a communicator, define your CQ Legacy -- how you want to be known -- and name your CQ Catalyst, the one relationship you most want to transform through this program." },
+  { n:"02", title:"Unlock Your Communication Power",                       sub:"Forte Profile, your three graphs",            detail:"You will explore your Forte Communication Style Profile -- your natural wiring, how you are adapting to your environment, and how others are most likely experiencing you right now. This is the intelligence that makes everything else in the program more precise." },
+  { n:"03", title:"Master Adaptive Techniques",                            sub:"ADAPT, Generations, Empathy",                 detail:"You will learn to read communication styles in others, navigate generational differences, balance empathy with effectiveness, and use the five-step ADAPT model to approach any conversation -- planned or sideways -- with intention and skill." },
+  { n:"04", title:"Transform Your Team and Client Relationships",          sub:"Motivators, Style Pairings, Crisis Challenge", detail:"You will discover what actually motivates and demotivates you and the people around you, learn how different communication style pairings create friction and synergy, and stress-test everything in the Crisis Navigation Challenge." },
+  { n:"05", title:"Supercharge Your Listening and Feedback Skills",        sub:"Proactive listening, Feedback as a gift",     detail:"You will replace passive listening with a three-part active practice, discover your natural questioning tendencies and how to expand them, and learn to give and receive feedback as a gift -- the insight others cannot access on their own." },
+  { n:"06", title:"Create Your Personal Communication Strategy and Action Plan", sub:"Legacy, commitments, next steps",       detail:"You will synthesize everything from the program into a personal Communication Strategy and Action Plan -- your Legacy, your commitment to your Catalyst, and the one specific behavior you will practice from this day forward." },
 ];
 
 const ModulePreviewList = () => {
@@ -1580,7 +1660,8 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const [journeyOpen,   setJourneyOpen]   = useState(false);
   const [panelOpen,     setPanelOpen]     = useState(false);
   const [panelDot,      setPanelDot]      = useState(false);
-  const [insights,      setInsights]      = useState({observations:[],commitments:[]});
+  const [insights,      setInsights]      = useState({observations:[],commitments:[],reflections:[]});
+  const [notes,         setNotes]         = useState("");
   const [error,         setError]         = useState(null);
   const [quickReplies,  setQuickReplies]  = useState([]);
   const [forteData,     setForteData]     = useState(null);
@@ -1593,19 +1674,25 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
 
   const addMsg = useCallback((role,text,artifact=null)=>{
     if(role==="coach" && text && text.length > 0) {
-      // Stream coach text word by word
-      const id = Date.now()+Math.random();
-      setMessages(prev=>[...prev,{id,role,text:"",artifact,streaming:true}]);
-      const words = text.split(" ");
-      let i = 0;
-      const interval = setInterval(()=>{
-        i++;
-        setMessages(prev=>prev.map(m=>m.id===id ? {...m, text:words.slice(0,i).join(" ")} : m));
-        if(i>=words.length){
-          clearInterval(interval);
-          setMessages(prev=>prev.map(m=>m.id===id ? {...m, streaming:false} : m));
-        }
-      }, 28);
+      // Split on double newlines into separate bubbles, each streamed
+      const paragraphs = text.split(/\n\n+/).map(p=>p.trim()).filter(p=>p.length>0);
+      paragraphs.forEach((para, pIdx) => {
+        const id = Date.now()+Math.random()+pIdx*0.001;
+        const delay = pIdx * 600; // stagger each paragraph bubble
+        setTimeout(() => {
+          setMessages(prev=>[...prev,{id,role,text:"",artifact:pIdx===paragraphs.length-1?artifact:null,streaming:true}]);
+          const words = para.split(" ");
+          let i = 0;
+          const interval = setInterval(()=>{
+            i++;
+            setMessages(prev=>prev.map(m=>m.id===id ? {...m, text:words.slice(0,i).join(" ")} : m));
+            if(i>=words.length){
+              clearInterval(interval);
+              setMessages(prev=>prev.map(m=>m.id===id ? {...m, streaming:false} : m));
+            }
+          }, 28);
+        }, delay);
+      });
     } else {
       setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role,text,artifact}]);
     }
@@ -1745,6 +1832,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
         if(a.type==="show_crisis_challenge"){ setTimeout(()=>addMsg("coach","",{type:"crisis_challenge"}),400); }
         if(a.type==="show_proficiency_rating"){ setTimeout(()=>addMsg("coach","",{type:"proficiency_rating",topic:a.topic}),400); }
         if(a.type==="show_adapt_planner"){ setTimeout(()=>addMsg("coach","",{type:"adapt_planner"}),400); }
+        if(a.type==="show_reflection"){ setTimeout(()=>addMsg("coach","",{type:"reflection",section:a.section,q1:a.q1,q2:a.q2}),400); }
       });
 
       if(cleanText) addMsg("coach",cleanText);
@@ -1769,6 +1857,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
     if(a.type==="listening_tendencies") return <ListeningTendenciesArtifact forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " listening tendency")} />;
     if(a.type==="proficiency_rating") return <ProficiencyRating topic={a.topic||"Bringing Your Best"} onComplete={(topic,level)=>handleSend("I rated myself as " + level + " on " + topic + ". Let us discuss what that means.")} />;
     if(a.type==="adapt_planner") return <ADAPTPlanner catalyst={catalyst} onComplete={vals=>handleSend("Here is my ADAPT plan: Analyze: " + vals.analyze + " | Describe: " + vals.describe + " | Acknowledge: " + vals.acknowledge + " | Pivot: " + vals.pivot + " | Track: " + vals.track)} />;
+    if(a.type==="reflection") return <SectionReflection sectionTitle={a.section||"Section Reflection"} question1={a.q1||"What was your most important insight from this section?"} question2={a.q2||""} onSave={(section,q1,r1,q2,r2)=>{ setInsights(prev=>({...prev,reflections:[...(prev.reflections||[]),{section,q1,r1,q2,r2,date:new Date().toLocaleDateString()}]})); setPanelDot(true); handleSend("I just saved my reflection on " + section + ". My response was: " + r1 + (r2?" Also: "+r2:"")); }} />;
     return null;
   };
 
@@ -1823,7 +1912,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
         <button onClick={()=>handleSend(input)} disabled={typing} style={{height:46,padding:"0 18px",borderRadius:23,background:typing?"rgba(36,65,105,.4)":C.navy,border:"none",cursor:typing?"not-allowed":"pointer",fontSize:13,fontWeight:800,color:C.white,whiteSpace:"nowrap"}}>Send</button>
       </div>
 
-      <MyCQPanel open={panelOpen} onClose={()=>setPanelOpen(false)} legacy={legacy} catalyst={catalyst} insights={insights} currentModule={currentModule} />
+      <MyCQPanel open={panelOpen} onClose={()=>setPanelOpen(false)} legacy={legacy} catalyst={catalyst} insights={insights} currentModule={currentModule} notes={notes} setNotes={setNotes} />
       {showForteUpload && (
         <ForteUploadScreen
           onComplete={(fd)=>{
