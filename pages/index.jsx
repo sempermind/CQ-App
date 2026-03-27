@@ -56,7 +56,10 @@ CORE RULES:
 
 MODULE 1 -- Commit to Become Your Best:
 
-SECTION 1: Peak Performance
+SECTION 1: Proficiency Rating -- Bringing Your Best
+Before the conversation begins, set up the rating: "Before we dive in, I want to give you a baseline. Throughout this program, you will rate yourself on ten communication skills. This is not a test -- it is a mirror. It helps you see where you are starting from so you can measure how far you go. The first one is about bringing your best." Tag: <SHOW_PROFICIENCY_RATING topic="Bringing Your Best"/>. After they rate: "Good. Hold onto that number -- we will come back to it. Now let us start somewhere real."
+
+SECTION 2: Peak Performance
 Frame: Open with curiosity, not content. "Before we dive into anything -- I want to start with a moment. Think of a recent conversation where you were completely on your game. You walked away knowing you nailed it. What made that work?"
 Teach through their story: reflect back what you heard, name the pattern you notice.
 Connect: "What was different about you in that moment versus a conversation that goes sideways?"
@@ -123,6 +126,7 @@ Debrief: "Which scenario hit closest to home? And what does it tell you about yo
 Bridge: "Adapting across generations is a skill. Adapting in the moment -- in any conversation, with any person -- requires a framework. That is what we are building next."
 
 SECTION 3: Balancing Empathy
+Proficiency rating first: "Before we talk about empathy, I want to know where you think you are with it right now." Tag: <SHOW_PROFICIENCY_RATING topic="Balancing Empathy"/>. After they rate, then continue.
 Frame: "Before we get to the framework, I want to talk about the one thing that makes all communication work -- and the thing most people skip when a conversation gets hard. Empathy."
 Teach: "Empathy in communication is not about being soft. It is about accurately understanding the emotions, thinking, and experiences of the person in front of you -- and letting that understanding inform how you show up. Research consistently shows that higher empathy produces stronger communication, better relationships, and better outcomes."
 Connect: "Here is the thing -- your style shapes how naturally empathy comes to you. Based on your Primary Profile, here is your natural tendency:" [describe their specific empathy tendency from their Forte profile -- Dominant tends to problem-solve, Extrovert tends to make it about them, Patient tends to go along, etc.] "Does that land? Where do you see that showing up?"
@@ -145,7 +149,7 @@ Teach each step conversationally:
 "T -- Track. After the conversation, what happened? What does that tell you for next time?"
 Connect: "Walk me through your Catalyst relationship using ADAPT. Start with Analyze -- what is the real need or challenge underneath your dynamic with them?"
 Guide them through each step with questions.
-Practice activity: "Now let us get practical. Every ADAPT strategy needs a Switch or a Knob. Some things require a fundamental change in approach -- a switch. Others just need a small precise adjustment -- a knob. Let me show you both." Tag: <SHOW_SWITCHES_KNOBS/>
+Practice activity: First, drop the ADAPT planner so they can build their strategy: "Let me give you a tool to capture your ADAPT strategy for your Catalyst right inside this app. Work through each step." Tag: <SHOW_ADAPT_PLANNER/>. After they complete it, then: "Now let us look at what Switches and Knobs you need to make that plan real. Some things require a fundamental change in approach -- a switch. Others just need a small precise adjustment -- a knob. Let me show you both." Tag: <SHOW_SWITCHES_KNOBS/>
 Debrief: "What is the most important switch you identified? And what is the one knob that could have an outsized impact on your Catalyst relationship?"
 Close Module 3: "You now have the full adaptive communication toolkit. You know your style, you can read others, you understand the generational layer, you know how to bring empathy and presence, and you have a five-step framework for any conversation. That is significant. Let us build on it." Tag: <MODULE_ADVANCE n="4"/>
 
@@ -192,11 +196,13 @@ Tag: <MODULE_ADVANCE n="5"/>
 MODULE 5 -- Supercharge Listening and Feedback:
 
 SECTION 1: The Power of Questions
+Proficiency rating: "Let us start with a baseline on questions." Tag: <SHOW_PROFICIENCY_RATING topic="Got Questions"/>. After they rate, then teach.
 Frame: "The single most powerful thing you can do to improve your listening and your feedback is to ask better questions. Questions are not just information-gathering tools. They signal genuine curiosity. They create space for someone else's thinking. They change the entire energy of a conversation."
 Teach: "Your communication style shapes the kinds of questions you naturally ask -- and the ones you avoid. Dominant communicators ask direct questions and get uncomfortable with indecision. Patient communicators ask questions that preserve harmony. Non-conformists ask provocative questions. What kind of questions do you tend to ask -- and which ones do you avoid?"
 Connect: "Think about your Catalyst. What question have you been avoiding asking them?"
 
 SECTION 2: Proactive Listening
+Proficiency rating: "And now one for listening." Tag: <SHOW_PROFICIENCY_RATING topic="Proactive Listening"/>. After they rate, then teach.
 Frame: "Most people think listening is passive -- the absence of talking. This program replaces that conception entirely. Proactive listening is an active skill with three specific moves."
 Teach: "Be Present -- move from nodding along to genuinely immersing yourself. Set aside distraction. Give your full attention. Be Curious -- actively seek to understand the perspective and emotions beneath the words. Go beyond the surface. Ask Questions -- use open-ended questions that invite deeper insight, not just clarifications."
 Connect: "Which of those three is hardest for you right now -- and why?"
@@ -204,6 +210,7 @@ Practice: Tag: <SHOW_LISTENING_TENDENCIES/>
 Debrief: "What did you learn about your natural listening tendency? What is the one adjustment that would most change how your Catalyst experiences you?"
 
 SECTION 3: Feedback as a Gift
+Proficiency rating: "One more baseline before we get into feedback." Tag: <SHOW_PROFICIENCY_RATING topic="Feedback"/>. After they rate, then teach.
 Frame: "Few things generate more anxiety in the workplace than giving feedback. And yet research is unambiguous: employees do not just want feedback -- they crave it. Sixty-eight percent would work harder if their efforts were more consistently acknowledged."
 Teach: "Here is the reframe that changes everything: feedback is a gift. It is an insight the other person cannot access on their own. If you were in their shoes, would you want the feedback you are sitting on? In almost every case -- yes."
 Hack: "And here is the most counterintuitive move in the module: instead of leading with feedback, start with a question. Not 'here is what you should do' -- but 'can you walk me through your plan?' or 'what would you advise me to do if I were in your position?' Starting with a question invites conversation instead of triggering defensiveness."
@@ -243,6 +250,7 @@ ARTIFACT TAGS (embed hidden in response when appropriate):
 - <SHOW_GENERATIONS/>
 - <SHOW_LISTENING_TENDENCIES/>
 - <SHOW_CRISIS_CHALLENGE/>
+- <SHOW_PROFICIENCY_RATING topic="Balancing Empathy"/> -- use the exact topic name from the list below before starting that section. Topics: "Bringing Your Best", "Balancing Empathy", "Earning Trust", "Non-Verbal Communication", "Virtual Communication", "ADAPT Model", "Got Questions", "Proactive Listening", "Feedback", "Clear Consistent Communication"
 - <MODULE_ADVANCE n="2"/> (adjust n for each module)
 - <COACH_INSIGHT>observation text</COACH_INSIGHT>
 
@@ -299,6 +307,10 @@ function parseAIResponse(text) {
   if (listenMatch) { artifacts.push({ type:"show_listening_tendencies" }); clean = clean.replace(listenMatch[0],""); }
   const crisisMatch = clean.match(/<SHOW_CRISIS_CHALLENGE\/>/);
   if (crisisMatch) { artifacts.push({ type:"show_crisis_challenge" }); clean = clean.replace(crisisMatch[0],""); }
+  const profMatch = clean.match(/<SHOW_PROFICIENCY_RATING topic="([^"]+)"\/>/);
+  if (profMatch) { artifacts.push({ type:"show_proficiency_rating", topic:profMatch[1] }); clean = clean.replace(profMatch[0],""); }
+  const adaptPlanMatch = clean.match(/<SHOW_ADAPT_PLANNER\/>/);
+  if (adaptPlanMatch) { artifacts.push({ type:"show_adapt_planner" }); clean = clean.replace(adaptPlanMatch[0],""); }
   const moduleMatch = clean.match(/<MODULE_ADVANCE n="(\d+)"\/>/);
   if (moduleMatch) { artifacts.push({ type:"module_advance", n:parseInt(moduleMatch[1]) }); clean = clean.replace(moduleMatch[0],""); }
   const insightMatch = clean.match(/<COACH_INSIGHT>([\s\S]*?)<\/COACH_INSIGHT>/);
@@ -1143,6 +1155,133 @@ const ForteUploadScreen = ({onComplete, onSkip}) => {
   );
 };
 
+
+
+// ── ADAPT PLANNER ARTIFACT ────────────────────────────────────────────────────
+const ADAPT_STEPS_DEF = [
+  { key:"analyze",     letter:"A", color:"#244169", label:"Analyze",     full:"Analyze the need, situation or challenge", prompt:"What is actually happening here? What does this person need from this conversation?", hint:"Look past the surface. What is the real need, not just the presenting issue?" },
+  { key:"describe",    letter:"D", color:"#385988", label:"Describe",    full:"Describe it specifically and objectively", prompt:"How would you describe the situation using only facts? What specifics are critical?", hint:"No interpretation. No emotion. Just what is observable and factual." },
+  { key:"acknowledge", letter:"A", color:"#5878bd", label:"Acknowledge", full:"Acknowledge constraints and resources", prompt:"What limitations are you working within? What resources -- people, tools, time -- do you have?", hint:"What is the other person carrying into this conversation? What are the real constraints?" },
+  { key:"pivot",       letter:"P", color:"#f08b35", label:"Pivot",       full:"Pivot as needed -- decide how to intentionally adapt", prompt:"What needs to change in your approach? How will you remain open and responsive?", hint:"When what you are doing is not working, what different approach might work better?" },
+  { key:"track",       letter:"T", color:"#e75a2b", label:"Track",       full:"Track the outcomes and continuously improve", prompt:"How will you measure success? What continuous improvements can you implement?", hint:"What happened as a result? What does that tell you for next time?" },
+];
+
+const ADAPTPlanner = ({catalyst, onComplete}) => {
+  const [activeStep, setActiveStep] = useState("analyze");
+  const [values, setValues] = useState({analyze:"", describe:"", acknowledge:"", pivot:"", track:""});
+  const [tooltip, setTooltip] = useState(null);
+  const allFilled = Object.values(values).every(v=>v.trim().length>0);
+  const currentStep = ADAPT_STEPS_DEF.find(s=>s.key===activeStep);
+
+  return (
+    <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      <div style={{background:C.navy,padding:"14px 16px"}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:2}}>ADAPT Strategy Planner</div>
+        <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>
+          {catalyst ? `Build your ADAPT plan for ${catalyst}` : "Build your ADAPT communication plan"}
+        </div>
+      </div>
+      <div style={{padding:"12px 14px"}}>
+        {/* Step nav */}
+        <div style={{display:"flex",gap:4,marginBottom:14}}>
+          {ADAPT_STEPS_DEF.map(s=>(
+            <button key={s.key} onClick={()=>setActiveStep(s.key)}
+              style={{flex:1,padding:"7px 4px",borderRadius:8,border:`1.5px solid ${activeStep===s.key?s.color:"rgba(36,65,105,.12)"}`,
+                background:activeStep===s.key?s.color:"transparent",cursor:"pointer",transition:"all .2s"}}>
+              <div style={{fontSize:14,fontWeight:900,color:activeStep===s.key?"#fff":s.color}}>{s.letter}</div>
+              <div style={{fontSize:9,fontWeight:700,color:activeStep===s.key?"rgba(255,255,255,.7)":"rgba(36,65,105,.4)",marginTop:1}}>{s.label}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* Active step */}
+        <div style={{marginBottom:12}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
+            <div style={{fontSize:13,fontWeight:800,color:currentStep.color}}>{currentStep.full}</div>
+            <button onMouseEnter={()=>setTooltip(currentStep.key)} onMouseLeave={()=>setTooltip(null)}
+              onClick={()=>setTooltip(tooltip?null:currentStep.key)}
+              style={{width:22,height:22,borderRadius:"50%",background:"rgba(36,65,105,.08)",border:"none",cursor:"pointer",fontSize:12,color:"rgba(36,65,105,.5)",fontWeight:800,flexShrink:0}}>?</button>
+          </div>
+          {tooltip===currentStep.key&&(
+            <div style={{background:"rgba(36,65,105,.06)",borderRadius:8,padding:"9px 11px",marginBottom:8,fontSize:12,color:C.navy,lineHeight:1.5,fontStyle:"italic"}}>
+              {currentStep.hint}
+            </div>
+          )}
+          <div style={{fontSize:12,color:"rgba(36,65,105,.5)",marginBottom:8,lineHeight:1.5}}>{currentStep.prompt}</div>
+          <textarea value={values[activeStep]} onChange={e=>setValues(prev=>({...prev,[activeStep]:e.target.value}))}
+            placeholder={`Your ${currentStep.label} for this situation...`} rows={3}
+            style={{width:"100%",padding:"10px 12px",border:`1.5px solid ${values[activeStep].trim()?"rgba(36,65,105,.25)":"rgba(36,65,105,.12)"}`,borderRadius:10,fontSize:13,color:C.navy,fontFamily:"inherit",resize:"vertical",outline:"none",lineHeight:1.5}} />
+        </div>
+
+        {/* Progress */}
+        <div style={{display:"flex",gap:3,marginBottom:12}}>
+          {ADAPT_STEPS_DEF.map(s=>(
+            <div key={s.key} style={{flex:1,height:3,borderRadius:2,background:values[s.key].trim()?s.color:"rgba(36,65,105,.1)",transition:"background .3s"}} />
+          ))}
+        </div>
+
+        {/* Nav buttons */}
+        <div style={{display:"flex",gap:8}}>
+          {ADAPT_STEPS_DEF.indexOf(currentStep)>0&&(
+            <button onClick={()=>setActiveStep(ADAPT_STEPS_DEF[ADAPT_STEPS_DEF.indexOf(currentStep)-1].key)}
+              style={{flex:1,padding:10,background:"rgba(36,65,105,.06)",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,color:C.navy}}>← Back</button>
+          )}
+          {ADAPT_STEPS_DEF.indexOf(currentStep)<4?(
+            <button onClick={()=>setActiveStep(ADAPT_STEPS_DEF[ADAPT_STEPS_DEF.indexOf(currentStep)+1].key)}
+              style={{flex:2,padding:10,background:currentStep.color,border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,color:"#fff"}}>Next →</button>
+          ):(
+            <button onClick={()=>onComplete(values)} disabled={!allFilled}
+              style={{flex:2,padding:10,background:allFilled?C.navy:"rgba(36,65,105,.2)",border:"none",borderRadius:10,cursor:allFilled?"pointer":"not-allowed",fontSize:13,fontWeight:700,color:"#fff"}}>
+              {allFilled?"Share with Coach →":"Complete all steps"}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+// ── PROFICIENCY RATING ARTIFACT ───────────────────────────────────────────────
+const PROFICIENCY_DATA = {"Bringing Your Best": ["I have the basics covered -- communication and adaptability. Is there more?", "I apply proven strategies to bring my best. They seem to work in most situations.", "I have personalized strategies that leverage my communication strengths. I continually adapt to improve on bringing my best to work."], "Balancing Empathy": ["I can confuse empathy with sympathy and I am not sure how it translates into productivity.", "I understand empathy is important for constructive relationships with colleagues and clients. I try to see things from others perspectives.", "I actively seek to understand the thoughts and emotions of others and to adapt my behavior from their perspective. I can describe the positive impact empathy has on relationships and business outcomes."], "Earning Trust": ["Either you have trust or you don't. Is there more than that?", "I am aware of how having trust (or not) impacts relationships and teams at work. I want people to trust me and to be confident in granting trust.", "I work to earn the trust of others and grant trust when it is earned. When trust is broken, I focus on regaining trust and then maintaining it."], "Non-Verbal Communication": ["I know that non-verbal communication exists but I rarely think about it.", "I understand how much of communication is non-verbal and I try to be aware of my own signals and those of others.", "I actively manage my non-verbal signals to ensure my body and presence match my message. I can read others signals accurately in real time."], "Virtual Communication": ["I have the basics covered or I can use help in connecting and communicating remotely.", "I understand the differences between remote and in-person communication. I attempt to communicate more effectively online.", "I exercise patience when it comes to working with others remotely. I take responsibility for how I can adapt to maximize my productivity and that of the team."], "ADAPT Model": ["I primarily practice one-way communication. I rarely adapt my message based on the receiver.", "I tend to listen as much as I speak. I like to check that the receiver understands my message.", "I recognize I am primarily responsible for the intent of my message being understood. I proactively work to ensure my intended message is aligned with the receivers understanding."], "Got Questions": ["I ask questions in the course of communicating and do not give it much thought.", "I regularly ask questions in conversations and in writing that result in the answers I am looking for.", "I ask questions that make others think in new ways and that promote good relationships, teamwork and innovation."], "Proactive Listening": ["I have not really thought about listening, but I can distinguish between hearing someone and listening to someone.", "I am aware of the impact of listening and not listening. I have tried to listen and it is not always easy and I have learned more about listening through reading, a class or a conversation with others.", "I understand why listening is an essential CQ skill that you can evolve. I can describe the impact of listening at work and I have specific actions that I take based on my CQ strengths and those of others to improve listening."], "Feedback": ["I am not comfortable receiving or giving feedback.", "I follow the rules and policies when it comes to feedback.", "I look forward to and act on feedback I receive. I ask for feedback when appropriate and I offer constructive feedback to others when I believe it would be useful."], "Clear Consistent Communication": ["I primarily practice one-way communication. I rarely adapt my message based on the receiver.", "I tend to listen as much as I speak. I like to check that the receiver understands my message.", "I recognize I am primarily responsible for the intent of my message being understood. I proactively work to ensure my intended message is aligned with the receivers understanding."]};
+
+const ProficiencyRating = ({topic, onComplete}) => {
+  const [selected, setSelected] = useState(null);
+  const levels = ["Novice", "Intermediate", "Mastery"];
+  const behaviors = PROFICIENCY_DATA[topic] || ["Basic awareness.", "Applied understanding.", "Consistent mastery."];
+  const colors = { Novice:"#e75a2b", Intermediate:"#f08b35", Mastery:"#2e7d32" };
+
+  return (
+    <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      <div style={{background:C.navy,padding:"14px 16px"}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:2}}>{topic}</div>
+        <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>Where are you now? Select your current level.</div>
+      </div>
+      <div style={{padding:"12px 14px"}}>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:selected?12:0}}>
+          {levels.map((level,i)=>(
+            <button key={level} onClick={()=>setSelected(level)}
+              style={{padding:"13px 14px",borderRadius:12,border:`1.5px solid ${selected===level?colors[level]:"rgba(36,65,105,.12)"}`,cursor:"pointer",textAlign:"left",
+                background:selected===level?`${colors[level]}10`:"#fff",transition:"all .2s"}}>
+              <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+                <div style={{width:20,height:20,borderRadius:"50%",border:`2px solid ${selected===level?colors[level]:"rgba(36,65,105,.2)"}`,background:selected===level?colors[level]:"transparent",flexShrink:0,marginTop:1,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {selected===level&&<div style={{width:8,height:8,borderRadius:"50%",background:"#fff"}} />}
+                </div>
+                <div>
+                  <div style={{fontSize:12,fontWeight:800,color:selected===level?colors[level]:C.navy,letterSpacing:".06em",textTransform:"uppercase",marginBottom:4}}>{level}</div>
+                  <div style={{fontSize:12.5,color:"rgba(36,65,105,.7)",lineHeight:1.5}}>{behaviors[i]}</div>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+        {selected&&(
+          <button onClick={()=>onComplete(topic, selected)} style={{width:"100%",padding:12,background:C.navy,border:"none",borderRadius:11,cursor:"pointer",fontSize:13,fontWeight:800,color:"#fff",marginTop:4}}>
+            Save my rating and continue
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
 const MyCQPanel = ({open,onClose,legacy,catalyst,insights,currentModule}) => {
   const [tab,setTab] = useState("journal");
   const TabBtn = ({t,label}) => (
@@ -1264,7 +1403,45 @@ const MicButton = ({onTranscript}) => {
 };
 
 
-const CQIntroScreen = ({participantName, level, onContinue}) => {
+
+const MODULE_PREVIEWS = [
+  { n:"01", title:"Commit to Become Your Best", sub:"Peak performance, Legacy, Catalyst", detail:"You will identify what it looks and feels like when you are at your best as a communicator, define your CQ Legacy -- how you want to be known -- and name your CQ Catalyst, the one relationship you most want to transform through this program." },
+  { n:"02", title:"Unlock Communication Power",  sub:"Forte Profile, your three graphs",   detail:"You will explore your Forte Communication Style Profile -- your natural wiring, how you are adapting to your environment, and how others are most likely experiencing you right now. This is the intelligence that makes everything else in the program more precise." },
+  { n:"03", title:"Master Adaptive Techniques",  sub:"ADAPT, Generations, Empathy",         detail:"You will learn to read communication styles in others, navigate generational differences, balance empathy with effectiveness, and use the five-step ADAPT model to approach any conversation -- planned or sideways -- with intention and skill." },
+  { n:"04", title:"Energize Team Dynamics",       sub:"Motivators, Style Pairings, Crisis",  detail:"You will discover what actually motivates and demotivates you and the people around you, learn how different communication style pairings create friction and synergy, and stress-test everything in the Crisis Navigation Challenge." },
+  { n:"05", title:"Supercharge Listening",        sub:"Proactive listening, Feedback",        detail:"You will replace passive listening with a three-part active practice, discover your natural questioning tendencies and how to expand them, and learn to give and receive feedback as a gift -- the insight others cannot access on their own." },
+  { n:"06", title:"Craft Your Action Plan",       sub:"Legacy, commitments, next steps",      detail:"You will synthesize everything from the program into a personal Communication Action Plan -- your Legacy, your commitment to your Catalyst, and the one specific behavior you will practice from this day forward." },
+];
+
+const ModulePreviewList = () => {
+  const [expanded, setExpanded] = useState(null);
+  return (
+    <div style={{marginBottom:28}}>
+      <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:12}}>Your 6-Module Journey</div>
+      <div style={{display:"flex",flexDirection:"column",gap:6}}>
+        {MODULE_PREVIEWS.map((m,i)=>(
+          <div key={m.n} onClick={()=>setExpanded(expanded===i?null:i)}
+            style={{borderRadius:12,border:"1px solid rgba(255,255,255,.1)",background:expanded===i?"rgba(255,255,255,.1)":"rgba(255,255,255,.05)",cursor:"pointer",overflow:"hidden",transition:"all .2s"}}>
+            <div style={{padding:"11px 14px",display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:28,height:28,borderRadius:8,background:expanded===i?"rgba(244,188,45,.2)":"rgba(255,255,255,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:C.gold,flexShrink:0}}>{m.n}</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:12.5,fontWeight:700,color:C.white,lineHeight:1.2}}>{m.title}</div>
+                <div style={{fontSize:11,color:"rgba(255,255,255,.4)",marginTop:1}}>{m.sub}</div>
+              </div>
+              <div style={{fontSize:14,color:"rgba(255,255,255,.3)",transform:expanded===i?"rotate(90deg)":"none",transition:"transform .2s"}}>›</div>
+            </div>
+            {expanded===i&&(
+              <div style={{padding:"0 14px 14px 54px",fontSize:12.5,color:"rgba(255,255,255,.65)",lineHeight:1.6}}>
+                {m.detail}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+const CQIntroScreen = ({participantName, level, onContinue, onBack}) => {
   const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
   const name = participantName || "there";
   const QUOTES = [
@@ -1276,11 +1453,13 @@ const CQIntroScreen = ({participantName, level, onContinue}) => {
   const quote = QUOTES[0];
 
   return (
-    <div style={{flex:1,background:C.navy,display:"flex",flexDirection:"column",overflowY:"auto"}}>
+    <div style={{flex:1,background:C.navy,display:"flex",flexDirection:"column",overflowY:"auto",position:"relative"}}>
       {/* Back button */}
-      <button onClick={onContinue} style={{position:"absolute",top:60,left:16,background:"rgba(255,255,255,.1)",border:"none",borderRadius:8,padding:"6px 12px",cursor:"pointer",fontSize:12,fontWeight:700,color:"rgba(255,255,255,.5)",zIndex:10}}>← Back</button>
+      <button onClick={()=>window.history.back?.[0] || onBack?.()} style={{display:"flex",alignItems:"center",gap:4,background:"rgba(255,255,255,.08)",border:"none",borderRadius:8,padding:"8px 12px",cursor:"pointer",fontSize:12,fontWeight:700,color:"rgba(255,255,255,.45)",margin:"16px 0 0 16px",alignSelf:"flex-start",flexShrink:0}}>
+        ← Back
+      </button>
 
-      <div style={{padding:"52px 24px 32px",display:"flex",flexDirection:"column",flex:1}}>
+      <div style={{padding:"16px 24px 32px",display:"flex",flexDirection:"column",flex:1}}>
         {/* Welcome */}
         <div style={{marginBottom:28}}>
           <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".14em",textTransform:"uppercase",marginBottom:8}}>Welcome, {name}</div>
@@ -1307,28 +1486,8 @@ const CQIntroScreen = ({participantName, level, onContinue}) => {
           <div style={{fontSize:11,color:"rgba(255,255,255,.4)",fontWeight:600,letterSpacing:".08em"}}>COMMUNICATION INTELLIGENCE PROGRAM</div>
         </div>
 
-        {/* What is ahead */}
-        <div style={{marginBottom:28}}>
-          <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:12}}>Your 6-Module Journey</div>
-          <div style={{display:"flex",flexDirection:"column",gap:8}}>
-            {[
-              ["01","Commit to Become Your Best","Peak performance, Legacy, Catalyst"],
-              ["02","Unlock Communication Power","Forte Profile, your three graphs"],
-              ["03","Master Adaptive Techniques","ADAPT, Generations, Empathy"],
-              ["04","Energize Team Dynamics","Motivators, Style Pairings, Crisis Challenge"],
-              ["05","Supercharge Listening","Proactive listening, Feedback as a gift"],
-              ["06","Craft Your Action Plan","Legacy, commitments, next steps"],
-            ].map(([n,title,sub])=>(
-              <div key={n} style={{display:"flex",alignItems:"center",gap:12}}>
-                <div style={{width:28,height:28,borderRadius:8,background:"rgba(255,255,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:C.gold,flexShrink:0}}>{n}</div>
-                <div>
-                  <div style={{fontSize:12.5,fontWeight:700,color:C.white}}>{title}</div>
-                  <div style={{fontSize:11,color:"rgba(255,255,255,.4)",marginTop:1}}>{sub}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* What is ahead -- interactive */}
+        <ModulePreviewList />
 
         <button onClick={onContinue} style={{width:"100%",padding:16,background:C.gold,color:C.navy,border:"none",borderRadius:14,fontSize:15,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 18px rgba(244,188,45,.3)"}}>
           I am ready -- let us begin
@@ -1584,6 +1743,8 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
         if(a.type==="show_generations"){ setTimeout(()=>addMsg("coach","",{type:"gencard"}),400); }
         if(a.type==="show_listening_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}),400); }
         if(a.type==="show_crisis_challenge"){ setTimeout(()=>addMsg("coach","",{type:"crisis_challenge"}),400); }
+        if(a.type==="show_proficiency_rating"){ setTimeout(()=>addMsg("coach","",{type:"proficiency_rating",topic:a.topic}),400); }
+        if(a.type==="show_adapt_planner"){ setTimeout(()=>addMsg("coach","",{type:"adapt_planner"}),400); }
       });
 
       if(cleanText) addMsg("coach",cleanText);
@@ -1606,6 +1767,8 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
     if(a.type==="crisis_challenge") return <CrisisChallenge onCoachTalk={(responses,strategy)=>handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?")} />;
     if(a.type==="switches_knobs") return <SwitchesKnobsArtifact catalyst={catalyst} onCoachTalk={(item,t)=>handleSend("Let us talk about the " + item.label + " " + t + " for my Catalyst")} />;
     if(a.type==="listening_tendencies") return <ListeningTendenciesArtifact forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " listening tendency")} />;
+    if(a.type==="proficiency_rating") return <ProficiencyRating topic={a.topic||"Bringing Your Best"} onComplete={(topic,level)=>handleSend("I rated myself as " + level + " on " + topic + ". Let us discuss what that means.")} />;
+    if(a.type==="adapt_planner") return <ADAPTPlanner catalyst={catalyst} onComplete={vals=>handleSend("Here is my ADAPT plan: Analyze: " + vals.analyze + " | Describe: " + vals.describe + " | Acknowledge: " + vals.acknowledge + " | Pivot: " + vals.pivot + " | Track: " + vals.track)} />;
     return null;
   };
 
@@ -1711,7 +1874,7 @@ export default function App() {
           </div>
           {screen==="home"  && <HomeScreen  onStart={s=>{const next=s==="level"?"level":"coach";setScreen(next);}} />}
           {screen==="level" && <LevelScreen onSelect={(l,n)=>{setLevel(l);setParticipantName(n);setScreen("intro");}} onBack={()=>setScreen("home")} />}
-          {screen==="intro" && <CQIntroScreen participantName={participantName} level={level} onContinue={()=>setScreen("coach")} />}
+          {screen==="intro" && <CQIntroScreen participantName={participantName} level={level} onContinue={()=>setScreen("coach")} onBack={()=>setScreen("level")} />}
           {screen==="coach" && <CoachScreen level={level} participantName={participantName} savedState={savedState} onSave={s=>saveSession({screen:"coach",level,participantName,...s})} onReset={handleReset} />}
         </div>
       </div>
