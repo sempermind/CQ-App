@@ -254,6 +254,13 @@ Catalyst: {catalyst}
 Forte Profile: {forteData}
 Current Module: {currentModule}
 
+CQ PROGRAM QUOTES -- Use these naturally at powerful moments, when a participant has a breakthrough, or when bridging between sections. Do not force them -- let them land when the moment earns them:
+- "Every conversation has the power to change the trajectory of a life."
+- "Communication is not a soft skill. It is the most consequential capability any professional can develop."
+- "You cannot build relationships by changing people. You can only build them by understanding them."
+- "The gap between who you are and how others experience you is where the most important coaching lives."
+- "Clarity is not about saying more. It is about saying exactly the right thing."
+
 USE THEIR NAME: Address the participant by their first name naturally throughout the session -- especially at the opening, when capturing something meaningful, and at moments of insight. Do not overdo it -- use it the way a good coach would, 3-5 times per session feels right.
 
 OPENING MESSAGE PERSONALIZATION BY LEVEL:
@@ -766,69 +773,129 @@ const GenCardArtifact = ({onCoachTalk}) => {
 
 
 // ── SWITCHES AND KNOBS ARTIFACT ───────────────────────────────────────────────
+const SWITCHES_DATA = [
+  { id:"formal",    label:"Formal vs. Informal",          scenario:"A formal approach is creating distance in a team that needs more collaboration.",         solution:"Try switching to a more informal, conversational tone to build rapport and encourage open dialogue. Drop the professional armor for a moment and talk like a human." },
+  { id:"directive", label:"Directive vs. Collaborative",  scenario:"Your direct instructions are being perceived as micromanagement by your team.",           solution:"Switch to a collaborative approach by asking questions and inviting input. Try: what do you think the best approach would be here?" },
+  { id:"facts",     label:"Facts-Focused vs. Story-Based",scenario:"Your audience is losing interest in your data-heavy delivery.",                          solution:"Switch to a narrative approach that wraps key facts in relatable stories. One vivid example does more than ten data points." },
+  { id:"passive",   label:"Active vs. Passive",           scenario:"Your passive approach leaves team members uncertain about priorities and expectations.",    solution:"Switch to active communication by clearly stating what you need and following up consistently. Clarity is a kindness." },
+  { id:"technical", label:"Technical vs. Plain Language", scenario:"Technical jargon is creating a credibility gap instead of building one.",                  solution:"Switch to the language your audience already uses. If they would not say it, do not say it. Analogies beat acronyms every time." },
+];
+
+const KNOBS_DATA = [
+  { id:"pace",      label:"Pace",         icon:"⏱", desc:"How fast you move through a conversation", low:"Slow down -- you are rushing past moments that matter.", mid:"Your pace feels right for this conversation.", high:"Pick it up -- they are ready to move and you are holding them back." },
+  { id:"detail",    label:"Detail Level", icon:"📋", desc:"How much context and background you give",  low:"Add more context -- they need the why before they can hear the what.", mid:"Your detail level feels calibrated.", high:"Cut the detail -- bottom line first, then offer to elaborate if needed." },
+  { id:"empathy",   label:"Empathy",      icon:"🤝", desc:"How much emotional acknowledgment you offer", low:"Lean in more -- acknowledge what they are carrying before you problem-solve.", mid:"Your empathy is landing well.", high:"Balance warmth with directness -- they may need action more than validation right now." },
+  { id:"direct",    label:"Directness",   icon:"🎯", desc:"How blunt or diplomatic you are",           low:"Be more direct -- they may be waiting for you to just say what you mean.", mid:"Your directness feels right.", high:"Soften the delivery a touch -- the message is right but the packaging may be too sharp." },
+  { id:"questions", label:"Questions",    icon:"💬", desc:"How often you ask vs. tell",                low:"Ask more and tell less -- you may be solving problems they need to solve themselves.", mid:"Your question balance feels right.", high:"Less questions, more direction -- they may need clarity, not more reflection." },
+];
+
 const SwitchesKnobsArtifact = ({catalyst, onCoachTalk}) => {
-  const [selected, setSelected] = useState(null);
-  const [type, setType] = useState(null);
+  const [tab, setTab] = useState("switches");
+  const [activeSwitch, setActiveSwitch] = useState(null);
+  const [activeKnob, setActiveKnob] = useState(null);
+  const [knobValues, setKnobValues] = useState({pace:5, detail:5, empathy:5, direct:5, questions:5});
 
-  const SWITCHES = [
-    { id:"formal",    label:"Formal vs. Informal",         desc:"Creating distance when you need connection.",        tip:"Switch to a more conversational tone. Drop the professional armor for a moment and talk like a human." },
-    { id:"directive", label:"Directive vs. Collaborative", desc:"Your instructions land as micromanagement.",         tip:"Switch from telling to asking. Try: 'What do you think the best approach would be here?'" },
-    { id:"facts",     label:"Facts-Focused vs. Story-Based",desc:"Data-heavy delivery is losing the room.",           tip:"Wrap your key point in a real story. One vivid example does more than ten data points." },
-    { id:"passive",   label:"Active vs. Passive",          desc:"People are unclear on what you actually need.",      tip:"Switch to stating expectations directly. Clarity is a kindness." },
-    { id:"technical", label:"Technical vs. Plain Language", desc:"Jargon is creating a gap instead of credibility.", tip:"Switch to the language your audience already uses. If they would not say it, do not say it." },
-  ];
+  const getKnobAdvice = (knob) => {
+    const val = knobValues[knob.id];
+    if(val <= 3) return knob.low;
+    if(val >= 8) return knob.high;
+    return knob.mid;
+  };
 
-  const KNOBS = [
-    { id:"pace",    label:"Pace",           desc:"How fast you move through a conversation.",  low:"Slow it down -- you are rushing past the moments that matter.",      high:"Pick up the pace -- they are ready to move and you are holding them back." },
-    { id:"detail",  label:"Detail Level",   desc:"How much context and background you give.",  low:"Add more context -- they need the 'why' before they can hear the 'what'.", high:"Cut the detail -- bottom line first, then offer to elaborate." },
-    { id:"empathy", label:"Empathy",        desc:"How much emotional acknowledgment you offer.", low:"Lean in more -- acknowledge what they are carrying before you problem-solve.", high:"Balance warmth with directness -- they may need action more than validation right now." },
-    { id:"volume",  label:"Directness",     desc:"How blunt or diplomatic you are.",           low:"Be more direct -- they may be waiting for you to just say what you mean.", high:"Soften the delivery -- the message is right but the packaging is too sharp." },
-    { id:"questions",label:"Questions",     desc:"How often you ask vs. tell.",                low:"Ask more and tell less -- you might be solving problems they need to solve themselves.", high:"Less questions, more clarity -- they may need direction, not more reflection." },
-  ];
-
-  const isSwitch = type==="switch";
-  const item = selected ? (isSwitch ? SWITCHES : KNOBS).find(x=>x.id===selected) : null;
+  const sw = activeSwitch ? SWITCHES_DATA.find(s=>s.id===activeSwitch) : null;
+  const kb = activeKnob ? KNOBS_DATA.find(k=>k.id===activeKnob) : null;
 
   return (
     <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
-      <div style={{background:"#244169",padding:"14px 16px"}}>
+      <div style={{background:C.navy,padding:"14px 16px"}}>
         <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:2}}>Switches and Knobs</div>
         <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>
-          {catalyst ? `What needs to change with ${catalyst}?` : "What needs to change?"}
+          {catalyst ? `What does ${catalyst} need you to adjust?` : "What communication adjustment do you need to make?"}
         </div>
       </div>
+
+      {/* Tab bar */}
+      <div style={{display:"flex",borderBottom:"1px solid rgba(36,65,105,.08)"}}>
+        <button onClick={()=>{setTab("switches");setActiveSwitch(null);}} style={{flex:1,padding:"11px 8px",border:"none",cursor:"pointer",fontSize:12,fontWeight:800,color:tab==="switches"?C.navy:"rgba(36,65,105,.4)",borderBottom:`2px solid ${tab==="switches"?C.navy:"transparent"}`,background:"transparent"}}>
+          ⚡ Switches
+        </button>
+        <button onClick={()=>{setTab("knobs");setActiveKnob(null);}} style={{flex:1,padding:"11px 8px",border:"none",cursor:"pointer",fontSize:12,fontWeight:800,color:tab==="knobs"?C.orange:"rgba(36,65,105,.4)",borderBottom:`2px solid ${tab==="knobs"?C.orange:"transparent"}`,background:"transparent"}}>
+          🎛 Knobs
+        </button>
+      </div>
+
       <div style={{padding:"12px 14px"}}>
-        <div style={{display:"flex",gap:8,marginBottom:12}}>
-          <button onClick={()=>{setType("switch");setSelected(null);}} style={{flex:1,padding:"8px 10px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:800,background:type==="switch"?"#244169":"rgba(36,65,105,.08)",color:type==="switch"?"#fff":"#244169"}}>
-            Switches — big changes
-          </button>
-          <button onClick={()=>{setType("knob");setSelected(null);}} style={{flex:1,padding:"8px 10px",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:800,background:type==="knob"?"#f08b35":"rgba(36,65,105,.08)",color:type==="knob"?"#fff":"#244169"}}>
-            Knobs — small tweaks
-          </button>
-        </div>
-        {!type&&<div style={{fontSize:12.5,color:"#8a8378",fontStyle:"italic",textAlign:"center",padding:"8px 0"}}>Choose switches for major changes or knobs for fine-tuning.</div>}
-        {type&&(
-          <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:12}}>
-            {(isSwitch?SWITCHES:KNOBS).map(x=>(
-              <button key={x.id} onClick={()=>setSelected(x.id)} style={{padding:"10px 12px",borderRadius:10,border:`1.5px solid ${selected===x.id?(isSwitch?"#244169":"#f08b35"):"rgba(36,65,105,.12)"}`,cursor:"pointer",textAlign:"left",background:selected===x.id?(isSwitch?"rgba(36,65,105,.06)":"rgba(240,139,53,.06)"):"#fff"}}>
-                <div style={{fontSize:13,fontWeight:700,color:"#244169"}}>{x.label}</div>
-                <div style={{fontSize:11.5,color:"#8a8378",marginTop:2}}>{x.desc}</div>
-              </button>
-            ))}
-          </div>
-        )}
-        {item&&(
-          <div style={{background:isSwitch?"rgba(36,65,105,.06)":"rgba(240,139,53,.08)",borderRadius:12,padding:"12px 14px",marginBottom:10}}>
-            <div style={{fontSize:11,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:isSwitch?"#244169":"#f08b35",marginBottom:6}}>
-              {isSwitch?"Switch this":"Adjust this knob"}
+        {tab==="switches"&&(
+          <>
+            <div style={{fontSize:12,color:"rgba(36,65,105,.6)",marginBottom:10,lineHeight:1.5}}>Switches are broad, fundamental changes to your communication approach. Select one that fits your situation.</div>
+            <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:sw?12:0}}>
+              {SWITCHES_DATA.map(s=>(
+                <button key={s.id} onClick={()=>setActiveSwitch(activeSwitch===s.id?null:s.id)}
+                  style={{padding:"11px 13px",borderRadius:11,border:`1.5px solid ${activeSwitch===s.id?"#244169":"rgba(36,65,105,.12)"}`,cursor:"pointer",textAlign:"left",
+                    background:activeSwitch===s.id?"rgba(36,65,105,.05)":"#fff",transition:"all .2s"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <div style={{width:10,height:10,borderRadius:5,background:activeSwitch===s.id?C.navy:"rgba(36,65,105,.2)",flexShrink:0,transition:"background .2s"}} />
+                    <div style={{fontSize:13,fontWeight:700,color:C.navy}}>{s.label}</div>
+                  </div>
+                  {activeSwitch===s.id&&(
+                    <div style={{marginTop:10,paddingTop:10,borderTop:"1px solid rgba(36,65,105,.08)"}}>
+                      <div style={{fontSize:11,fontWeight:800,color:"#c0392b",letterSpacing:".08em",textTransform:"uppercase",marginBottom:5}}>Scenario</div>
+                      <div style={{fontSize:12.5,color:C.navy,lineHeight:1.55,marginBottom:10}}>{s.scenario}</div>
+                      <div style={{fontSize:11,fontWeight:800,color:C.navy,letterSpacing:".08em",textTransform:"uppercase",marginBottom:5}}>Suggested Switch</div>
+                      <div style={{fontSize:12.5,color:C.navy,lineHeight:1.55,background:"rgba(36,65,105,.04)",borderRadius:8,padding:"9px 11px"}}>{s.solution}</div>
+                    </div>
+                  )}
+                </button>
+              ))}
             </div>
-            <div style={{fontSize:13,color:"#244169",lineHeight:1.55}}>{isSwitch?item.tip:item.low}</div>
-          </div>
+            {sw&&(
+              <button onClick={()=>onCoachTalk(sw,"switch")} style={{width:"100%",marginTop:8,padding:11,background:C.navy,border:"none",borderRadius:11,cursor:"pointer",fontSize:13,fontWeight:700,color:"#fff"}}>
+                Talk to Coach about this switch
+              </button>
+            )}
+          </>
         )}
-        {item&&(
-          <button onClick={()=>onCoachTalk(item, type)} style={{width:"100%",padding:10,background:"#244169",border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,color:"#fff"}}>
-            Talk to Coach about this
-          </button>
+
+        {tab==="knobs"&&(
+          <>
+            <div style={{fontSize:12,color:"rgba(36,65,105,.6)",marginBottom:12,lineHeight:1.5}}>Knobs are fine-tuning adjustments. Select one, then use the slider to show where you currently are and where you need to move.</div>
+            <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:kb?12:0}}>
+              {KNOBS_DATA.map(k=>(
+                <div key={k.id}>
+                  <button onClick={()=>setActiveKnob(activeKnob===k.id?null:k.id)}
+                    style={{width:"100%",padding:"11px 13px",borderRadius:11,border:`1.5px solid ${activeKnob===k.id?C.orange:"rgba(36,65,105,.12)"}`,cursor:"pointer",textAlign:"left",
+                      background:activeKnob===k.id?"rgba(240,139,53,.05)":"#fff",transition:"all .2s"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8}}>
+                      <span style={{fontSize:16}}>{k.icon}</span>
+                      <div>
+                        <div style={{fontSize:13,fontWeight:700,color:C.navy}}>{k.label}</div>
+                        <div style={{fontSize:11,color:"rgba(36,65,105,.5)",marginTop:1}}>{k.desc}</div>
+                      </div>
+                    </div>
+                  </button>
+                  {activeKnob===k.id&&(
+                    <div style={{background:"rgba(240,139,53,.05)",border:"1.5px solid rgba(240,139,53,.2)",borderTop:"none",borderRadius:"0 0 11px 11px",padding:"12px 13px"}}>
+                      <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+                        <span style={{fontSize:11,fontWeight:700,color:"rgba(36,65,105,.5)"}}>Less</span>
+                        <span style={{fontSize:12,fontWeight:800,color:C.orange}}>{knobValues[k.id]}/10</span>
+                        <span style={{fontSize:11,fontWeight:700,color:"rgba(36,65,105,.5)"}}>More</span>
+                      </div>
+                      <input type="range" min="1" max="10" value={knobValues[k.id]}
+                        onChange={e=>setKnobValues(prev=>({...prev,[k.id]:parseInt(e.target.value)}))}
+                        style={{width:"100%",accentColor:C.orange,marginBottom:12,cursor:"pointer"}} />
+                      <div style={{background:"rgba(240,139,53,.1)",borderRadius:8,padding:"9px 11px"}}>
+                        <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:4}}>Adjustment guidance</div>
+                        <div style={{fontSize:12.5,color:C.navy,lineHeight:1.55}}>{getKnobAdvice(k)}</div>
+                      </div>
+                      <button onClick={()=>onCoachTalk(k,"knob")} style={{width:"100%",marginTop:10,padding:10,background:C.navy,border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,color:"#fff"}}>
+                        Talk to Coach about {k.label.toLowerCase()}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -1196,6 +1263,80 @@ const MicButton = ({onTranscript}) => {
   );
 };
 
+
+const CQIntroScreen = ({participantName, level, onContinue}) => {
+  const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
+  const name = participantName || "there";
+  const QUOTES = [
+    "Every conversation has the power to change the trajectory of a life.",
+    "Communication is not a soft skill. It is the most consequential capability any professional can develop.",
+    "You cannot build relationships by changing people. You can only build them by understanding them.",
+    "The gap between who you are and how others experience you is where the most important coaching lives.",
+  ];
+  const quote = QUOTES[0];
+
+  return (
+    <div style={{flex:1,background:C.navy,display:"flex",flexDirection:"column",overflowY:"auto"}}>
+      {/* Back button */}
+      <button onClick={onContinue} style={{position:"absolute",top:60,left:16,background:"rgba(255,255,255,.1)",border:"none",borderRadius:8,padding:"6px 12px",cursor:"pointer",fontSize:12,fontWeight:700,color:"rgba(255,255,255,.5)",zIndex:10}}>← Back</button>
+
+      <div style={{padding:"52px 24px 32px",display:"flex",flexDirection:"column",flex:1}}>
+        {/* Welcome */}
+        <div style={{marginBottom:28}}>
+          <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".14em",textTransform:"uppercase",marginBottom:8}}>Welcome, {name}</div>
+          <div style={{fontSize:26,fontWeight:900,color:C.white,lineHeight:1.2,marginBottom:12}}>Your CQ Journey Starts Now</div>
+          <div style={{fontSize:13.5,color:"rgba(255,255,255,.65)",lineHeight:1.7}}>
+            You are about to go through the Communication Intelligence program -- designed specifically for {levelInfo.name}s who want to build the communication legacy that matters most to them.
+          </div>
+        </div>
+
+        {/* What is CQ */}
+        <div style={{background:"rgba(255,255,255,.07)",borderRadius:16,padding:"18px 18px",marginBottom:20}}>
+          <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>What is Communication Intelligence?</div>
+          <div style={{fontSize:13.5,color:"rgba(255,255,255,.8)",lineHeight:1.7,marginBottom:12}}>
+            Communication Intelligence -- CQ -- is the ability to understand your own communication style, read the styles of others, and adapt in real time to make every conversation more effective.
+          </div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.65}}>
+            It is not about being a better talker. It is about being someone others feel genuinely heard by -- and someone who creates trust, clarity, and momentum in every conversation that matters.
+          </div>
+        </div>
+
+        {/* Quote */}
+        <div style={{borderLeft:`3px solid ${C.gold}`,paddingLeft:16,marginBottom:24}}>
+          <div style={{fontSize:15,fontWeight:700,color:C.white,lineHeight:1.55,fontStyle:"italic",marginBottom:6}}>"{quote}"</div>
+          <div style={{fontSize:11,color:"rgba(255,255,255,.4)",fontWeight:600,letterSpacing:".08em"}}>COMMUNICATION INTELLIGENCE PROGRAM</div>
+        </div>
+
+        {/* What is ahead */}
+        <div style={{marginBottom:28}}>
+          <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:12}}>Your 6-Module Journey</div>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {[
+              ["01","Commit to Become Your Best","Peak performance, Legacy, Catalyst"],
+              ["02","Unlock Communication Power","Forte Profile, your three graphs"],
+              ["03","Master Adaptive Techniques","ADAPT, Generations, Empathy"],
+              ["04","Energize Team Dynamics","Motivators, Style Pairings, Crisis Challenge"],
+              ["05","Supercharge Listening","Proactive listening, Feedback as a gift"],
+              ["06","Craft Your Action Plan","Legacy, commitments, next steps"],
+            ].map(([n,title,sub])=>(
+              <div key={n} style={{display:"flex",alignItems:"center",gap:12}}>
+                <div style={{width:28,height:28,borderRadius:8,background:"rgba(255,255,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:C.gold,flexShrink:0}}>{n}</div>
+                <div>
+                  <div style={{fontSize:12.5,fontWeight:700,color:C.white}}>{title}</div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,.4)",marginTop:1}}>{sub}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button onClick={onContinue} style={{width:"100%",padding:16,background:C.gold,color:C.navy,border:"none",borderRadius:14,fontSize:15,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 18px rgba(244,188,45,.3)"}}>
+          I am ready -- let us begin
+        </button>
+      </div>
+    </div>
+  );
+};
 const HomeScreen = ({onStart}) => (
   <div style={{flex:1,background:C.gold,display:"flex",flexDirection:"column",alignItems:"center",overflow:"hidden",minHeight:0}}>
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"space-between",flex:1,width:"100%",padding:"52px 28px 44px",minHeight:0}}>
@@ -1214,7 +1355,7 @@ const HomeScreen = ({onStart}) => (
   </div>
 );
 
-const LevelScreen = ({onSelect}) => {
+const LevelScreen = ({onSelect, onBack}) => {
   const [sel,setSel] = useState(null);
   const [name,setName] = useState("");
   const canProceed = sel && name.trim().length > 0;
@@ -1261,8 +1402,9 @@ const LevelScreen = ({onSelect}) => {
             </div>
           ))}
         </div>
-        <div style={{paddingTop:20}}>
+        <div style={{paddingTop:20,display:"flex",flexDirection:"column",gap:10}}>
           <button disabled={!canProceed} onClick={()=>onSelect(sel, name.trim())} style={{width:"100%",padding:16,background:C.navy,color:C.white,border:"none",borderRadius:14,fontSize:15,fontWeight:800,cursor:canProceed?"pointer":"not-allowed",opacity:canProceed?1:.35,boxShadow:"0 4px 18px rgba(36,65,105,.3)"}}>Begin My Journey</button>
+          <button onClick={onBack} style={{width:"100%",padding:12,background:"transparent",border:"none",cursor:"pointer",fontSize:13,color:C.navy,opacity:.4,fontWeight:600}}>← Back</button>
         </div>
       </div>
     </div>
@@ -1488,6 +1630,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
           <button onClick={()=>{if(window.confirm("Start a new session? Your current progress will be cleared."))onReset?.();}} style={{background:"rgba(255,255,255,.1)",border:"1.5px solid rgba(255,255,255,.15)",borderRadius:"50%",width:34,height:34,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" strokeWidth="2.2" strokeLinecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
           </button>
+          <button onClick={()=>onReset?.()} title="Exit session" style={{background:"rgba(255,255,255,.07)",border:"1px solid rgba(255,255,255,.12)",borderRadius:8,padding:"6px 10px",cursor:"pointer",fontSize:11,fontWeight:700,color:"rgba(255,255,255,.4)"}}>✕</button>
         </div>
       </div>
 
@@ -1539,6 +1682,7 @@ export default function App() {
   const [screen,         setScreen]       = useState("home");
   const [level,          setLevel]         = useState(null);
   const [participantName,setParticipantName]= useState("");
+  // intro screen shows between level select and coach
   const [restored,       setRestored]      = useState(false);
   const [savedState,     setSavedState]    = useState(null);
 
@@ -1566,7 +1710,8 @@ export default function App() {
             </div>
           </div>
           {screen==="home"  && <HomeScreen  onStart={s=>{const next=s==="level"?"level":"coach";setScreen(next);}} />}
-          {screen==="level" && <LevelScreen onSelect={(l,n)=>{setLevel(l);setParticipantName(n);setScreen("coach");}} />}
+          {screen==="level" && <LevelScreen onSelect={(l,n)=>{setLevel(l);setParticipantName(n);setScreen("intro");}} onBack={()=>setScreen("home")} />}
+          {screen==="intro" && <CQIntroScreen participantName={participantName} level={level} onContinue={()=>setScreen("coach")} />}
           {screen==="coach" && <CoachScreen level={level} participantName={participantName} savedState={savedState} onSave={s=>saveSession({screen:"coach",level,participantName,...s})} onReset={handleReset} />}
         </div>
       </div>
