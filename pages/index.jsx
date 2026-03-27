@@ -129,18 +129,33 @@ Debrief: "Which scenario hit closest to home? And what does it tell you about yo
 Then drop a reflection: Tag: <SHOW_REFLECTION section="Generational Dynamics" q1="Which generation do you find most challenging to communicate with -- and what is one thing you now understand about why?" q2="What is one adjustment you will make this week based on what you just explored?"/>
 Bridge: "Adapting across generations is a skill. Adapting in the moment -- in any conversation, with any person -- requires a framework. That is what we are building next."
 
+SECTION 2.5: Introduce the 10 CQ Essentials (comes AFTER Spotting Strengths and Generational Dynamics)
+Frame first: "Beyond communication styles, what really determines the quality of any interaction is the choices we make in the moment. These choices are what we call the 10 CQ Essentials -- the behavioral practices that define what high-quality communication looks like in action. You will rate yourself on each essential throughout this program -- and by the final session, those ratings form the backbone of your personal action plan. At first glance they might look basic. They are not. Each one has hidden depth. We will cover all ten over the course of the program. For now let us zoom in on the first two: Balancing Empathy and Earning Trust." Tag: <SHOW_CQ_ESSENTIALS/>
+
 SECTION 3: Balancing Empathy
-Proficiency rating first: "Before we talk about empathy, I want to know where you think you are with it right now." Tag: <SHOW_PROFICIENCY_RATING topic="Balancing Empathy"/>. After they rate, then continue.
+After they click through the Essentials, continue. Proficiency rating: "Let us start with a baseline on empathy." Tag: <SHOW_PROFICIENCY_RATING topic="Balancing Empathy"/>. After they rate, then continue.
 Frame: "Before we get to the framework, I want to talk about the one thing that makes all communication work -- and the thing most people skip when a conversation gets hard. Empathy."
 Teach: "Empathy in communication is not about being soft. It is about accurately understanding the emotions, thinking, and experiences of the person in front of you -- and letting that understanding inform how you show up. Research consistently shows that higher empathy produces stronger communication, better relationships, and better outcomes."
 Connect: "Here is the thing -- your style shapes how naturally empathy comes to you. Based on your Primary Profile, here is your natural tendency:" [describe their specific empathy tendency from their Forte profile -- Dominant tends to problem-solve, Extrovert tends to make it about them, Patient tends to go along, etc.] "Does that land? Where do you see that showing up?"
 Practice: "Think about your Catalyst. When they come to you with a problem, what is your natural first move -- and what would next-level empathy look like in that moment?"
 Bridge: "Now let us talk about the other thing that makes communication land: trust."
 
+SECTION 3b: Earning Trust
+After the empathy section, rate Trust: Tag: <SHOW_PROFICIENCY_RATING topic="Earning Trust"/>
+Frame: "Trust is built through being understood. When someone feels genuinely heard, trust follows almost automatically. Empathy is not a soft add-on -- it is the mechanism through which trust is created."
+Connect: "Think about your Catalyst. On a scale of one to ten, how much trust exists in that relationship right now? And what do you think is driving that number?"
+Bridge: "Now let us look at the signals you are sending before you even say a word."
+
 SECTION 4: Non-Verbal Communication
+Proficiency rating first: Tag: <SHOW_PROFICIENCY_RATING topic="Non-Verbal Communication"/>
 Frame: "Research shows it takes one-tenth of a second to form a first impression, and only seven seconds to establish a full point of view. Before a single word is spoken, your body is already communicating. Non-verbal signals account for up to 93 percent of the message someone receives."
 Teach: "There are five key signals: posture, facial expression, eye contact, gestures, and voice pitch. The goal is not performance -- it is alignment. Your body should match your message."
 Connect: "In your role, when is non-verbal communication most likely working against you? Is it in high-stakes moments, virtual meetings, or something else?"
+
+SECTION 4b: Virtual Communication
+Proficiency rating: Tag: <SHOW_PROFICIENCY_RATING topic="Virtual Communication"/>
+Frame: "The virtual environment amplifies every non-verbal signal. Before a word is spoken on a video call, your camera angle, your background, your stillness or fidgeting -- all of it is communicating. Mastering virtual communication is not optional in the modern workplace."
+Connect: "When you think about your most important virtual interactions -- what is one thing your camera or presence is communicating that you did not intend?"
 Bridge: "Now we have the full picture -- your style, generational awareness, empathy, and presence. Let us put it all together into one framework."
 
 SECTION 5: The ADAPT Model
@@ -155,6 +170,13 @@ Connect: "Walk me through your Catalyst relationship using ADAPT. Start with Ana
 Guide them through each step with questions.
 Practice activity: First, drop the ADAPT planner so they can build their strategy: "Let me give you a tool to capture your ADAPT strategy for your Catalyst right inside this app. Work through each step." Tag: <SHOW_ADAPT_PLANNER/>. After they complete it, then: "Now let us look at what Switches and Knobs you need to make that plan real. Some things require a fundamental change in approach -- a switch. Others just need a small precise adjustment -- a knob. Let me show you both." Tag: <SHOW_SWITCHES_KNOBS/>
 Debrief: "What is the most important switch you identified? And what is the one knob that could have an outsized impact on your Catalyst relationship?"
+SECTION 5b: Expanding Safe Spaces
+After ADAPT, before closing Module 3:
+Proficiency rating: Tag: <SHOW_PROFICIENCY_RATING topic="Expanding Safe Spaces"/>
+Frame: "The ADAPT model gives you the tactical approach. Safe spaces give you the environment in which it can work. A safe space is built on two pillars -- respect and rapport. Respect ensures people feel their contributions matter. Rapport ensures they feel welcome enough to share them honestly."
+Connect: "Think about your Catalyst relationship. Does that person feel safe enough to tell you the truth? What would make it safer?"
+Bridge: "Let us close Module 3 and carry this into your team and client dynamics."
+
 Close Module 3: "You now have the full adaptive communication toolkit. You know your style, you can read others, you understand the generational layer, you know how to bring empathy and presence, and you have a five-step framework for any conversation. That is significant. Let us build on it." Tag: <MODULE_ADVANCE n="4"/>
 
 ---
@@ -204,6 +226,8 @@ Proficiency rating: "Let us start with a baseline on questions." Tag: <SHOW_PROF
 Frame: "The single most powerful thing you can do to improve your listening and your feedback is to ask better questions. Questions are not just information-gathering tools. They signal genuine curiosity. They create space for someone else's thinking. They change the entire energy of a conversation."
 Teach: "Your communication style shapes the kinds of questions you naturally ask -- and the ones you avoid. Dominant communicators ask direct questions and get uncomfortable with indecision. Patient communicators ask questions that preserve harmony. Non-conformists ask provocative questions. What kind of questions do you tend to ask -- and which ones do you avoid?"
 Connect: "Think about your Catalyst. What question have you been avoiding asking them?"
+Then drop the artifact: "Here is something useful -- your style shapes not just the answers you give, but the questions you ask. And more importantly, the ones you avoid." Tag: <SHOW_QUESTIONING_TENDENCIES/>
+Debrief: "Which tendency resonated most? And what question could you ask your Catalyst this week that you have been holding back?"
 
 SECTION 2: Proactive Listening
 Proficiency rating: "And now one for listening." Tag: <SHOW_PROFICIENCY_RATING topic="Proactive Listening"/>. After they rate, then teach.
@@ -225,6 +249,15 @@ Tag: <MODULE_ADVANCE n="6"/>
 ---
 
 MODULE 6 -- Craft Your Communication Action Plan:
+
+SECTION 0: CQ Essentials Summary
+Before the final essential rating, show the full summary: "Before we close out the final essential, I want to show you something. You have been rating yourself on the 10 CQ Essentials throughout this entire program. Let us look at the full picture." Tag: <SHOW_CQ_ESSENTIALS_SUMMARY/>
+
+SECTION 0b: Clear Consistent Communication -- the final essential
+Proficiency rating to close out the 10: Tag: <SHOW_PROFICIENCY_RATING topic="Clear Consistent Communication"/>
+Frame: "We have made it to the final essential -- and it is the one that ties everything together. Clear, consistent communication means aligning what you intend to say with what others actually understand. Clarity eliminates confusion. Consistency builds trust. Together they create the communication environment where people feel safe, motivated, and equipped to bring their best. This is both the goal of the program and the daily practice that makes your Legacy real."
+Connect: "On the ten essentials you have rated throughout this program -- which one surprised you most about where you are right now?"
+Bridge: "Now let us build your plan."
 
 SECTION 1: Synthesis
 "Before we build your plan -- let us take stock. You have been through a lot in this program. What is the single most important insight you are taking away? The thing that genuinely changed how you see yourself as a communicator?"
@@ -252,6 +285,7 @@ ARTIFACT TAGS (embed hidden in response when appropriate):
 - <SHOW_FORTE_UPLOAD/>
 - <SHOW_SWITCHES_KNOBS/>
 - <SHOW_GENERATIONS/>
+- <SHOW_QUESTIONING_TENDENCIES/> -- use in Module 5 Section 5.1 when teaching questioning tendencies by style
 - <SHOW_LISTENING_TENDENCIES/>
 - <SHOW_CRISIS_CHALLENGE/>
 - <SHOW_REFLECTION section="Section Name" q1="First reflection question" q2="Optional second question"/> -- use at the end of each major section to capture participant insight before bridging to the next topic
@@ -273,6 +307,22 @@ CQ PROGRAM QUOTES -- Use these naturally at powerful moments, when a participant
 - "You cannot build relationships by changing people. You can only build them by understanding them."
 - "The gap between who you are and how others experience you is where the most important coaching lives."
 - "Clarity is not about saying more. It is about saying exactly the right thing."
+
+MODULE COMMITMENT CAPTURE: At the end of EVERY module, before advancing, ask for a specific commitment: "Before we move on -- what is the one specific thing you are going to do differently this week based on what we just covered? Not a vague intention. A concrete behavior, with a specific person, in a specific situation." Then tag: <COACH_INSIGHT>MODULE [n] COMMITMENT: [their commitment]</COACH_INSIGHT>
+
+FORTE PAGE 9 -- THE 30-DAY COMMUNICATION HACK: In Module 2, after walking through the three profiles, always direct them to page 9: "Page 9 of your Forte report is where the practical application begins immediately. It shows you the specific tips for closing the gap between how you are adapting and how you are coming across. Read through the tips on page 9. Which one feels most immediately actionable for your situation with your Catalyst?" This is a required step in Module 2.
+
+STYLE-SPECIFIC COACHING -- know these patterns and use them:
+- Dominant: Tends to rush to solutions. When they describe a conflict, reflect: "It sounds like you moved straight to solving it. What did you skip over?" Coaching edge: slow down to see the person before the problem.
+- Non-Dominant: Holds back perspective. When they hedge, push: "You clearly have a view on this. What is it?" Coaching edge: their input has more value than they claim.
+- Extrovert: Makes it about their experience. When they bridge to themselves, redirect: "Let us stay with them for a moment. What do you think they were experiencing?" Coaching edge: stay curious about the other person.
+- Introvert: Appears to agree but may be processing. Push gently: "Where does that not quite fit for you?" Coaching edge: externalize the thinking.
+- Patient: Avoids naming difficult truths. When they minimize tension: "It sounds like this might have been more uncomfortable than you are letting on." Coaching edge: name what is observed.
+- Impatient: Rushing past emotional content. Slow them: "Before we figure out what to do -- what do you think they were feeling in that moment?" Coaching edge: resist the urge to fix.
+- Conformist: Gets caught in details of what happened. Redirect: "Let us step back from the facts for a moment. What was the emotional impact of that conversation?" Coaching edge: attend to feeling, not just fact.
+- Non-Conformist: Reframes rather than receives. When they challenge: "Before you offer a different interpretation -- did you fully receive theirs?" Coaching edge: resist the impulse to improve on someone else's experience.
+
+OVER-AGREEMENT WATCH: When a participant agrees with everything you say, get curious. That is compliance, not growth. Push: "Where does that not quite fit for you?" or "What is the part of this that is harder to accept than you are letting on?"
 
 USE THEIR NAME: Address the participant by their first name naturally throughout the session -- especially at the opening, when capturing something meaningful, and at moments of insight. Do not overdo it -- use it the way a good coach would, 3-5 times per session feels right.
 
@@ -310,6 +360,8 @@ function parseAIResponse(text) {
   if (genMatch) { artifacts.push({ type:"show_generations" }); clean = clean.replace(genMatch[0],""); }
   const listenMatch = clean.match(/<SHOW_LISTENING_TENDENCIES\/>/);
   if (listenMatch) { artifacts.push({ type:"show_listening_tendencies" }); clean = clean.replace(listenMatch[0],""); }
+  const questionMatch = clean.match(/<SHOW_QUESTIONING_TENDENCIES\/>/);
+  if (questionMatch) { artifacts.push({ type:"show_questioning_tendencies" }); clean = clean.replace(questionMatch[0],""); }
   const crisisMatch = clean.match(/<SHOW_CRISIS_CHALLENGE\/>/);
   if (crisisMatch) { artifacts.push({ type:"show_crisis_challenge" }); clean = clean.replace(crisisMatch[0],""); }
   const profMatch = clean.match(/<SHOW_PROFICIENCY_RATING topic="([^"]+)"\/>/);
@@ -318,6 +370,10 @@ function parseAIResponse(text) {
   if (adaptPlanMatch) { artifacts.push({ type:"show_adapt_planner" }); clean = clean.replace(adaptPlanMatch[0],""); }
   const reflectMatch = clean.match(/<SHOW_REFLECTION section="([^"]+)" q1="([^"]+)"(?:\s+q2="([^"]+)")?\s*\/>/);
   if (reflectMatch) { artifacts.push({ type:"show_reflection", section:reflectMatch[1], q1:reflectMatch[2], q2:reflectMatch[3]||"" }); clean = clean.replace(reflectMatch[0],""); }
+  const essentialsMatch = clean.match(/<SHOW_CQ_ESSENTIALS\/>/);
+  if (essentialsMatch) { artifacts.push({ type:"show_cq_essentials" }); clean = clean.replace(essentialsMatch[0],""); }
+  const essentialsSummaryMatch = clean.match(/<SHOW_CQ_ESSENTIALS_SUMMARY\/>/);
+  if (essentialsSummaryMatch) { artifacts.push({ type:"show_cq_essentials_summary" }); clean = clean.replace(essentialsSummaryMatch[0],""); }
   const moduleMatch = clean.match(/<MODULE_ADVANCE n="(\d+)"\/>/);
   if (moduleMatch) { artifacts.push({ type:"module_advance", n:parseInt(moduleMatch[1]) }); clean = clean.replace(moduleMatch[0],""); }
   const insightMatch = clean.match(/<COACH_INSIGHT>([\s\S]*?)<\/COACH_INSIGHT>/);
@@ -331,12 +387,21 @@ function parseAIResponse(text) {
 
 const SESSION_KEY = "cq_session_v1";
 async function saveSession(data) {
-  try { await window.storage.set(SESSION_KEY, JSON.stringify(data)); } catch(e) {}
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(data));
+  } catch(e) {
+    try { await window.storage.set(SESSION_KEY, JSON.stringify(data)); } catch(e2) {}
+  }
 }
 async function loadSession() {
+  try {
+    const v = localStorage.getItem(SESSION_KEY);
+    if(v) return JSON.parse(v);
+  } catch(e) {}
   try { const r = await window.storage.get(SESSION_KEY); return r ? JSON.parse(r.value) : null; } catch(e) { return null; }
 }
 async function clearSession() {
+  try { localStorage.removeItem(SESSION_KEY); } catch(e) {}
   try { await window.storage.delete(SESSION_KEY); } catch(e) {}
 }
 
@@ -450,33 +515,242 @@ const LegacyCard = ({text}) => (
   </div>
 );
 
+
+
+// ── CQ ESSENTIALS SUMMARY ARTIFACT ───────────────────────────────────────────
+const CQEssentialsSummary = ({ratings, onContinue}) => {
+  const all = CQ_ESSENTIALS_LIST;
+  const getColor = (r) => r==="Mastery"?"#2e7d32":r==="Intermediate"?"#f08b35":"#e75a2b";
+  const getRated = (label) => {
+    if(!ratings) return null;
+    const key = Object.keys(ratings).find(k=>k.toLowerCase()===label.toLowerCase()||label.toLowerCase().includes(k.toLowerCase())||k.toLowerCase().includes(label.toLowerCase()));
+    return key ? ratings[key] : null;
+  };
+
+  const rated = all.map(e=>({ ...e, rating: getRated(e.label) }));
+  const ratedCount = rated.filter(e=>e.rating).length;
+
+  return (
+    <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      <div style={{background:`linear-gradient(135deg, ${C.navy}, #385988)`,padding:"16px 16px"}}>
+        <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".14em",textTransform:"uppercase",marginBottom:4}}>Your CQ Profile</div>
+        <div style={{fontSize:16,fontWeight:900,color:"#fff",marginBottom:4}}>10 CQ Essentials -- Where You Are Now</div>
+        <div style={{fontSize:12,color:"rgba(255,255,255,.6)"}}>Rated {ratedCount} of 10 essentials throughout this program</div>
+      </div>
+      <div style={{padding:"14px 14px"}}>
+        <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:14}}>
+          {rated.map((e,i)=>(
+            <div key={e.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:10,background:"rgba(36,65,105,.03)",border:"1px solid rgba(36,65,105,.08)"}}>
+              <div style={{width:22,height:22,borderRadius:6,background:"rgba(36,65,105,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:C.navy,flexShrink:0}}>{String(i+1).padStart(2,"0")}</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:12.5,fontWeight:700,color:C.navy,lineHeight:1.2}}>{e.label}</div>
+              </div>
+              {e.rating ? (
+                <div style={{padding:"3px 10px",borderRadius:12,background:getColor(e.rating),fontSize:10,fontWeight:800,color:"#fff",flexShrink:0}}>{e.rating}</div>
+              ) : (
+                <div style={{padding:"3px 10px",borderRadius:12,background:"rgba(36,65,105,.1)",fontSize:10,fontWeight:600,color:"rgba(36,65,105,.4)",flexShrink:0}}>Not rated</div>
+              )}
+            </div>
+          ))}
+        </div>
+        <div style={{background:"rgba(244,188,45,.1)",borderRadius:12,padding:"12px 14px",marginBottom:14,borderLeft:`3px solid ${C.gold}`}}>
+          <div style={{fontSize:12,fontWeight:800,color:C.navy,marginBottom:4}}>Which will you focus on first?</div>
+          <div style={{fontSize:12.5,color:"rgba(36,65,105,.7)",lineHeight:1.55}}>Your Novice ratings are your biggest growth opportunities. Your Mastery ratings are the strengths to build from. Your action plan starts with both.</div>
+        </div>
+        <button onClick={onContinue} style={{width:"100%",padding:12,background:C.navy,border:"none",borderRadius:11,cursor:"pointer",fontSize:13,fontWeight:800,color:"#fff"}}>
+          Build my action plan
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ── CQ ESSENTIALS INTRODUCTION ARTIFACT ──────────────────────────────────────
+const CQ_ESSENTIALS_LIST = [
+  { id:"empathy",     label:"Balancing Empathy",                  module:"03", principle:"Merge empathy with communication skill to strengthen connection and productivity.",         health:"Genuine perspective-taking, compassion with boundaries.",              unhealth:"Over-identifying or dismissing emotional reality entirely." },
+  { id:"trust",       label:"Earning Trust",                      module:"03", principle:"Build and sustain trust through consistency, transparency, and demonstrated understanding.", health:"Reliability, transparency, actions match words.",                       unhealth:"Broken promises, lack of follow-through, growing suspicion." },
+  { id:"nonverbal",   label:"Crystallizing Non-Verbal Communication", module:"03", principle:"Align words and body language to build trust and credibility.",                        health:"Congruent tone, posture, and expression.",                             unhealth:"Mixed signals, incongruence, dismissive non-verbals." },
+  { id:"virtual",     label:"Connecting Through Virtual Communication", module:"03", principle:"Adapt communication skills to thrive in digital and hybrid spaces.",                 health:"Clear norms, active presence, medium-appropriate tone.",                unhealth:"Zoom fatigue, digital ghosting, poor tech etiquette." },
+  { id:"safespace",   label:"Expanding Safe Spaces",               module:"03", principle:"Ensure people feel emotionally, physically, and psychologically safe to contribute.",      health:"Inclusive dialogue, respect, protection from harm.",                   unhealth:"Silence from fear, unchecked microaggressions, exclusion." },
+  { id:"challenging", label:"Communicating with Challenging People", module:"04", principle:"Focus on behavior, not personality. Seek common ground through adaptation.",            health:"Curiosity, calm framing, de-escalation.",                              unhealth:"Avoidance, personalization, escalating conflict." },
+  { id:"questions",   label:"Got Questions?",                      module:"05", principle:"Ask questions that invite authentic answers and open doors to deeper understanding.",     health:"Open-ended, clarifying, curiosity-driven questions.",                  unhealth:"Leading, closed, or rhetorical questions that shut dialogue down." },
+  { id:"listening",   label:"Proactive Listening",                 module:"05", principle:"Go beyond hearing words -- make people feel fully heard.",                               health:"Presence, clarifying questions, reflective listening.",                unhealth:"Interrupting, distracted, rehearsing rebuttals." },
+  { id:"feedback",    label:"Receiving and Giving Ongoing Feedback", module:"05", principle:"Treat feedback as a continuous, strength-based growth tool.",                          health:"Frequent, actionable, future-focused, well-received.",                 unhealth:"Defensiveness, vague criticism, lack of feedback culture." },
+  { id:"clear",       label:"Clear, Consistent Communication",     module:"06", principle:"Align what you intend to say with what others actually understand.",                     health:"Concise, direct, consistently understood messages.",                   unhealth:"Misinterpretation, assumptions, having to repeat yourself constantly." },
+];
+
+const CQEssentialsIntro = ({onContinue}) => {
+  const [expanded, setExpanded] = useState(null);
+  const moduleColors = { "03":"#244169", "04":"#385988", "05":"#5878bd", "06":"#f08b35" };
+
+  return (
+    <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      {/* Header */}
+      <div style={{background:`linear-gradient(135deg, ${C.navy}, #385988)`,padding:"16px 16px"}}>
+        <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".14em",textTransform:"uppercase",marginBottom:4}}>The Foundation</div>
+        <div style={{fontSize:16,fontWeight:900,color:"#fff",marginBottom:4}}>The 10 CQ Essentials</div>
+        <div style={{fontSize:12.5,color:"rgba(255,255,255,.65)",lineHeight:1.55}}>
+          These are the behavioral practices that define Communication Intelligence in action. You will rate yourself on each one throughout this program -- and by the final session, your ratings become the backbone of your personal action plan.
+        </div>
+      </div>
+
+      <div style={{padding:"14px 14px"}}>
+        <div style={{fontSize:12,color:"rgba(36,65,105,.5)",marginBottom:12,fontStyle:"italic"}}>Tap any essential to learn more. Each one has hidden depth.</div>
+
+        {/* Essentials list */}
+        <div style={{display:"flex",flexDirection:"column",gap:5,marginBottom:14}}>
+          {CQ_ESSENTIALS_LIST.map((e,i)=>(
+            <div key={e.id} onClick={()=>setExpanded(expanded===i?null:i)}
+              style={{borderRadius:11,border:`1.5px solid ${expanded===i?C.navy:"rgba(36,65,105,.1)"}`,background:expanded===i?"rgba(36,65,105,.03)":"#fff",cursor:"pointer",overflow:"hidden",transition:"all .2s"}}>
+              <div style={{padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
+                <div style={{width:26,height:26,borderRadius:8,background:expanded===i?C.navy:"rgba(36,65,105,.06)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:900,color:expanded===i?"#fff":C.navy,flexShrink:0}}>
+                  {String(i+1).padStart(2,"0")}
+                </div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:13,fontWeight:700,color:C.navy,lineHeight:1.2}}>{e.label}</div>
+                  <div style={{fontSize:10,color:"rgba(36,65,105,.4)",marginTop:1,fontWeight:600}}>Covered in Module {e.module}</div>
+                </div>
+                <div style={{fontSize:14,color:"rgba(36,65,105,.25)",transform:expanded===i?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</div>
+              </div>
+              {expanded===i&&(
+                <div style={{padding:"0 12px 12px 48px"}}>
+                  <div style={{fontSize:12.5,color:C.navy,lineHeight:1.6,marginBottom:8}}>{e.principle}</div>
+                  <div style={{display:"flex",gap:6}}>
+                    <div style={{flex:1,background:"rgba(46,125,50,.07)",borderRadius:8,padding:"8px 10px"}}>
+                      <div style={{fontSize:9,fontWeight:800,color:"#2e7d32",letterSpacing:".1em",textTransform:"uppercase",marginBottom:3}}>Health</div>
+                      <div style={{fontSize:11.5,color:C.navy,lineHeight:1.4}}>{e.health}</div>
+                    </div>
+                    <div style={{flex:1,background:"rgba(192,57,43,.07)",borderRadius:8,padding:"8px 10px"}}>
+                      <div style={{fontSize:9,fontWeight:800,color:"#c0392b",letterSpacing:".1em",textTransform:"uppercase",marginBottom:3}}>Watch for</div>
+                      <div style={{fontSize:11.5,color:C.navy,lineHeight:1.4}}>{e.unhealth}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div style={{background:"rgba(244,188,45,.1)",borderRadius:12,padding:"12px 14px",marginBottom:14,borderLeft:`3px solid ${C.gold}`}}>
+          <div style={{fontSize:12.5,color:C.navy,lineHeight:1.6,fontStyle:"italic"}}>"At first glance these might look basic. They are not. Each one has a hidden depth -- a set of specific techniques and common pitfalls that we will explore together."</div>
+        </div>
+
+        <button onClick={onContinue} style={{width:"100%",padding:12,background:C.navy,border:"none",borderRadius:11,cursor:"pointer",fontSize:13,fontWeight:800,color:"#fff"}}>
+          Got it -- let us dive in
+        </button>
+      </div>
+    </div>
+  );
+};
+// Single Forte line chart matching real report style
+const ForteLineChart = ({scores, color, label}) => {
+  const W = 280, H = 140, PAD = 28;
+  const CHART_W = W - PAD*2, CHART_H = H - PAD*2;
+  // 4 dims evenly spaced
+  const xs = [0,1,2,3].map(i => PAD + (i/(3)) * CHART_W);
+  // score range -36 to +36, midline at center
+  const toY = s => PAD + ((36 - parseInt(s)) / 72) * CHART_H;
+  const midY = toY(0);
+  const pts = scores.map((s,i) => ({ x:xs[i], y:toY(s), s }));
+  const polyline = pts.map(p=>`${p.x},${p.y}`).join(" ");
+  // Top labels: positive side names
+  const topLabels = ["Dom","Ext","Pat","Con"];
+  // Bottom labels: negative side names
+  const botLabels = ["NDom","Int","IPat","NCon"];
+
+  return (
+    <svg width={W} height={H+30} viewBox={`0 0 ${W} ${H+30}`} style={{display:"block",margin:"0 auto"}}>
+      {/* Background shading above midline */}
+      <rect x={PAD} y={PAD} width={CHART_W} height={midY-PAD} fill="rgba(200,220,240,.18)" rx="2"/>
+      {/* Background shading below midline */}
+      <rect x={PAD} y={midY} width={CHART_W} height={PAD+CHART_H-midY} fill="rgba(200,220,240,.10)" rx="2"/>
+      {/* Midline */}
+      <line x1={PAD} y1={midY} x2={PAD+CHART_W} y2={midY} stroke="rgba(36,65,105,.2)" strokeWidth="1" strokeDasharray="4,3"/>
+      {/* 36 top line */}
+      <line x1={PAD} y1={PAD} x2={PAD+CHART_W} y2={PAD} stroke="rgba(36,65,105,.08)" strokeWidth="1"/>
+      {/* -36 bottom line */}
+      <line x1={PAD} y1={PAD+CHART_H} x2={PAD+CHART_W} y2={PAD+CHART_H} stroke="rgba(36,65,105,.08)" strokeWidth="1"/>
+      {/* Top labels */}
+      {topLabels.map((l,i)=>(
+        <text key={l} x={xs[i]} y={PAD-6} textAnchor="middle" fontSize="9" fontWeight="700" fill="rgba(36,65,105,.6)">{l}</text>
+      ))}
+      {/* Bottom labels */}
+      {botLabels.map((l,i)=>(
+        <text key={l} x={xs[i]} y={PAD+CHART_H+14} textAnchor="middle" fontSize="9" fontWeight="700" fill="rgba(36,65,105,.6)">{l}</text>
+      ))}
+      {/* Axis labels 36 and -36 */}
+      <text x={PAD-4} y={PAD+3} textAnchor="end" fontSize="8" fill="rgba(36,65,105,.4)">36</text>
+      <text x={PAD-4} y={midY+3} textAnchor="end" fontSize="8" fill="rgba(36,65,105,.4)">0</text>
+      <text x={PAD-4} y={PAD+CHART_H+3} textAnchor="end" fontSize="8" fill="rgba(36,65,105,.4)">36</text>
+      {/* Vertical dim lines */}
+      {xs.map((x,i)=>(
+        <line key={i} x1={x} y1={PAD} x2={x} y2={PAD+CHART_H} stroke="rgba(36,65,105,.08)" strokeWidth="1"/>
+      ))}
+      {/* The line */}
+      <polyline points={polyline} fill="none" stroke={color} strokeWidth="2" strokeDasharray={color==="#1565c0"?"5,3":"none"}/>
+      {/* Score circles */}
+      {pts.map((p,i)=>(
+        <g key={i}>
+          <circle cx={p.x} cy={p.y} r="10" fill="white" stroke={color} strokeWidth="1.5"/>
+          <text x={p.x} y={p.y+3.5} textAnchor="middle" fontSize="8.5" fontWeight="700" fill={color}>{p.s}</text>
+        </g>
+      ))}
+    </svg>
+  );
+};
+
 const ForteGraph = ({forteData}) => {
   const [tab,setTab] = useState("green");
   const data = forteData || FORTE_DATA;
   const d = data[tab];
-  const tabStyle = t => ({padding:"5px 12px",borderRadius:16,fontSize:12,fontWeight:700,cursor:"pointer",border:"1.5px solid",
-    borderColor:tab===t?"transparent":"rgba(36,65,105,.15)",
-    color:tab===t?C.white:"rgba(36,65,105,.5)",
-    background:tab===t?(t==="green"?"#2e7d32":t==="red"?"#c0392b":"#1565c0"):"transparent"});
+  const GRAPH_COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
+  const GRAPH_LABELS = { green:"Primary Profile", red:"Adapting Profile", blue:"Current Perceiver" };
+  const GRAPH_PAGES  = { green:"Pages 3–6", red:"Pages 7–8", blue:"Page 9" };
+  const color = GRAPH_COLORS[tab];
+
+  const tabStyle = t => ({
+    flex:1, padding:"7px 6px", borderRadius:10, fontSize:11, fontWeight:800,
+    cursor:"pointer", border:"1.5px solid",
+    borderColor: tab===t ? GRAPH_COLORS[t] : "rgba(36,65,105,.12)",
+    color: tab===t ? "#fff" : "rgba(36,65,105,.45)",
+    background: tab===t ? GRAPH_COLORS[t] : "transparent",
+    transition:"all .2s",
+  });
+
   return (
-    <div style={{margin:"6px 14px",padding:16,background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)"}}>
-      <div style={{fontSize:13,fontWeight:800,color:C.navy,marginBottom:12}}>Your Forte Profile</div>
-      <div style={{display:"flex",gap:6,marginBottom:12}}>
-        {["green","red","blue"].map((t,i)=>(
-          <button key={t} style={tabStyle(t)} onClick={()=>setTab(t)}>{["Primary Profile","Adapting Profile","Current Perceiver"][i]}</button>
-        ))}
-      </div>
-      {DIMS.map((dim,i)=>(
-        <div key={dim} style={{marginBottom:9}}>
-          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-            <span style={{fontSize:12,fontWeight:700,color:C.navy}}>{dim}</span>
-            <span style={{fontSize:11.5,fontWeight:600,color:C.orange}}>{d.scores[i]} - {d.labels[i]}</span>
-          </div>
-          <div style={{height:6,background:"rgba(36,65,105,.08)",borderRadius:3,overflow:"hidden"}}>
-            <div style={{height:"100%",width:`${d.pcts[i]}%`,background:FORTE_COLORS[tab],borderRadius:3,transition:"width .7s ease, background .3s"}} />
-          </div>
+    <div style={{margin:"6px 14px",background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      {/* Header */}
+      <div style={{padding:"13px 14px 10px"}}>
+        <div style={{fontSize:13,fontWeight:800,color:C.navy,marginBottom:10}}>Your Forte Profile</div>
+        <div style={{display:"flex",gap:5}}>
+          {["green","red","blue"].map(t=>(
+            <button key={t} style={tabStyle(t)} onClick={()=>setTab(t)}>
+              <div>{GRAPH_LABELS[t]}</div>
+              <div style={{fontSize:9,fontWeight:600,opacity:.7,marginTop:1}}>{GRAPH_PAGES[t]}</div>
+            </button>
+          ))}
         </div>
-      ))}
+      </div>
+
+      {/* Line chart */}
+      <div style={{background:"rgba(36,65,105,.02)",borderTop:"1px solid rgba(36,65,105,.06)",borderBottom:"1px solid rgba(36,65,105,.06)",padding:"10px 0 4px"}}>
+        <ForteLineChart scores={d.scores} color={color} label={GRAPH_LABELS[tab]} />
+      </div>
+
+      {/* Score legend below chart */}
+      <div style={{padding:"10px 14px 14px"}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 12px"}}>
+          {DIMS.map((dim,i)=>(
+            <div key={dim} style={{display:"flex",alignItems:"center",gap:6}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0}}/>
+              <div>
+                <div style={{fontSize:10,fontWeight:700,color:C.navy}}>{dim}</div>
+                <div style={{fontSize:10.5,color:color,fontWeight:600}}>{d.scores[i]} — {d.labels[i]}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
@@ -914,6 +1188,79 @@ const SwitchesKnobsArtifact = ({catalyst, onCoachTalk}) => {
                 </div>
               ))}
             </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+
+// ── QUESTIONING TENDENCIES ARTIFACT ──────────────────────────────────────────
+const QUESTIONING_DATA = {
+  Dominance:    { tendency:"Curious and inquisitive. Asks direct questions. Uncomfortable with indecisive answers. Can come across as aggressive or critical.", alt:'Ask assertively but with openness. Frame questions that invite collaboration. Try: "How do you see this working?" or "Can you clarify this so we can all be on the same page?"' },
+  NonDominance: { tendency:"Appreciates input from others before deciding. May hold back from asking questions even when they have unclear information.", alt:'Create psychological safety. Try: "I want to make sure I fully understand before we move on." or "I value your perspective -- can I ask for clarification?"' },
+  Extroversion: { tendency:"Asks questions to persuade or control. May be first to jump in. Asks questions to put others at ease but can dominate.", alt:'Balance engagement with patience. Show interest in others instead of leading. Try: "What is your take on this?" or "How do you feel about this direction?"' },
+  Introversion: { tendency:"Most comfortable asking questions with those they know well. Thinks through questions carefully before asking. Very sincere approach.", alt:'Broaden your engagement beyond comfortable situations. Try: "I have been reflecting on this and would love your insights." or "Can I ask a follow-up to understand better?"' },
+  Ambiversion:  { tendency:"May switch between extroversion and introversion. Can be inconsistent in questioning approach depending on energy level.", alt:'Adopt flexibility with intention. Frame questions for clarity and mutual understanding. Try: "I would like to gather thoughts on this" or "What is your perspective based on what has been shared?"' },
+  Patience:     { tendency:"Likes time to think through questions. Sensitive to others when framing. Comfortable with positive questions but avoids questions that create conflict.", alt:'Ask questions that foster constructive dialogue. Phrase challenging questions in ways that invite discussion. Try: "How can we approach this collaboratively?" or "What is the best path forward from your perspective?"' },
+  Impatience:   { tendency:"Asks questions to move ahead or speed up action. Expects quick responses. May answer a question before it is finished.", alt:'Practice mindful inquiry. Slow down and frame questions with space for thoughtful responses. Try: "Before we move on, is there anything else to consider?" or "Let us take a moment to think this through."' },
+  Conformity:   { tendency:"Asks questions to thoroughly understand a situation or double-check an answer. May prefer asking and answering in writing.", alt:'Use questions to explore perspectives, not just verify. Try: "How does this fit with what we already know?" or "What other ways can we approach this?"' },
+  NonConformity:{ tendency:"Asks candid questions. May skip asking entirely and assume the answers.", alt:'Ask with curiosity, not assumption. Invite perspectives you may not have considered. Try: "What is your take on this?" or "Can you walk me through how you see this unfolding?"' },
+};
+
+const QuestioningTendencies = ({forteData, onCoachTalk}) => {
+  const [selected, setSelected] = useState(null);
+  const styles = Object.keys(QUESTIONING_DATA);
+
+  const getPrimaryStyle = () => {
+    if(!forteData) return null;
+    const scores = forteData.green.scores.map(Number);
+    const dims = ["Dominance","Extroversion","Patience","Conformity"];
+    const maxIdx = scores.reduce((best,v,i) => Math.abs(v) > Math.abs(scores[best]) ? i : best, 0);
+    const score = scores[maxIdx];
+    if(dims[maxIdx]==="Dominance") return score > 0 ? "Dominance" : "NonDominance";
+    if(dims[maxIdx]==="Extroversion") return score > 0 ? (Math.abs(score)<=7?"Ambiversion":"Extroversion") : "Introversion";
+    if(dims[maxIdx]==="Patience") return score > 0 ? "Patience" : "Impatience";
+    if(dims[maxIdx]==="Conformity") return score > 0 ? "Conformity" : "NonConformity";
+    return null;
+  };
+
+  const primary = getPrimaryStyle();
+  const active = selected || primary;
+  const item = active ? QUESTIONING_DATA[active] : null;
+  const labels = { Dominance:"Dominant", NonDominance:"Non-Dominant", Extroversion:"Extrovert", Introversion:"Introvert", Ambiversion:"Ambivert", Patience:"Patient", Impatience:"Impatient", Conformity:"Conformist", NonConformity:"Non-Conformist" };
+
+  return (
+    <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      <div style={{background:C.navy,padding:"14px 16px"}}>
+        <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:2}}>Questioning Tendencies by Style</div>
+        <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>How your style shapes the questions you ask -- and avoid</div>
+      </div>
+      <div style={{padding:"12px 14px"}}>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}}>
+          {styles.map(s=>(
+            <button key={s} onClick={()=>setSelected(s)} style={{padding:"5px 10px",borderRadius:20,border:"1.5px solid",fontSize:11,fontWeight:700,cursor:"pointer",
+              borderColor:active===s?C.blue:"rgba(36,65,105,.15)",
+              background:active===s?C.blue:"transparent",
+              color:active===s?"#fff":"rgba(36,65,105,.6)"}}>
+              {labels[s]}{s===primary&&<span style={{marginLeft:3,fontSize:9}}>★</span>}
+            </button>
+          ))}
+        </div>
+        {item&&(
+          <>
+            <div style={{background:"rgba(231,90,43,.07)",borderRadius:10,padding:"11px 12px",marginBottom:10}}>
+              <div style={{fontSize:10,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:"#e75a2b",marginBottom:4}}>Your natural tendency</div>
+              <div style={{fontSize:13,color:C.navy,lineHeight:1.55}}>{item.tendency}</div>
+            </div>
+            <div style={{background:"rgba(88,120,189,.07)",borderRadius:10,padding:"11px 12px",marginBottom:10}}>
+              <div style={{fontSize:10,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:C.blue,marginBottom:4}}>Better approach</div>
+              <div style={{fontSize:13,color:C.navy,lineHeight:1.55}}>{item.alt}</div>
+            </div>
+            <button onClick={()=>onCoachTalk(active,item)} style={{width:"100%",padding:10,background:C.navy,border:"none",borderRadius:10,cursor:"pointer",fontSize:13,fontWeight:700,color:"#fff"}}>
+              Talk to Coach about this
+            </button>
           </>
         )}
       </div>
@@ -1829,10 +2176,13 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
         if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
         if(a.type==="show_generations"){ setTimeout(()=>addMsg("coach","",{type:"gencard"}),400); }
         if(a.type==="show_listening_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}),400); }
+        if(a.type==="show_questioning_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"questioning_tendencies"}),400); }
         if(a.type==="show_crisis_challenge"){ setTimeout(()=>addMsg("coach","",{type:"crisis_challenge"}),400); }
         if(a.type==="show_proficiency_rating"){ setTimeout(()=>addMsg("coach","",{type:"proficiency_rating",topic:a.topic}),400); }
         if(a.type==="show_adapt_planner"){ setTimeout(()=>addMsg("coach","",{type:"adapt_planner"}),400); }
         if(a.type==="show_reflection"){ setTimeout(()=>addMsg("coach","",{type:"reflection",section:a.section,q1:a.q1,q2:a.q2}),400); }
+        if(a.type==="show_cq_essentials"){ setTimeout(()=>addMsg("coach","",{type:"cq_essentials"}),400); }
+        if(a.type==="show_cq_essentials_summary"){ setTimeout(()=>addMsg("coach","",{type:"cq_essentials_summary"}),400); }
       });
 
       if(cleanText) addMsg("coach",cleanText);
@@ -1854,8 +2204,15 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
     if(a.type==="gencard")   return <GenCardArtifact onCoachTalk={card=>handleSend("Tell me about the " + card.g + " scenario")} />;
     if(a.type==="crisis_challenge") return <CrisisChallenge onCoachTalk={(responses,strategy)=>handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?")} />;
     if(a.type==="switches_knobs") return <SwitchesKnobsArtifact catalyst={catalyst} onCoachTalk={(item,t)=>handleSend("Let us talk about the " + item.label + " " + t + " for my Catalyst")} />;
+    if(a.type==="questioning_tendencies") return <QuestioningTendencies forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " questioning tendency")} />;
     if(a.type==="listening_tendencies") return <ListeningTendenciesArtifact forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " listening tendency")} />;
-    if(a.type==="proficiency_rating") return <ProficiencyRating topic={a.topic||"Bringing Your Best"} onComplete={(topic,level)=>handleSend("I rated myself as " + level + " on " + topic + ". Let us discuss what that means.")} />;
+    if(a.type==="cq_essentials_summary") return <CQEssentialsSummary ratings={insights.essentialRatings||{}} onContinue={()=>handleSend("I have reviewed my CQ Essentials summary. Let us build my action plan.")} />;
+    if(a.type==="cq_essentials") return <CQEssentialsIntro onContinue={()=>handleSend("I just read through all 10 CQ Essentials. I am ready to dive into Balancing Empathy and Earning Trust.")} />;
+    if(a.type==="proficiency_rating") return <ProficiencyRating topic={a.topic||"Bringing Your Best"} onComplete={(topic,level)=>{
+      setInsights(prev=>({...prev, essentialRatings:{...(prev.essentialRatings||{}), [topic]:level}}));
+      setPanelDot(true);
+      handleSend("I rated myself as " + level + " on " + topic + ". Let us discuss what that means.");
+    }} />;
     if(a.type==="adapt_planner") return <ADAPTPlanner catalyst={catalyst} onComplete={vals=>handleSend("Here is my ADAPT plan: Analyze: " + vals.analyze + " | Describe: " + vals.describe + " | Acknowledge: " + vals.acknowledge + " | Pivot: " + vals.pivot + " | Track: " + vals.track)} />;
     if(a.type==="reflection") return <SectionReflection sectionTitle={a.section||"Section Reflection"} question1={a.q1||"What was your most important insight from this section?"} question2={a.q2||""} onSave={(section,q1,r1,q2,r2)=>{ setInsights(prev=>({...prev,reflections:[...(prev.reflections||[]),{section,q1,r1,q2,r2,date:new Date().toLocaleDateString()}]})); setPanelDot(true); handleSend("I just saved my reflection on " + section + ". My response was: " + r1 + (r2?" Also: "+r2:"")); }} />;
     return null;
