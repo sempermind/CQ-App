@@ -97,16 +97,19 @@ SECTION 1: First reaction
 "Before I explain anything -- when you looked at your results, what was your first reaction?"
 
 SECTION 2: Primary Profile
-Explain briefly: "Your Primary Profile is your natural wiring. Largely stable over time. This is how you would describe yourself at your most authentic -- the communication strengths you were essentially born with."
-"Does that feel accurate to who you know yourself to be?"
+STEP 1: Drop the graph first so they can see it while you speak: <SHOW_FORTE_GRAPH tab="green"/>
+STEP 2: Explain briefly: "Your Primary Profile is your natural wiring. Largely stable over time. This is how you would describe yourself at your most authentic -- the communication strengths you were essentially born with."
+STEP 3: Ask: "Does that feel accurate to who you know yourself to be?"
 
 SECTION 3: Adapting Profile
-Explain briefly: "Your Adapting Profile shows how you have been showing up over the last 30 days. It is environmentally driven -- what you believe your current situation expects of you. It can shift significantly based on pressure, role, or relationships."
-"What does the gap between your Primary and Adapting profiles tell you about the pressure you have been under lately?"
+STEP 1: Drop the graph: <SHOW_FORTE_GRAPH tab="red"/>
+STEP 2: Explain briefly: "Your Adapting Profile shows how you have been showing up over the last 30 days. It is environmentally driven -- what you believe your current situation expects of you. It can shift significantly based on pressure, role, or relationships."
+STEP 3: Ask: "Compare it to your Primary Profile. What does the gap between them tell you about the pressure you have been under lately?"
 
 SECTION 4: Current Perceiver
-Explain briefly: "This is the one that surprises people. Using predictive analytics, your Current Perceiver shows how others are most likely experiencing you right now -- not how you intend to come across, but how you are landing."
-"Look at the gap between your Adapting and Perceiver profiles. Are you landing the way you think you are? And what might your Catalyst be experiencing that you are not aware of?"
+STEP 1: Drop the graph: <SHOW_FORTE_GRAPH tab="blue"/>
+STEP 2: Frame it: "This is the one that surprises most people. Your Current Perceiver shows how others are most likely experiencing you right now -- not how you intend to come across, but how you are actually landing."
+STEP 3: Ask: "Look at the gap between your Adapting and your Current Perceiver. What does that gap tell you? And what do you think your Catalyst is experiencing that you might not be aware of?"
 
 SECTION 5: Close and bridge
 "This is where your self-awareness becomes a competitive advantage. You now know how you are wired, how you are adapting, and what others are likely experiencing. That gap is where the coaching lives."
@@ -289,6 +292,7 @@ ARTIFACT TAGS (embed hidden in response when appropriate):
 - <CAPTURE_LEGACY>their exact legacy words</CAPTURE_LEGACY>
 - <CAPTURE_CATALYST>catalyst description</CAPTURE_CATALYST>
 - <SHOW_FORTE_UPLOAD/>
+- <SHOW_FORTE_GRAPH tab="green"/> -- drop this when starting to discuss the Primary Profile so participant can see it. Use tab="red" for Adapting Profile discussion, tab="blue" for Current Perceiver. Drop BEFORE asking your question about that profile.
 - <SHOW_SWITCHES_KNOBS/>
 - <SHOW_GENERATIONS/>
 - <SHOW_QUESTIONING_TENDENCIES/> -- use in Module 5 Section 5.1 when teaching questioning tendencies by style
@@ -362,6 +366,8 @@ function parseAIResponse(text) {
   const catalystMatch = clean.match(/<CAPTURE_CATALYST>([\s\S]*?)<\/CAPTURE_CATALYST>/);
   if (catalystMatch) { artifacts.push({ type:"capture_catalyst", value:catalystMatch[1].trim() }); clean = clean.replace(catalystMatch[0],""); }
   const forteMatch = clean.match(/<SHOW_FORTE_UPLOAD\/>/);
+  const forteGraphMatch = clean.match(/<SHOW_FORTE_GRAPH tab="([^"]+)"\/>/);
+  if (forteGraphMatch) { artifacts.push({ type:"show_forte_graph", tab:forteGraphMatch[1] }); clean = clean.replace(forteGraphMatch[0],""); }
   if (forteMatch) { artifacts.push({ type:"show_forte_upload" }); clean = clean.replace(forteMatch[0],""); }
   const switchesMatch = clean.match(/<SHOW_SWITCHES_KNOBS\/>/);
   if (switchesMatch) { artifacts.push({ type:"show_switches_knobs" }); clean = clean.replace(switchesMatch[0],""); }
@@ -457,7 +463,7 @@ const CoachAvatar = ({size=52}) => <Logo size={size} style={{flexShrink:0}} />;
 
 const TypingIndicator = () => (
   <div style={{padding:"0 14px 2px",display:"flex",alignItems:"flex-end",gap:8}}>
-    <CoachAvatar size={28}/>
+    <CoachAvatar size={36}/>
     <div style={{
       background:C.white,
       borderRadius:"18px 18px 18px 4px",
@@ -515,12 +521,12 @@ const Bubble = ({role,text,isLast,prevRole}) => {
       {/* Avatar only shows on first bubble in a coach run */}
       {isCoach && showAvatar && (
         <div style={{marginBottom:4,marginLeft:2}}>
-          <CoachAvatar size={26}/>
+          <CoachAvatar size={36}/>
         </div>
       )}
       {/* Indent coach bubbles to align under avatar */}
       <div style={{
-        marginLeft: isCoach && !showAvatar ? 34 : 0,
+        marginLeft: isCoach && !showAvatar ? 44 : 0,
         animation: isCoach
           ? "msgIn .25s cubic-bezier(.2,.6,.3,1) both"
           : "msgInRight .2s cubic-bezier(.2,.6,.3,1) both",
@@ -797,6 +803,45 @@ const ForteGraph = ({forteData}) => {
       </div>
 
       {/* Score legend below chart */}
+      <div style={{padding:"10px 14px 14px"}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 12px"}}>
+          {DIMS.map((dim,i)=>(
+            <div key={dim} style={{display:"flex",alignItems:"center",gap:6}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0}}/>
+              <div>
+                <div style={{fontSize:10,fontWeight:700,color:C.navy}}>{dim}</div>
+                <div style={{fontSize:10.5,color:color,fontWeight:600}}>{d.scores[i]} — {d.labels[i]}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── FORTE GRAPH FOCUSED — shows one specific profile tab, locked, for in-session reference ──
+const ForteGraphFocused = ({forteData, initialTab="green"}) => {
+  const data = forteData || FORTE_DATA;
+  const GRAPH_COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
+  const GRAPH_LABELS = { green:"Primary Profile", red:"Adapting Profile", blue:"Current Perceiver" };
+  const GRAPH_PAGES  = { green:"Pages 3–6", red:"Pages 7–8", blue:"Page 9" };
+  const color = GRAPH_COLORS[initialTab];
+  const d = data[initialTab];
+  const label = GRAPH_LABELS[initialTab];
+
+  return (
+    <div style={{margin:"6px 14px",background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      <div style={{background:color,padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+        <div style={{flex:1}}>
+          <div style={{fontSize:10,fontWeight:800,color:"rgba(255,255,255,.7)",letterSpacing:".12em",textTransform:"uppercase",marginBottom:1}}>Now discussing</div>
+          <div style={{fontSize:14,fontWeight:900,color:"#fff"}}>{label}</div>
+        </div>
+        <div style={{fontSize:11,color:"rgba(255,255,255,.6)",fontWeight:600}}>{GRAPH_PAGES[initialTab]}</div>
+      </div>
+      <div style={{background:"rgba(36,65,105,.02)",padding:"10px 0 4px"}}>
+        <ForteLineChart scores={d.scores} color={color} label={label} />
+      </div>
       <div style={{padding:"10px 14px 14px"}}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 12px"}}>
           {DIMS.map((dim,i)=>(
@@ -2323,7 +2368,7 @@ const HomeScreen = ({onStart}) => (
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"space-between",flex:1,width:"100%",padding:"44px 28px 44px",minHeight:0}}>
       <div style={{display:"flex",flexDirection:"column",alignItems:"center",flex:1,justifyContent:"center"}}>
         <div style={{animation:"breathe 3.6s ease-in-out infinite",display:"flex",justifyContent:"center"}}>
-          <LogoMD size={240} />
+          <LogoMD size={200} />
         </div>
         <p style={{marginTop:20,fontSize:14,color:C.nm,textAlign:"center",lineHeight:1.65,maxWidth:260,opacity:.8}}>Your personal AI coach — build the communication legacy you want.</p>
       </div>
@@ -2593,6 +2638,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
         }
         if(a.type==="module_advance"){ setCurrentModule(a.n); }
         if(a.type==="coach_insight"){ setInsights(prev=>({...prev,observations:[...prev.observations,a.value]})); setPanelDot(true); }
+        if(a.type==="show_forte_graph"){ setTimeout(()=>addMsg("coach","",{type:"forte_graph_focused", tab:a.tab||"green"}),400); }
         if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
         if(a.type==="show_generations"){ setTimeout(()=>addMsg("coach","",{type:"gencard"}),400); }
         if(a.type==="show_listening_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}),400); }
@@ -2623,6 +2669,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
     if(a.type==="milestone") return <MilestoneCard n={a.n} title={a.title||""} sub={a.sub||""} />;
     if(a.type==="legacy")    return <LegacyCard text={a.text||legacy} />;
     if(a.type==="forte")     return <ForteGraph forteData={forteData} />;
+    if(a.type==="forte_graph_focused") return <ForteGraphFocused forteData={forteData} initialTab={a.tab||"green"} />;
     if(a.type==="gap")       return <GapAlert />;
     if(a.type==="gencard")   return <GenCardArtifact onCoachTalk={card=>handleSend("Tell me about the " + card.g + " scenario")} />;
     if(a.type==="crisis_challenge") return <CrisisChallenge onCoachTalk={(responses,strategy)=>handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?")} />;
@@ -2711,13 +2758,15 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
         <ForteUploadScreen
           onComplete={(fd)=>{
             setForteData(fd); setShowForteUpload(false);
+            // Show all 3 graphs immediately so participant sees their results right away
             setTimeout(()=>addMsg("coach","",{type:"forte"}),200);
+            // Trigger the coach's Module 2 first-reaction question via API (not hardcoded)
+            // so it flows naturally without repetition
             setTimeout(()=>{
-              setTyping(true);
-              setTimeout(()=>{ setTyping(false); addMsg("coach","Got it -- I can see your full profile now. Before I walk you through what I see, I want to hear from you first. When you looked at your results -- what was your first reaction?"); },1000);
-            },500);
+              handleSend("I just entered my Forte scores. I can see all three profiles on screen now.");
+            },900);
           }}
-          onSkip={()=>{ setShowForteUpload(false); addMsg("coach","No problem -- you can upload it any time from the My CQ panel. Let us keep going."); }}
+          onSkip={()=>{ setShowForteUpload(false); addMsg("coach","No problem -- you can add your scores any time from the My CQ panel. Let us keep going."); }}
         />
       )}
     </div>
