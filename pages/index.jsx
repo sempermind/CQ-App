@@ -62,13 +62,9 @@ CORE RULES:
 
 MODULE 1 -- Commit to Become Your Best:
 
-SECTION 1: Proficiency Rating -- Bringing Your Best
-Before the conversation begins, set up the rating: "Before we dive in, I want to give you a baseline. Throughout this program, you will rate yourself on the 10 CQ Essentials -- the behavioral practices that define Communication Intelligence in action. This is not a test. It is a mirror. It shows you where you are starting from so you can measure how far you go. The first rating is about bringing your best." Tag: <SHOW_PROFICIENCY_RATING topic="Bringing Your Best"/>. After they rate: "Good. Hold onto that number -- we will come back to it. Now let us start somewhere real."
-
-SECTION 2: Peak Performance
-Frame: Open with curiosity, not content. "Before we dive into anything -- I want to start with a moment. Think of a recent conversation where you were completely on your game. You walked away knowing you nailed it. What made that work?"
-Teach through their story: reflect back what you heard, name the pattern you notice.
-Connect: "What was different about you in that moment versus a conversation that goes sideways?"
+SECTION 1: Peak Performance
+NOTE: The opening message already asked the peak performance question ("What made that work?"). Do NOT ask it again. The participant has now answered it.
+Your job: reflect back what you heard specifically -- name the exact pattern or strength you notice in their answer. One sentence of genuine acknowledgment. Then ask the connect question: "What was different about you in that moment versus a conversation that goes sideways?" That is the only question here.
 
 SECTION 2: Catalyst
 Frame: "Now I want to flip it. Because the real work in this program is not about the conversations you are already winning. It is about the ones that matter most and feel hardest."
@@ -168,7 +164,6 @@ STEP 3 -- CONNECT: "What is one thing your presence on video is communicating th
 STEP 4 -- BRIDGE: "Now we have the full picture. Let us give you the framework that ties it all together."
 
 SECTION 5: The ADAPT Model
-STEP 1 -- RATE: Tag: <SHOW_PROFICIENCY_RATING topic="ADAPT Model"/>. Wait for rating.
 STEP 2 -- FRAME: "This is the centerpiece of Module 3. ADAPT is a five-step framework you can use in any conversation -- whether you are planning it in advance or navigating one that has already gone sideways."
 STEP 3 -- TEACH: <TEACH_MOMENT concept="ADAPT Model"/>. Wait for their response.
 STEP 4 -- CONNECT: "Walk me through your Catalyst using just the A -- Analyze. What is the real need underneath your dynamic with them? Not the surface issue. The actual need."
@@ -299,7 +294,7 @@ ARTIFACT TAGS (embed hidden in response when appropriate):
 - <SHOW_LISTENING_TENDENCIES/>
 - <SHOW_CRISIS_CHALLENGE/>
 - <SHOW_REFLECTION section="Section Name" q1="First reflection question" q2="Optional second question"/> -- use at the end of each major section to capture participant insight before bridging to the next topic
-- <SHOW_PROFICIENCY_RATING topic="Balancing Empathy"/> -- use the exact topic name from the list below before starting that section. Topics: "Bringing Your Best", "Balancing Empathy", "Earning Trust", "Non-Verbal Communication", "Virtual Communication", "ADAPT Model", "Got Questions", "Proactive Listening", "Feedback", "Clear Consistent Communication"
+- <SHOW_PROFICIENCY_RATING topic="Balancing Empathy"/> -- use the exact topic name from the list below before starting that section. Topics: "Balancing Empathy", "Earning Trust", "Non-Verbal Communication", "Virtual Communication", "Expanding Safe Spaces", "Got Questions", "Proactive Listening", "Feedback", "Clear Consistent Communication"
 - <TEACH_MOMENT concept="Balancing Empathy"/> -- THIS IS YOUR PRIMARY TEACHING TOOL. Use it INSTEAD of writing teaching content yourself. NEVER explain or summarize a concept in text when you could emit this tag. Available concepts: "Balancing Empathy", "Earning Trust", "Non-Verbal Communication", "ADAPT Model", "Expanding Safe Spaces", "Proactive Listening", "Got Questions", "Feedback". The tag generates a hyper-personalized 3-sentence teaching card built live from the participant profile. Your job is to FRAME before and CONNECT after -- the tag does the actual teaching.
 - <MODULE_ADVANCE n="2"/> (adjust n for each module)
 - <COACH_INSIGHT>observation text</COACH_INSIGHT>
@@ -765,65 +760,69 @@ const ForteLineChart = ({scores, color, label}) => {
 };
 
 const ForteGraph = ({forteData}) => {
-  const [tab, setTab] = useState(null); // null = show all 3, string = expanded single
+  const [expanded, setExpanded] = useState(null);
   const data = forteData || FORTE_DATA;
-  const GRAPH_COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
-  const GRAPH_LABELS = { green:"Primary Profile", red:"Current Adapting", blue:"Current Perceiver" };
-  const GRAPH_PAGES  = { green:"Pages 3–6", red:"Pages 7–8", blue:"Page 9" };
-  const GRAPH_PAGE_COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
+  const COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
+  const LABELS = { green:"Primary Profile", red:"Current Adapting", blue:"Current Perceiver" };
+  const PAGES  = { green:"Pages 3-6", red:"Pages 7-8", blue:"Page 9" };
 
-  // Mini chart for the side-by-side view
-  const MiniChart = ({key: _k, tabKey}) => {
-    const color = GRAPH_COLORS[tabKey];
+  const SingleChart = ({tabKey, compact=false}) => {
+    const color = COLORS[tabKey];
     const d = data[tabKey];
-    const W=90, H=80, PAD=14;
+    const isDashed = tabKey==="red" || tabKey==="blue";
+    const W=compact?290:320, H=compact?110:130, PAD=compact?22:26;
     const CW=W-PAD*2, CH=H-PAD*2;
-    const xs = [0,1,2,3].map(i=>PAD+(i/3)*CW);
-    const toY = s=>PAD+((36-parseInt(s))/72)*CH;
-    const midY = toY(0);
-    const pts = d.scores.map((s,i)=>({x:xs[i],y:toY(s),s}));
-    const isDashed = tabKey==="blue" || tabKey==="red";
+    const xs=[0,1,2,3].map(i=>PAD+(i/3)*CW);
+    const toY=s=>PAD+((36-parseInt(s))/72)*CH;
+    const midY=toY(0);
+    const pts=d.scores.map((s,i)=>({x:xs[i],y:toY(s),s}));
+    const fontSize=compact?8.5:9;
     return (
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{display:"block",margin:"0 auto"}}>
-        <rect x={PAD} y={PAD} width={CW} height={midY-PAD} fill="rgba(180,200,230,.18)" rx="1"/>
-        <rect x={PAD} y={midY} width={CW} height={PAD+CH-midY} fill="rgba(180,200,230,.10)" rx="1"/>
-        <line x1={PAD} y1={midY} x2={PAD+CW} y2={midY} stroke="rgba(36,65,105,.25)" strokeWidth=".8" strokeDasharray="3,2"/>
-        {xs.map((x,i)=><line key={i} x1={x} y1={PAD} x2={x} y2={PAD+CH} stroke="rgba(36,65,105,.08)" strokeWidth=".8"/>)}
-        <polyline points={pts.map(p=>`${p.x},${p.y}`).join(" ")} fill="none" stroke={color} strokeWidth="1.8" strokeDasharray={isDashed?"4,2":"none"}/>
+        <rect x={PAD} y={PAD} width={CW} height={midY-PAD} fill="rgba(180,200,230,.15)" rx="1"/>
+        <rect x={PAD} y={midY} width={CW} height={PAD+CH-midY} fill="rgba(180,200,230,.08)" rx="1"/>
+        <line x1={PAD} y1={midY} x2={PAD+CW} y2={midY} stroke="rgba(36,65,105,.2)" strokeWidth=".8" strokeDasharray="3,2"/>
+        {xs.map((x,i)=><line key={i} x1={x} y1={PAD} x2={x} y2={PAD+CH} stroke="rgba(36,65,105,.07)" strokeWidth=".8"/>)}
+        <polyline points={pts.map(p=>`${p.x},${p.y}`).join(" ")} fill="none" stroke={color} strokeWidth="2" strokeDasharray={isDashed?"5,3":"none"}/>
         {pts.map((p,i)=>(
           <g key={i}>
-            <circle cx={p.x} cy={p.y} r="7" fill="white" stroke={color} strokeWidth="1.4"/>
-            <text x={p.x} y={p.y+2.8} textAnchor="middle" fontSize="6.5" fontWeight="800" fill={color}>{p.s}</text>
+            <circle cx={p.x} cy={p.y} r={compact?9:11} fill="white" stroke={color} strokeWidth="1.5"/>
+            <text x={p.x} y={p.y+(compact?3.5:4)} textAnchor="middle" fontSize={fontSize} fontWeight="700" fill={color}>{p.s}</text>
           </g>
         ))}
+        <text x={PAD-4} y={PAD+3} textAnchor="end" fontSize="7.5" fill="rgba(36,65,105,.35)">36</text>
+        <text x={PAD-4} y={midY+3} textAnchor="end" fontSize="7.5" fill="rgba(36,65,105,.35)">0</text>
+        <text x={PAD-4} y={PAD+CH+3} textAnchor="end" fontSize="7.5" fill="rgba(36,65,105,.35)">36</text>
       </svg>
     );
   };
 
-  if (tab) {
-    // Expanded single graph view
-    const color = GRAPH_COLORS[tab];
-    const d = data[tab];
+  if (expanded) {
+    const color = COLORS[expanded];
+    const d = data[expanded];
     return (
-      <div style={{margin:"6px 14px",background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",borderBottom:"1px solid rgba(36,65,105,.06)"}}>
-          <button onClick={()=>setTab(null)} style={{background:"rgba(36,65,105,.07)",border:"none",borderRadius:8,padding:"5px 10px",fontSize:11,fontWeight:700,color:C.navy,cursor:"pointer"}}>← All Profiles</button>
-          <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <div style={{width:8,height:8,borderRadius:"50%",background:color}}/>
-            <span style={{fontSize:12,fontWeight:800,color:C.navy}}>{GRAPH_LABELS[tab]}</span>
-            <span style={{fontSize:10,color:"rgba(36,65,105,.4)",fontWeight:600,marginLeft:2}}>{GRAPH_PAGES[tab]}</span>
+      <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+        <div style={{background:color,padding:"10px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div>
+            <div style={{fontSize:11,fontWeight:900,color:"rgba(255,255,255,.75)",letterSpacing:".1em",textTransform:"uppercase"}}>{LABELS[expanded]}</div>
+            <div style={{fontSize:10,color:"rgba(255,255,255,.6)",marginTop:1}}>{PAGES[expanded]}</div>
           </div>
+          <button onClick={()=>setExpanded(null)} style={{background:"rgba(255,255,255,.2)",border:"none",borderRadius:8,padding:"5px 10px",fontSize:11,fontWeight:700,color:"#fff",cursor:"pointer"}}>← All</button>
         </div>
-        <div style={{padding:"8px 0 4px"}}>
-          <ForteLineChart scores={d.scores} color={color} label={GRAPH_LABELS[tab]} />
+        <div style={{display:"flex",justifyContent:"space-around",padding:"8px 26px 0"}}>
+          {["Dom","Ext","Pat","Con"].map(l=><div key={l} style={{fontSize:10,fontWeight:700,color:"rgba(36,65,105,.5)",textAlign:"center",width:50}}>{l}</div>)}
         </div>
-        <div style={{padding:"8px 14px 14px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px 12px"}}>
+        <SingleChart tabKey={expanded} compact={false}/>
+        <div style={{display:"flex",justifyContent:"space-around",padding:"0 26px 8px"}}>
+          {["NDom","Int","IPat","NCon"].map(l=><div key={l} style={{fontSize:9,fontWeight:700,color:"rgba(36,65,105,.4)",textAlign:"center",width:50}}>{l}</div>)}
+        </div>
+        <div style={{padding:"8px 14px 12px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px 12px",borderTop:"1px solid rgba(36,65,105,.06)"}}>
           {DIMS.map((dim,i)=>(
             <div key={dim} style={{display:"flex",alignItems:"center",gap:6}}>
               <div style={{width:7,height:7,borderRadius:"50%",background:color,flexShrink:0}}/>
               <div>
-                <div style={{fontSize:10,fontWeight:700,color:C.navy}}>{dim}</div>
-                <div style={{fontSize:10.5,color,fontWeight:600}}>{d.scores[i]} — {d.labels[i]}</div>
+                <div style={{fontSize:10,fontWeight:700,color:"#244169"}}>{dim}</div>
+                <div style={{fontSize:10.5,color,fontWeight:700}}>{d.scores[i]} — {d.labels[i]}</div>
               </div>
             </div>
           ))}
@@ -832,62 +831,41 @@ const ForteGraph = ({forteData}) => {
     );
   }
 
-  // Default: all 3 side-by-side matching real report layout
+  // Default: 3 stacked graphs (like the real report) — tap to expand
   return (
-    <div style={{margin:"6px 14px",background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
-      <div style={{padding:"10px 14px 6px",borderBottom:"1px solid rgba(36,65,105,.06)"}}>
-        <div style={{fontSize:12,fontWeight:800,color:C.navy}}>Your Forte Profile</div>
-        <div style={{fontSize:10.5,color:"rgba(36,65,105,.45)",marginTop:2}}>Tap any graph to expand it</div>
+    <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      <div style={{padding:"10px 14px 6px",borderBottom:"1px solid rgba(36,65,105,.06)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <div style={{fontSize:12,fontWeight:800,color:"#244169"}}>Your Forte Profile</div>
+        <div style={{fontSize:10,color:"rgba(36,65,105,.4)"}}>Tap to expand</div>
       </div>
-      <div style={{display:"flex",padding:"8px 6px 4px",gap:4}}>
-        {["green","red","blue"].map(t=>{
-          const color = GRAPH_COLORS[t];
-          return (
-            <div key={t} onClick={()=>setTab(t)} style={{flex:1,cursor:"pointer",borderRadius:10,border:`1.5px solid ${color}22`,overflow:"hidden",background:`${color}04`}}>
-              {/* Profile label + page badge */}
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"5px 6px 3px"}}>
-                <div style={{fontSize:8.5,fontWeight:800,color,lineHeight:1.2}}>{GRAPH_LABELS[t]}</div>
-                <div style={{background:color,borderRadius:4,padding:"1px 4px",fontSize:7.5,fontWeight:800,color:"#fff"}}>{GRAPH_PAGES[t]}</div>
+      {["green","red","blue"].map(t=>{
+        const color = COLORS[t];
+        return (
+          <div key={t} onClick={()=>setExpanded(t)} style={{cursor:"pointer",borderBottom:t!=="blue"?"1px solid rgba(36,65,105,.06)":undefined}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"7px 14px 2px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:7}}>
+                <div style={{width:10,height:10,borderRadius:"50%",background:color,flexShrink:0}}/>
+                <span style={{fontSize:11,fontWeight:800,color}}>{LABELS[t]}</span>
               </div>
-              {/* Dim labels */}
-              <div style={{display:"flex",justifyContent:"space-around",padding:"0 6px",marginBottom:1}}>
-                {["Dom","Ext","Pat","Con"].map(l=>(
-                  <div key={l} style={{fontSize:7,fontWeight:700,color:"rgba(36,65,105,.5)",textAlign:"center"}}>{l}</div>
-                ))}
-              </div>
-              <MiniChart tabKey={t} />
-              {/* NDom/Int/IPat/NCon labels */}
-              <div style={{display:"flex",justifyContent:"space-around",padding:"0 6px 4px"}}>
-                {["NDom","Int","IPat","NCon"].map(l=>(
-                  <div key={l} style={{fontSize:6.5,fontWeight:700,color:"rgba(36,65,105,.4)",textAlign:"center"}}>{l}</div>
-                ))}
+              <div style={{display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontSize:10,color:"rgba(36,65,105,.4)",fontWeight:600}}>{PAGES[t]}</span>
+                <span style={{fontSize:11,color:"rgba(36,65,105,.3)"}}>›</span>
               </div>
             </div>
-          );
-        })}
-      </div>
-      {/* Score summary row */}
-      <div style={{padding:"6px 12px 10px",borderTop:"1px solid rgba(36,65,105,.06)"}}>
-        <div style={{display:"flex",gap:6}}>
-          {["green","red","blue"].map(t=>{
-            const color = GRAPH_COLORS[t];
-            const d = data[t];
-            return (
-              <div key={t} style={{flex:1}}>
-                {DIMS.map((dim,i)=>(
-                  <div key={dim} style={{display:"flex",justifyContent:"space-between",padding:"1px 0"}}>
-                    <span style={{fontSize:8.5,color:"rgba(36,65,105,.55)",fontWeight:600}}>{dim}</span>
-                    <span style={{fontSize:8.5,color,fontWeight:800}}>{d.scores[i]}</span>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+            <div style={{display:"flex",justifyContent:"space-around",padding:"2px 22px 0"}}>
+              {["Dom","Ext","Pat","Con"].map(l=><div key={l} style={{fontSize:8,fontWeight:700,color:"rgba(36,65,105,.45)",textAlign:"center",width:40}}>{l}</div>)}
+            </div>
+            <SingleChart tabKey={t} compact={true}/>
+            <div style={{display:"flex",justifyContent:"space-around",padding:"0 22px 6px"}}>
+              {["NDom","Int","IPat","NCon"].map(l=><div key={l} style={{fontSize:7.5,fontWeight:700,color:"rgba(36,65,105,.35)",textAlign:"center",width:40}}>{l}</div>)}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
+
 
 // ── FORTE GRAPH FOCUSED — shows one specific profile tab, locked, for in-session reference ──
 const ForteGraphFocused = ({forteData, initialTab="green"}) => {
@@ -1652,31 +1630,76 @@ const ForteUploadScreen = ({onComplete, onSkip}) => {
           </>
         )}
 
-        {step===4&&(
-          <>
-            <div style={{fontSize:15,fontWeight:800,color:"#244169",marginBottom:4}}>Check your scores</div>
-            <div style={{fontSize:12.5,color:"#385988",marginBottom:16,opacity:.8}}>Make sure these match your report before we continue.</div>
-            {graphs.map(({key,label,color,textColor})=>(
-              <div key={key} style={{background:"#fff",borderRadius:12,padding:"12px 14px",marginBottom:10,boxShadow:"0 1px 6px rgba(0,0,0,.06)"}}>
-                <div style={{display:"inline-block",background:color,borderRadius:6,padding:"3px 10px",fontSize:10,fontWeight:800,color:textColor,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>{label}</div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 16px"}}>
-                  {dims.map((dim,i)=>(
-                    <div key={dim} style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                      <span style={{fontSize:12,color:"#385988"}}>{dim}</span>
-                      <span style={{fontSize:13,fontWeight:800,color:"#244169"}}>{scores[key][i]}</span>
+        {step===4&&(()=>{
+          // Build preview data from current scores to show graphs
+          const preview = buildForteDataFromScores({
+            green: scores.green.map(Number),
+            red:   scores.red.map(Number),
+            blue:  scores.blue.map(Number),
+          });
+          const COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
+          const LABELS = { green:"Primary Profile", red:"Adapting Profile", blue:"Current Perceiver" };
+          const PAGES  = { green:"Pages 3–6", red:"Pages 7–8", blue:"Page 9" };
+          return (
+            <>
+              <div style={{fontSize:15,fontWeight:800,color:"#244169",marginBottom:4}}>Do these look right?</div>
+              <div style={{fontSize:12.5,color:"#385988",marginBottom:16,opacity:.8}}>Compare these graphs to your report before continuing.</div>
+              {["green","red","blue"].map(t=>{
+                const color = COLORS[t];
+                const d = preview[t];
+                const isDashed = t==="red" || t==="blue";
+                const W=290, H=110, PAD=22;
+                const CW=W-PAD*2, CH=H-PAD*2;
+                const xs=[0,1,2,3].map(i=>PAD+(i/3)*CW);
+                const toY=s=>PAD+((36-parseInt(s))/72)*CH;
+                const midY=toY(0);
+                const pts=d.scores.map((s,i)=>({x:xs[i],y:toY(s),s}));
+                return (
+                  <div key={t} style={{background:"#fff",borderRadius:12,marginBottom:10,boxShadow:"0 1px 6px rgba(0,0,0,.06)",overflow:"hidden"}}>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 12px",background:`${color}12`,borderBottom:`1px solid ${color}22`}}>
+                      <div style={{fontSize:11,fontWeight:800,color}}>{LABELS[t]}</div>
+                      <div style={{fontSize:10,fontWeight:700,color:"rgba(36,65,105,.5)"}}>{PAGES[t]}</div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-            <button onClick={confirm} style={{width:"100%",padding:15,background:"#244169",border:"none",borderRadius:14,cursor:"pointer",fontSize:15,fontWeight:800,color:"#fff",marginTop:8}}>
-              These look right -- let us go
-            </button>
-            <button onClick={()=>setStep(1)} style={{width:"100%",marginTop:8,padding:12,background:"transparent",border:"none",cursor:"pointer",fontSize:13,color:"#385988",opacity:.6}}>
-              Go back and fix them
-            </button>
-          </>
-        )}
+                    {/* Dim top labels */}
+                    <div style={{display:"flex",justifyContent:"space-around",padding:"6px 22px 0"}}>
+                      {["Dom","Ext","Pat","Con"].map(l=>(
+                        <div key={l} style={{fontSize:9,fontWeight:700,color:"rgba(36,65,105,.5)",textAlign:"center",width:40}}>{l}</div>
+                      ))}
+                    </div>
+                    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{display:"block",margin:"0 auto"}}>
+                      <rect x={PAD} y={PAD} width={CW} height={midY-PAD} fill="rgba(180,200,230,.15)" rx="1"/>
+                      <rect x={PAD} y={midY} width={CW} height={PAD+CH-midY} fill="rgba(180,200,230,.08)" rx="1"/>
+                      <line x1={PAD} y1={midY} x2={PAD+CW} y2={midY} stroke="rgba(36,65,105,.2)" strokeWidth=".8" strokeDasharray="3,2"/>
+                      {xs.map((x,i)=><line key={i} x1={x} y1={PAD} x2={x} y2={PAD+CH} stroke="rgba(36,65,105,.07)" strokeWidth=".8"/>)}
+                      <polyline points={pts.map(p=>`${p.x},${p.y}`).join(" ")} fill="none" stroke={color} strokeWidth="2" strokeDasharray={isDashed?"5,3":"none"}/>
+                      {pts.map((p,i)=>(
+                        <g key={i}>
+                          <circle cx={p.x} cy={p.y} r="10" fill="white" stroke={color} strokeWidth="1.5"/>
+                          <text x={p.x} y={p.y+3.5} textAnchor="middle" fontSize="8.5" fontWeight="700" fill={color}>{p.s}</text>
+                        </g>
+                      ))}
+                      <text x={PAD-4} y={PAD+3} textAnchor="end" fontSize="7.5" fill="rgba(36,65,105,.35)">36</text>
+                      <text x={PAD-4} y={midY+3} textAnchor="end" fontSize="7.5" fill="rgba(36,65,105,.35)">0</text>
+                      <text x={PAD-4} y={PAD+CH+3} textAnchor="end" fontSize="7.5" fill="rgba(36,65,105,.35)">36</text>
+                    </svg>
+                    {/* NDom labels */}
+                    <div style={{display:"flex",justifyContent:"space-around",padding:"0 22px 8px"}}>
+                      {["NDom","Int","IPat","NCon"].map(l=>(
+                        <div key={l} style={{fontSize:8,fontWeight:700,color:"rgba(36,65,105,.4)",textAlign:"center",width:40}}>{l}</div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              <button onClick={confirm} style={{width:"100%",padding:15,background:"#244169",border:"none",borderRadius:14,cursor:"pointer",fontSize:15,fontWeight:800,color:"#fff",marginTop:8}}>
+                These look right — let us go
+              </button>
+              <button onClick={()=>setStep(1)} style={{width:"100%",marginTop:8,padding:12,background:"transparent",border:"none",cursor:"pointer",fontSize:13,color:"#385988",opacity:.6}}>
+                Go back and fix them
+              </button>
+            </>
+          );
+        })()}
       </div>
     </div>
   );
@@ -2271,10 +2294,9 @@ const ProficiencyRating = ({topic, onComplete}) => {
                 width:"100%",position:"relative",zIndex:1,
                 accentColor:color,
                 cursor:"pointer",
-                height:6,
-                WebkitAppearance:"none",
-                appearance:"none",
-                background:"transparent",
+                height:28,
+                display:"block",
+                margin:"0 0 2px",
               }}
             />
             {/* Tick marks */}
