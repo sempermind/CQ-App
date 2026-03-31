@@ -63,7 +63,7 @@ CORE RULES:
 MODULE 1 -- Commit to Become Your Best:
 
 SECTION 1: Proficiency Rating -- Bringing Your Best
-Before the conversation begins, set up the rating: "Before we dive in, I want to give you a baseline. Throughout this program, you will rate yourself on ten communication skills. This is not a test -- it is a mirror. It helps you see where you are starting from so you can measure how far you go. The first one is about bringing your best." Tag: <SHOW_PROFICIENCY_RATING topic="Bringing Your Best"/>. After they rate: "Good. Hold onto that number -- we will come back to it. Now let us start somewhere real."
+Before the conversation begins, set up the rating: "Before we dive in, I want to give you a baseline. Throughout this program, you will rate yourself on the 10 CQ Essentials -- the behavioral practices that define Communication Intelligence in action. This is not a test. It is a mirror. It shows you where you are starting from so you can measure how far you go. The first rating is about bringing your best." Tag: <SHOW_PROFICIENCY_RATING topic="Bringing Your Best"/>. After they rate: "Good. Hold onto that number -- we will come back to it. Now let us start somewhere real."
 
 SECTION 2: Peak Performance
 Frame: Open with curiosity, not content. "Before we dive into anything -- I want to start with a moment. Think of a recent conversation where you were completely on your game. You walked away knowing you nailed it. What made that work?"
@@ -765,55 +765,124 @@ const ForteLineChart = ({scores, color, label}) => {
 };
 
 const ForteGraph = ({forteData}) => {
-  const [tab,setTab] = useState("green");
+  const [tab, setTab] = useState(null); // null = show all 3, string = expanded single
   const data = forteData || FORTE_DATA;
-  const d = data[tab];
   const GRAPH_COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
-  const GRAPH_LABELS = { green:"Primary Profile", red:"Adapting Profile", blue:"Current Perceiver" };
+  const GRAPH_LABELS = { green:"Primary Profile", red:"Current Adapting", blue:"Current Perceiver" };
   const GRAPH_PAGES  = { green:"Pages 3–6", red:"Pages 7–8", blue:"Page 9" };
-  const color = GRAPH_COLORS[tab];
+  const GRAPH_PAGE_COLORS = { green:"#2e7d32", red:"#c0392b", blue:"#1565c0" };
 
-  const tabStyle = t => ({
-    flex:1, padding:"7px 6px", borderRadius:10, fontSize:11, fontWeight:800,
-    cursor:"pointer", border:"1.5px solid",
-    borderColor: tab===t ? GRAPH_COLORS[t] : "rgba(36,65,105,.12)",
-    color: tab===t ? "#fff" : "rgba(36,65,105,.45)",
-    background: tab===t ? GRAPH_COLORS[t] : "transparent",
-    transition:"all .2s",
-  });
+  // Mini chart for the side-by-side view
+  const MiniChart = ({key: _k, tabKey}) => {
+    const color = GRAPH_COLORS[tabKey];
+    const d = data[tabKey];
+    const W=90, H=80, PAD=14;
+    const CW=W-PAD*2, CH=H-PAD*2;
+    const xs = [0,1,2,3].map(i=>PAD+(i/3)*CW);
+    const toY = s=>PAD+((36-parseInt(s))/72)*CH;
+    const midY = toY(0);
+    const pts = d.scores.map((s,i)=>({x:xs[i],y:toY(s),s}));
+    const isDashed = tabKey==="blue" || tabKey==="red";
+    return (
+      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{display:"block",margin:"0 auto"}}>
+        <rect x={PAD} y={PAD} width={CW} height={midY-PAD} fill="rgba(180,200,230,.18)" rx="1"/>
+        <rect x={PAD} y={midY} width={CW} height={PAD+CH-midY} fill="rgba(180,200,230,.10)" rx="1"/>
+        <line x1={PAD} y1={midY} x2={PAD+CW} y2={midY} stroke="rgba(36,65,105,.25)" strokeWidth=".8" strokeDasharray="3,2"/>
+        {xs.map((x,i)=><line key={i} x1={x} y1={PAD} x2={x} y2={PAD+CH} stroke="rgba(36,65,105,.08)" strokeWidth=".8"/>)}
+        <polyline points={pts.map(p=>`${p.x},${p.y}`).join(" ")} fill="none" stroke={color} strokeWidth="1.8" strokeDasharray={isDashed?"4,2":"none"}/>
+        {pts.map((p,i)=>(
+          <g key={i}>
+            <circle cx={p.x} cy={p.y} r="7" fill="white" stroke={color} strokeWidth="1.4"/>
+            <text x={p.x} y={p.y+2.8} textAnchor="middle" fontSize="6.5" fontWeight="800" fill={color}>{p.s}</text>
+          </g>
+        ))}
+      </svg>
+    );
+  };
 
-  return (
-    <div style={{margin:"6px 14px",background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
-      {/* Header */}
-      <div style={{padding:"13px 14px 10px"}}>
-        <div style={{fontSize:13,fontWeight:800,color:C.navy,marginBottom:10}}>Your Forte Profile</div>
-        <div style={{display:"flex",gap:5}}>
-          {["green","red","blue"].map(t=>(
-            <button key={t} style={tabStyle(t)} onClick={()=>setTab(t)}>
-              <div>{GRAPH_LABELS[t]}</div>
-              <div style={{fontSize:9,fontWeight:600,opacity:.7,marginTop:1}}>{GRAPH_PAGES[t]}</div>
-            </button>
-          ))}
+  if (tab) {
+    // Expanded single graph view
+    const color = GRAPH_COLORS[tab];
+    const d = data[tab];
+    return (
+      <div style={{margin:"6px 14px",background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 14px",borderBottom:"1px solid rgba(36,65,105,.06)"}}>
+          <button onClick={()=>setTab(null)} style={{background:"rgba(36,65,105,.07)",border:"none",borderRadius:8,padding:"5px 10px",fontSize:11,fontWeight:700,color:C.navy,cursor:"pointer"}}>← All Profiles</button>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <div style={{width:8,height:8,borderRadius:"50%",background:color}}/>
+            <span style={{fontSize:12,fontWeight:800,color:C.navy}}>{GRAPH_LABELS[tab]}</span>
+            <span style={{fontSize:10,color:"rgba(36,65,105,.4)",fontWeight:600,marginLeft:2}}>{GRAPH_PAGES[tab]}</span>
+          </div>
         </div>
-      </div>
-
-      {/* Line chart */}
-      <div style={{background:"rgba(36,65,105,.02)",borderTop:"1px solid rgba(36,65,105,.06)",borderBottom:"1px solid rgba(36,65,105,.06)",padding:"10px 0 4px"}}>
-        <ForteLineChart scores={d.scores} color={color} label={GRAPH_LABELS[tab]} />
-      </div>
-
-      {/* Score legend below chart */}
-      <div style={{padding:"10px 14px 14px"}}>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 12px"}}>
+        <div style={{padding:"8px 0 4px"}}>
+          <ForteLineChart scores={d.scores} color={color} label={GRAPH_LABELS[tab]} />
+        </div>
+        <div style={{padding:"8px 14px 14px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px 12px"}}>
           {DIMS.map((dim,i)=>(
             <div key={dim} style={{display:"flex",alignItems:"center",gap:6}}>
-              <div style={{width:8,height:8,borderRadius:"50%",background:color,flexShrink:0}}/>
+              <div style={{width:7,height:7,borderRadius:"50%",background:color,flexShrink:0}}/>
               <div>
                 <div style={{fontSize:10,fontWeight:700,color:C.navy}}>{dim}</div>
-                <div style={{fontSize:10.5,color:color,fontWeight:600}}>{d.scores[i]} — {d.labels[i]}</div>
+                <div style={{fontSize:10.5,color,fontWeight:600}}>{d.scores[i]} — {d.labels[i]}</div>
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Default: all 3 side-by-side matching real report layout
+  return (
+    <div style={{margin:"6px 14px",background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
+      <div style={{padding:"10px 14px 6px",borderBottom:"1px solid rgba(36,65,105,.06)"}}>
+        <div style={{fontSize:12,fontWeight:800,color:C.navy}}>Your Forte Profile</div>
+        <div style={{fontSize:10.5,color:"rgba(36,65,105,.45)",marginTop:2}}>Tap any graph to expand it</div>
+      </div>
+      <div style={{display:"flex",padding:"8px 6px 4px",gap:4}}>
+        {["green","red","blue"].map(t=>{
+          const color = GRAPH_COLORS[t];
+          return (
+            <div key={t} onClick={()=>setTab(t)} style={{flex:1,cursor:"pointer",borderRadius:10,border:`1.5px solid ${color}22`,overflow:"hidden",background:`${color}04`}}>
+              {/* Profile label + page badge */}
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"5px 6px 3px"}}>
+                <div style={{fontSize:8.5,fontWeight:800,color,lineHeight:1.2}}>{GRAPH_LABELS[t]}</div>
+                <div style={{background:color,borderRadius:4,padding:"1px 4px",fontSize:7.5,fontWeight:800,color:"#fff"}}>{GRAPH_PAGES[t]}</div>
+              </div>
+              {/* Dim labels */}
+              <div style={{display:"flex",justifyContent:"space-around",padding:"0 6px",marginBottom:1}}>
+                {["Dom","Ext","Pat","Con"].map(l=>(
+                  <div key={l} style={{fontSize:7,fontWeight:700,color:"rgba(36,65,105,.5)",textAlign:"center"}}>{l}</div>
+                ))}
+              </div>
+              <MiniChart tabKey={t} />
+              {/* NDom/Int/IPat/NCon labels */}
+              <div style={{display:"flex",justifyContent:"space-around",padding:"0 6px 4px"}}>
+                {["NDom","Int","IPat","NCon"].map(l=>(
+                  <div key={l} style={{fontSize:6.5,fontWeight:700,color:"rgba(36,65,105,.4)",textAlign:"center"}}>{l}</div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {/* Score summary row */}
+      <div style={{padding:"6px 12px 10px",borderTop:"1px solid rgba(36,65,105,.06)"}}>
+        <div style={{display:"flex",gap:6}}>
+          {["green","red","blue"].map(t=>{
+            const color = GRAPH_COLORS[t];
+            const d = data[t];
+            return (
+              <div key={t} style={{flex:1}}>
+                {DIMS.map((dim,i)=>(
+                  <div key={dim} style={{display:"flex",justifyContent:"space-between",padding:"1px 0"}}>
+                    <span style={{fontSize:8.5,color:"rgba(36,65,105,.55)",fontWeight:600}}>{dim}</span>
+                    <span style={{fontSize:8.5,color,fontWeight:800}}>{d.scores[i]}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -2085,47 +2154,185 @@ ${brief.closingHook ? `CLOSING ENERGY: ${brief.closingHook}` : ""}`;
 };
 
 // ── PROFICIENCY RATING ARTIFACT ───────────────────────────────────────────────
-const PROFICIENCY_DATA = {"Bringing Your Best": ["I have the basics covered -- communication and adaptability. Is there more?", "I apply proven strategies to bring my best. They seem to work in most situations.", "I have personalized strategies that leverage my communication strengths. I continually adapt to improve on bringing my best to work."], "Balancing Empathy": ["I can confuse empathy with sympathy and I am not sure how it translates into productivity.", "I understand empathy is important for constructive relationships with colleagues and clients. I try to see things from others perspectives.", "I actively seek to understand the thoughts and emotions of others and to adapt my behavior from their perspective. I can describe the positive impact empathy has on relationships and business outcomes."], "Earning Trust": ["Either you have trust or you don't. Is there more than that?", "I am aware of how having trust (or not) impacts relationships and teams at work. I want people to trust me and to be confident in granting trust.", "I work to earn the trust of others and grant trust when it is earned. When trust is broken, I focus on regaining trust and then maintaining it."], "Non-Verbal Communication": ["I know that non-verbal communication exists but I rarely think about it.", "I understand how much of communication is non-verbal and I try to be aware of my own signals and those of others.", "I actively manage my non-verbal signals to ensure my body and presence match my message. I can read others signals accurately in real time."], "Virtual Communication": ["I have the basics covered or I can use help in connecting and communicating remotely.", "I understand the differences between remote and in-person communication. I attempt to communicate more effectively online.", "I exercise patience when it comes to working with others remotely. I take responsibility for how I can adapt to maximize my productivity and that of the team."], "ADAPT Model": ["I primarily practice one-way communication. I rarely adapt my message based on the receiver.", "I tend to listen as much as I speak. I like to check that the receiver understands my message.", "I recognize I am primarily responsible for the intent of my message being understood. I proactively work to ensure my intended message is aligned with the receivers understanding."], "Got Questions": ["I ask questions in the course of communicating and do not give it much thought.", "I regularly ask questions in conversations and in writing that result in the answers I am looking for.", "I ask questions that make others think in new ways and that promote good relationships, teamwork and innovation."], "Proactive Listening": ["I have not really thought about listening, but I can distinguish between hearing someone and listening to someone.", "I am aware of the impact of listening and not listening. I have tried to listen and it is not always easy and I have learned more about listening through reading, a class or a conversation with others.", "I understand why listening is an essential CQ skill that you can evolve. I can describe the impact of listening at work and I have specific actions that I take based on my CQ strengths and those of others to improve listening."], "Feedback": ["I am not comfortable receiving or giving feedback.", "I follow the rules and policies when it comes to feedback.", "I look forward to and act on feedback I receive. I ask for feedback when appropriate and I offer constructive feedback to others when I believe it would be useful."], "Clear Consistent Communication": ["I primarily practice one-way communication. I rarely adapt my message based on the receiver.", "I tend to listen as much as I speak. I like to check that the receiver understands my message.", "I recognize I am primarily responsible for the intent of my message being understood. I proactively work to ensure my intended message is aligned with the receivers understanding."]};
+const PROFICIENCY_DATA = {
+  "Bringing Your Best":               { low:"I have the basics covered -- communication and adaptability. Is there more?",                                                                                                       mid:"I apply proven strategies to bring my best. They work in most situations.",                                                                                                                                          high:"I have personalized strategies that leverage my strengths. I continually adapt to improve on bringing my best to work and life." },
+  "Balancing Empathy":                { low:"I can confuse empathy with sympathy and I am not sure how it translates into productivity.",                                                                                         mid:"I understand empathy is important for constructive relationships. I try to see things from others' perspectives.",                                                                                                       high:"I actively seek to understand the thoughts and emotions of others and adapt my behavior from their perspective. I can describe the positive impact empathy has on relationships and business outcomes." },
+  "Earning Trust":                    { low:"Either you have trust or you don't. Is there more than that?",                                                                                                                        mid:"I am aware of how having trust (or not) impacts relationships and teams at work. I want people to trust me.",                                                                                                             high:"I work to earn the trust of others and grant trust when it is earned. When trust is broken, I focus on regaining it and then maintaining it." },
+  "Non-Verbal Communication":         { low:"I know that non-verbal communication exists but I rarely think about it.",                                                                                                            mid:"I understand how much of communication is non-verbal and try to be aware of my own signals and those of others.",                                                                                                        high:"I actively manage my non-verbal signals to ensure my body and presence match my message. I can read others' signals accurately in real time." },
+  "Virtual Communication":            { low:"I have the basics covered or I can use help in connecting and communicating remotely.",                                                                                               mid:"I understand the differences between remote and in-person communication. I attempt to communicate more effectively online.",                                                                                              high:"I take responsibility for how I can adapt to maximize my productivity and that of my team in virtual environments." },
+  "ADAPT Model":                      { low:"I primarily practice one-way communication. I rarely adapt my message based on the receiver.",                                                                                        mid:"I tend to listen as much as I speak. I like to check that the receiver understands my message.",                                                                                                                         high:"I recognize I am primarily responsible for ensuring my message is understood. I proactively work to align my intent with the receiver's understanding." },
+  "Got Questions":                    { low:"I ask questions in the course of communicating and do not give it much thought.",                                                                                                      mid:"I regularly ask questions in conversations and in writing that result in the answers I am looking for.",                                                                                                                  high:"I ask questions that make others think in new ways and that promote good relationships, teamwork and innovation." },
+  "Proactive Listening":              { low:"I have not really thought about listening, but I can distinguish between hearing someone and listening to someone.",                                                                  mid:"I am aware of the impact of listening. I have tried to listen and know it is not always easy.",                                                                                                                          high:"I understand why listening is an essential CQ skill. I have specific actions I take based on my CQ strengths and those of others to improve listening." },
+  "Feedback":                         { low:"I am not comfortable receiving or giving feedback.",                                                                                                                                   mid:"I follow the rules and policies when it comes to feedback.",                                                                                                                                                             high:"I look forward to and act on feedback I receive. I ask for and offer constructive feedback when I believe it would be useful." },
+  "Clear Consistent Communication":   { low:"I primarily practice one-way communication. I rarely adapt my message based on the receiver.",                                                                                        mid:"I tend to listen as much as I speak. I like to check that the receiver understands my message.",                                                                                                                         high:"I recognize I am primarily responsible for ensuring my message is understood. I proactively align my intent with the receiver's understanding." },
+  "Expanding Safe Spaces":            { low:"I am aware that creating safe spaces matters but I am not sure how to do it intentionally.",                                                                                          mid:"I understand what psychological safety is and I try to create environments where people feel comfortable contributing.",                                                                                                  high:"I actively and intentionally create conditions where everyone feels respected, valued, and safe to share their full perspective." },
+  "Communicating with Challenging People": { low:"I find certain people genuinely difficult and tend to avoid or disengage from them.",                                                                                           mid:"I understand that style differences drive most conflict and I try to adapt, though it does not always come naturally.",                                                                                                    high:"I approach challenging communication dynamics with curiosity. I can de-escalate, find common ground, and focus on behavior rather than personality." },
+};
+
+// Map the CQ Essentials topic names to display labels
+const CQ_ESSENTIAL_LABELS = {
+  "Bringing Your Best":               "Bringing Your Best",
+  "Balancing Empathy":                "Balancing Empathy",
+  "Earning Trust":                    "Earning Trust",
+  "Non-Verbal Communication":         "Crystallizing Non-Verbal Communication",
+  "Virtual Communication":            "Connecting Through Virtual Communication",
+  "ADAPT Model":                      "Communicating with Clarity (ADAPT)",
+  "Got Questions":                    "Got Questions?",
+  "Proactive Listening":              "Proactive Listening",
+  "Feedback":                         "Receiving and Giving Ongoing Feedback",
+  "Clear Consistent Communication":   "Clear, Consistent Communication",
+  "Expanding Safe Spaces":            "Expanding Safe Spaces",
+  "Communicating with Challenging People": "Communicating with Challenging People",
+};
+
+const SLIDER_COLORS = {
+  low:  "#e75a2b",
+  mid:  "#f08b35",
+  high: "#2e7d32",
+};
+
+function sliderLevelLabel(val) {
+  if (val <= 3)  return { label:"Novice",       color:SLIDER_COLORS.low };
+  if (val <= 6)  return { label:"Developing",   color:SLIDER_COLORS.mid };
+  if (val <= 8)  return { label:"Proficient",   color:"#f4bc2d" };
+  return             { label:"Mastery",       color:SLIDER_COLORS.high };
+}
 
 const ProficiencyRating = ({topic, onComplete}) => {
-  const [selected, setSelected] = useState(null);
-  const levels = ["Novice", "Intermediate", "Mastery"];
-  const behaviors = PROFICIENCY_DATA[topic] || ["Basic awareness.", "Applied understanding.", "Consistent mastery."];
-  const colors = { Novice:"#e75a2b", Intermediate:"#f08b35", Mastery:"#2e7d32" };
+  const [value, setValue] = useState(5);
+  const [committed, setCommitted] = useState(false);
+  const data = PROFICIENCY_DATA[topic] || PROFICIENCY_DATA["Bringing Your Best"];
+  const displayLabel = CQ_ESSENTIAL_LABELS[topic] || topic;
+  const { label, color } = sliderLevelLabel(value);
+
+  // Which anchor text to show based on position
+  const getAnchorText = () => {
+    if (value <= 3)  return data.low;
+    if (value <= 7)  return data.mid;
+    return data.high;
+  };
+
+  const handleSave = () => {
+    setCommitted(true);
+    onComplete(topic, label + " (" + value + "/10)");
+  };
 
   return (
     <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
-      <div style={{background:C.navy,padding:"14px 16px"}}>
-        <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:2}}>{topic}</div>
-        <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>Where are you now? Select your current level.</div>
+      {/* Header */}
+      <div style={{background:`linear-gradient(135deg, ${C.navy}, #385988)`,padding:"14px 16px"}}>
+        <div style={{fontSize:9,fontWeight:800,color:"rgba(255,255,255,.55)",letterSpacing:".14em",textTransform:"uppercase",marginBottom:3}}>CQ Essential</div>
+        <div style={{fontSize:14,fontWeight:900,color:"#fff",lineHeight:1.2}}>{displayLabel}</div>
+        <div style={{fontSize:11,color:"rgba(255,255,255,.5)",marginTop:4}}>Where are you right now? Drag the slider.</div>
       </div>
-      <div style={{padding:"12px 14px"}}>
-        <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:selected?12:0}}>
-          {levels.map((level,i)=>(
-            <button key={level} onClick={()=>setSelected(level)}
-              style={{padding:"13px 14px",borderRadius:12,border:`1.5px solid ${selected===level?colors[level]:"rgba(36,65,105,.12)"}`,cursor:"pointer",textAlign:"left",
-                background:selected===level?`${colors[level]}10`:"#fff",transition:"all .2s"}}>
-              <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-                <div style={{width:20,height:20,borderRadius:"50%",border:`2px solid ${selected===level?colors[level]:"rgba(36,65,105,.2)"}`,background:selected===level?colors[level]:"transparent",flexShrink:0,marginTop:1,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {selected===level&&<div style={{width:8,height:8,borderRadius:"50%",background:"#fff"}} />}
-                </div>
-                <div>
-                  <div style={{fontSize:12,fontWeight:800,color:selected===level?colors[level]:C.navy,letterSpacing:".06em",textTransform:"uppercase",marginBottom:4}}>{level}</div>
-                  <div style={{fontSize:12.5,color:"rgba(36,65,105,.7)",lineHeight:1.5}}>{behaviors[i]}</div>
-                </div>
-              </div>
-            </button>
-          ))}
+
+      {committed ? (
+        <div style={{padding:"20px 16px",textAlign:"center"}}>
+          <div style={{fontSize:28,marginBottom:8}}>✓</div>
+          <div style={{fontSize:14,fontWeight:800,color:C.navy,marginBottom:3}}>Saved to your Insights Journal</div>
+          <div style={{display:"inline-flex",alignItems:"center",gap:8,background:`${color}15`,borderRadius:20,padding:"5px 14px",marginTop:4}}>
+            <div style={{width:8,height:8,borderRadius:"50%",background:color}}/>
+            <span style={{fontSize:12,fontWeight:800,color:color}}>{label} — {value}/10</span>
+          </div>
         </div>
-        {selected&&(
-          <button onClick={()=>onComplete(topic, selected)} style={{width:"100%",padding:12,background:C.navy,border:"none",borderRadius:11,cursor:"pointer",fontSize:13,fontWeight:800,color:"#fff",marginTop:4}}>
-            Save my rating and continue
+      ) : (
+        <div style={{padding:"16px 16px 18px"}}>
+          {/* Score display */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <div style={{width:40,height:40,borderRadius:12,background:`${color}15`,border:`2px solid ${color}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <span style={{fontSize:18,fontWeight:900,color:color}}>{value}</span>
+              </div>
+              <div>
+                <div style={{fontSize:11,color:"rgba(36,65,105,.4)",fontWeight:600}}>out of 10</div>
+                <div style={{fontSize:13,fontWeight:800,color:color}}>{label}</div>
+              </div>
+            </div>
+            <div style={{fontSize:11,color:"rgba(36,65,105,.35)",fontWeight:600,textAlign:"right"}}>
+              <div>1 = Just starting</div>
+              <div>10 = Deep mastery</div>
+            </div>
+          </div>
+
+          {/* Slider track */}
+          <div style={{position:"relative",marginBottom:14}}>
+            {/* Color track behind the input */}
+            <div style={{
+              position:"absolute",top:"50%",left:0,right:0,height:6,marginTop:-3,
+              borderRadius:3,
+              background:`linear-gradient(to right, ${SLIDER_COLORS.low} 0%, ${SLIDER_COLORS.mid} 50%, ${SLIDER_COLORS.high} 100%)`,
+              opacity:.25,
+            }}/>
+            <input
+              type="range" min="1" max="10" step="1"
+              value={value}
+              onChange={e=>setValue(Number(e.target.value))}
+              style={{
+                width:"100%",position:"relative",zIndex:1,
+                accentColor:color,
+                cursor:"pointer",
+                height:6,
+                WebkitAppearance:"none",
+                appearance:"none",
+                background:"transparent",
+              }}
+            />
+            {/* Tick marks */}
+            <div style={{display:"flex",justifyContent:"space-between",padding:"0 2px",marginTop:4}}>
+              {[1,2,3,4,5,6,7,8,9,10].map(n=>(
+                <div key={n} style={{
+                  width:2,height:n===value?8:4,
+                  borderRadius:1,
+                  background:n<=value?color:"rgba(36,65,105,.15)",
+                  transition:"all .15s",
+                }}/>
+              ))}
+            </div>
+          </div>
+
+          {/* Anchor text — updates as slider moves */}
+          <div style={{
+            background:"rgba(36,65,105,.04)",
+            border:"1.5px solid rgba(36,65,105,.08)",
+            borderRadius:12,
+            padding:"11px 13px",
+            marginBottom:14,
+            minHeight:60,
+          }}>
+            <div style={{fontSize:9,fontWeight:800,color:"rgba(36,65,105,.4)",letterSpacing:".12em",textTransform:"uppercase",marginBottom:5}}>
+              {value <= 3 ? "At this level:" : value <= 7 ? "At this level:" : "At this level:"}
+            </div>
+            <div style={{fontSize:13,color:C.navy,lineHeight:1.55,fontStyle:"italic"}}>
+              "{getAnchorText()}"
+            </div>
+          </div>
+
+          {/* 3-zone labels */}
+          <div style={{display:"flex",gap:4,marginBottom:16}}>
+            {[["1–3","Novice",SLIDER_COLORS.low],["4–7","Developing",SLIDER_COLORS.mid],["8–10","Mastery",SLIDER_COLORS.high]].map(([range,lbl,col])=>(
+              <div key={lbl} style={{flex:1,textAlign:"center",padding:"6px 4px",borderRadius:8,
+                background:sliderLevelLabel(value).label === lbl || (lbl==="Developing" && value>=4 && value<=7) || (lbl==="Novice" && value<=3) || (lbl==="Mastery" && value>=8) ? `${col}15` : "transparent",
+                border:`1px solid ${col}30`,transition:"background .2s"}}>
+                <div style={{fontSize:10,fontWeight:800,color:col,marginBottom:1}}>{lbl}</div>
+                <div style={{fontSize:9,color:"rgba(36,65,105,.4)",fontWeight:600}}>{range}</div>
+              </div>
+            ))}
+          </div>
+
+          <button onClick={handleSave} style={{
+            width:"100%",padding:13,background:color,border:"none",borderRadius:12,
+            cursor:"pointer",fontSize:13,fontWeight:800,color:"#fff",
+            boxShadow:`0 3px 12px ${color}40`,transition:"all .2s",
+          }}>
+            Save — {label} ({value}/10) →
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
+
+
 const NotesTab = ({notes, onSave}) => (
   <div>
     <div style={{fontSize:12.5,color:"#888",lineHeight:1.55,marginBottom:10,fontStyle:"italic"}}>Capture anything you want to remember -- insights, ideas, questions, commitments.</div>
@@ -2194,6 +2401,29 @@ const MyCQPanel = ({open,onClose,legacy,catalyst,insights,currentModule,notes,se
                     <div style={{fontSize:13,color:C.navy,lineHeight:1.5,fontStyle:"italic"}}>{obs}</div>
                   </div>))
               : <Card label="Coach observations" content={null} empty="Patterns from your sessions will appear here." />}
+            <SectionTitle>My CQ Essentials Ratings</SectionTitle>
+            {insights.essentialRatings && Object.keys(insights.essentialRatings).length > 0 ? (
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {Object.entries(insights.essentialRatings).map(([topic, rating])=>{
+                  const displayName = CQ_ESSENTIAL_LABELS[topic] || topic;
+                  // Parse color from rating label
+                  const ratingStr = String(rating);
+                  const col = ratingStr.includes("Novice") ? SLIDER_COLORS.low
+                             : ratingStr.includes("Mastery") ? SLIDER_COLORS.high
+                             : ratingStr.includes("Proficient") ? "#f4bc2d"
+                             : SLIDER_COLORS.mid;
+                  return (
+                    <div key={topic} style={{background:C.cream,borderRadius:12,padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
+                      <div style={{width:8,height:8,borderRadius:"50%",background:col,flexShrink:0}}/>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:11,fontWeight:700,color:C.navy,lineHeight:1.2}}>{displayName}</div>
+                      </div>
+                      <div style={{fontSize:11,fontWeight:800,color:col,whiteSpace:"nowrap"}}>{ratingStr}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : <Card label="CQ Essentials" content={null} empty="Your ratings will appear here as you progress through the program." />}
           </>}
           {tab==="plan"&&<>
             <div style={{fontSize:12.5,color:"#888",lineHeight:1.55,marginBottom:14,fontStyle:"italic"}}>Auto-populates as you progress through all 6 modules.</div>
@@ -2638,7 +2868,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
         }
         if(a.type==="module_advance"){ setCurrentModule(a.n); }
         if(a.type==="coach_insight"){ setInsights(prev=>({...prev,observations:[...prev.observations,a.value]})); setPanelDot(true); }
-        if(a.type==="show_forte_graph"){ setTimeout(()=>addMsg("coach","",{type:"forte_graph_focused", tab:a.tab||"green"}),400); }
+        if(a.type==="show_forte_graph"){ setTimeout(()=>addMsg("coach","",{type:"forte_graph_focused", tab:a.tab||"green", forteData:forteData}),400); }
         if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
         if(a.type==="show_generations"){ setTimeout(()=>addMsg("coach","",{type:"gencard"}),400); }
         if(a.type==="show_listening_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}),400); }
@@ -2668,8 +2898,10 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
     if(!a) return null;
     if(a.type==="milestone") return <MilestoneCard n={a.n} title={a.title||""} sub={a.sub||""} />;
     if(a.type==="legacy")    return <LegacyCard text={a.text||legacy} />;
-    if(a.type==="forte")     return <ForteGraph forteData={forteData} />;
-    if(a.type==="forte_graph_focused") return <ForteGraphFocused forteData={forteData} initialTab={a.tab||"green"} />;
+    // For forte artifacts, prefer forteData passed directly in artifact object (avoids async state timing issues)
+    const fd = a.forteData || forteData;
+    if(a.type==="forte" || a.type==="forte_all") return <ForteGraph forteData={fd} />;
+    if(a.type==="forte_graph_focused") return <ForteGraphFocused forteData={fd} initialTab={a.tab||"green"} />;
     if(a.type==="gap")       return <GapAlert />;
     if(a.type==="gencard")   return <GenCardArtifact onCoachTalk={card=>handleSend("Tell me about the " + card.g + " scenario")} />;
     if(a.type==="crisis_challenge") return <CrisisChallenge onCoachTalk={(responses,strategy)=>handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?")} />;
@@ -2757,14 +2989,66 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
       {showForteUpload && (
         <ForteUploadScreen
           onComplete={(fd)=>{
-            setForteData(fd); setShowForteUpload(false);
-            // Show all 3 graphs immediately so participant sees their results right away
-            setTimeout(()=>addMsg("coach","",{type:"forte"}),200);
-            // Trigger the coach's Module 2 first-reaction question via API (not hardcoded)
-            // so it flows naturally without repetition
+            setForteData(fd);
+            setShowForteUpload(false);
+            // Use a small delay to ensure state update commits before rendering graph
             setTimeout(()=>{
-              handleSend("I just entered my Forte scores. I can see all three profiles on screen now.");
-            },900);
+              setMessages(prev=>[...prev,{
+                id: Date.now()+Math.random(),
+                role:"coach",
+                text:"",
+                artifact:{type:"forte_all", forteData:fd}
+              }]);
+            },150);
+            // Then fire API for the first-reaction question — pass forteData directly
+            // in the user message content so it doesn't appear as a fake bubble
+            setTimeout(()=>{
+              const hist = [];
+              setMessages(prev=>{
+                hist.push(...prev.filter(m=>m.text&&m.text.trim()));
+                return prev;
+              });
+              const collapsed = hist
+                .map(m=>({role:m.role==="coach"?"assistant":"user", content:m.text.trim()}))
+                .filter(m=>m.content);
+              // Fix alternation
+              while(collapsed.length>0&&collapsed[0].role==="assistant") collapsed.shift();
+              const finalMsg = {role:"user",content:"I just entered my Forte profile scores and can see the graphs."};
+              fetch("/api/chat",{
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({
+                  model:"claude-sonnet-4-20250514",
+                  max_tokens:600,
+                  system:buildSystemPrompt({
+                    levelName: (LEVEL_DATA[level]||LEVEL_DATA[1]).name,
+                    levelCoaching: (LEVEL_DATA[level]||LEVEL_DATA[1]).coaching,
+                    participantName: participantName||"the participant",
+                    legacy: legacyRef.current,
+                    catalyst: catalystRef.current,
+                    forteData: "Primary Profile -- Dom:"+fd.green.scores[0]+", Ext:"+fd.green.scores[1]+", Pat:"+fd.green.scores[2]+", Con:"+fd.green.scores[3]+
+                               " | Adapting -- Dom:"+fd.red.scores[0]+", Ext:"+fd.red.scores[1]+", Pat:"+fd.red.scores[2]+", Con:"+fd.red.scores[3]+
+                               " | Perceiver -- Dom:"+fd.blue.scores[0]+", Ext:"+fd.blue.scores[1]+", Pat:"+fd.blue.scores[2]+", Con:"+fd.blue.scores[3],
+                    currentModule: 2,
+                  }),
+                  messages:[...collapsed, finalMsg]
+                })
+              }).then(r=>r.json()).then(json=>{
+                const aiText = json.content?.[0]?.text;
+                if(aiText){
+                  const {text:cleanText,artifacts:arts} = parseAIResponse(aiText);
+                  arts.forEach(a=>{
+                    if(a.type==="module_advance") setCurrentModule(a.n);
+                    if(a.type==="coach_insight") setInsights(prev=>({...prev,observations:[...prev.observations,a.value]}));
+                    if(a.type==="show_forte_graph") setTimeout(()=>setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:"",artifact:{type:"forte_graph_focused",tab:a.tab||"green",forteData:fd}}]),300);
+                  });
+                  const finalText = cleanText.trim();
+                  if(finalText) addMsg("coach",finalText);
+                }
+              }).catch(()=>{
+                addMsg("coach","Before I walk you through what I see -- when you looked at your results, what was your first reaction?");
+              });
+            },600);
           }}
           onSkip={()=>{ setShowForteUpload(false); addMsg("coach","No problem -- you can add your scores any time from the My CQ panel. Let us keep going."); }}
         />
