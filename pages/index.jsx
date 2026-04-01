@@ -3107,6 +3107,163 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
   );
 };
 
+// ── DEV JUMP PANEL ────────────────────────────────────────────────────────────
+// Activate with: https://cq-app-smoky.vercel.app?dev=true
+// Injects realistic seed state so you can jump straight to any module
+const DEV_MODE = true; // Dev panel hidden behind triple-tap trigger
+
+const DEV_SEED_FORTE = {
+  green: { scores:["3","20","1","19"],  labels:["Non-Dominant","Strong Extrovert","Highly Impatient","Non-Conformist"],              pcts:[8,56,3,53]  },
+  red:   { scores:["12","4","11","3"],  labels:["Adapting Dominant","Adapting Withdrawn","Adapting Impatient","Adapting Conformist"], pcts:[33,11,31,8] },
+  blue:  { scores:["4","13","10","12"], labels:["Perceived Non-Dom","Perceived Extrovert","Perceived Impatient","Perceived Non-Conform"], pcts:[11,36,28,33] },
+};
+
+const DEV_MODULE_HISTORY = {
+  1: [
+    { id:1.1, role:"coach", text:"Mike — good to have you here. A Manager navigating the gap between what you intend and how your team actually experiences you. That gap is exactly where this program lives." },
+    { id:1.2, role:"coach", text:"Before we get into anything — think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it. What made that work?" },
+    { id:1.3, role:"user",  text:"Had a 1:1 with someone on my team who was about to quit. I just listened for the first 10 minutes without trying to fix anything. By the end they felt heard and we figured it out together." },
+    { id:1.4, role:"coach", text:"That is not a small thing. You made a choice most managers never make — you let the silence do the work. What was different about you in that moment versus a conversation that goes sideways?" },
+  ],
+  2: [
+    { id:2.1, role:"coach", text:"Mike — you have told me about Jordan — your direct report who shuts down in groups — and your legacy: creating space where people can say the hard thing. That is the thread we are following." },
+    { id:2.2, role:"coach", text:"Now I want to show you the data behind how you are actually wired. Your Forte profile is in. Let us start with what your Primary Profile is telling us." },
+    { id:2.3, role:"user",  text:"Okay I am looking at it. The extroversion score surprises me a little." },
+    { id:2.4, role:"coach", text:"That surprise is worth paying attention to. What does the gap between how you see yourself and what the profile shows tell you?" },
+  ],
+  3: [
+    { id:3.1, role:"coach", text:"Mike — you have seen your profile, you know your natural style, and you understand what Jordan is carrying into those group conversations. Now we start building the adaptive toolkit." },
+    { id:3.2, role:"coach", text:"The first skill — spotting communication strengths in others before you try to lead them. Tell me about the last time you noticed someone communicating in a style completely different from yours." },
+    { id:3.3, role:"user",  text:"My peer Sarah. Super methodical, never rushes, asks clarifying questions before she says anything. I used to find it frustrating but now I realize she just processes differently." },
+    { id:3.4, role:"coach", text:"You just did the thing. You named her behavior pattern without judging it. That is the foundation of adaptive communication. Let us take that lens into the generational layer now." },
+  ],
+  4: [
+    { id:4.1, role:"coach", text:"Mike — three modules in. You know your profile, you have started reading others, you have a toolkit for adapting. Now we go into the most complex territory: team and client dynamics." },
+    { id:4.2, role:"coach", text:"When your team is in a high-stakes situation, what do you notice about how the communication breaks down?" },
+    { id:4.3, role:"user",  text:"People go quiet or they start talking over each other. The introverts disappear and the extroverts take over and nothing actually gets decided." },
+    { id:4.4, role:"coach", text:"Classic pressure pattern. The extroverts fill the vacuum, the introverts read the room as unsafe. What does Jordan do when that happens?" },
+  ],
+  5: [
+    { id:5.1, role:"coach", text:"Mike — Module 5. Listening and feedback — the two skills most leaders think they have and most teams say they do not experience." },
+    { id:5.2, role:"coach", text:"Let us start with questions. Not how many you ask — but what kind, and when. What is your default question style when someone comes to you with a problem?" },
+    { id:5.3, role:"user",  text:"Honestly I probably jump to solutions. I ask a question or two but I think I am already formulating the answer while they are still talking." },
+    { id:5.4, role:"coach", text:"That is more self-aware than most. Your extrovert pattern processes out loud — your listening and your speaking are happening simultaneously. That is what we are working on." },
+  ],
+  6: [
+    { id:6.1, role:"coach", text:"Mike — this is the last module. Everything we have built — your profile, your Catalyst work with Jordan, your essential ratings — it all comes together into your personal action plan." },
+    { id:6.2, role:"coach", text:"Before we build the plan, I want to revisit your legacy statement. You said you wanted people to say you created space for real conversations. How close are you to that right now — honestly?" },
+    { id:6.3, role:"user",  text:"Maybe a 6 out of 10. I am better than I was but Jordan is still the gap. That relationship is the test case." },
+    { id:6.4, role:"coach", text:"Then Jordan is where we anchor the plan. Let us build it around that relationship as the proving ground. Ready?" },
+  ],
+};
+
+const DevJumpPanel = ({ onJump }) => {
+  const [open, setOpen] = React.useState(false);
+  const [selMod, setSelMod] = React.useState(3);
+  const [selLvl, setSelLvl] = React.useState(2);
+  const tapCount = React.useRef(0);
+  const tapTimer = React.useRef(null);
+
+  if (!DEV_MODE) return null;
+
+  const handleHiddenTap = () => {
+    tapCount.current += 1;
+    clearTimeout(tapTimer.current);
+    tapTimer.current = setTimeout(() => { tapCount.current = 0; }, 600);
+    if (tapCount.current >= 3) { tapCount.current = 0; setOpen(o => !o); }
+  };
+
+  const handleJump = () => {
+    const history = DEV_MODULE_HISTORY[selMod] || DEV_MODULE_HISTORY[1];
+    const jumpState = {
+      messages: history,
+      legacy: "I want people to say I made them feel like they could say the hard thing — that I was the kind of leader who created space for real conversations, not just managed ones",
+      catalyst: "my direct report Jordan — smart but shuts down in group settings and I cannot figure out why",
+      currentModule: selMod,
+      forteData: DEV_SEED_FORTE,
+      insights: {
+        observations: ["Mike shows high self-awareness around his extrovert pattern", "Jordan identified as key Catalyst relationship"],
+        commitments: [],
+        reflections: [],
+        essentialRatings: selMod >= 4 ? {"Balancing Empathy":6,"Earning Trust":7,"Non-Verbal Communication":5,"Virtual Communication":6,"Expanding Safe Spaces":4,"Got Questions":7,"Proactive Listening":6,"Feedback":5} : {},
+      },
+    };
+    onJump(selLvl, "Mike", jumpState);
+    setOpen(false);
+  };
+
+  const modLabels = ["","Commit","Unlock","Master","Transform","Supercharge","Action Plan"];
+
+  return (
+    <>
+      {/* Invisible 50x50 tap zone bottom-right — triple-tap to toggle dev panel */}
+      <div onClick={handleHiddenTap} style={{
+        position:"fixed",bottom:0,right:0,width:50,height:50,
+        zIndex:9999,cursor:"default",WebkitTapHighlightColor:"transparent",
+      }} />
+
+      {open && (
+        <div style={{
+          position:"fixed",bottom:16,right:16,zIndex:9999,
+          background:"#1e2a3a",borderRadius:16,padding:18,width:238,
+          boxShadow:"0 8px 32px rgba(0,0,0,.55)",
+          border:"1px solid rgba(255,255,255,.1)",
+          fontFamily:"-apple-system,'Segoe UI',Arial,sans-serif",
+        }}>
+          <div style={{fontSize:11,fontWeight:800,color:"#f4bc2d",letterSpacing:".1em",textTransform:"uppercase",marginBottom:14}}>
+            ⚡ Dev Jump Panel
+          </div>
+
+          <div style={{marginBottom:12}}>
+            <div style={{fontSize:10,fontWeight:700,color:"rgba(255,255,255,.4)",letterSpacing:".08em",textTransform:"uppercase",marginBottom:6}}>Level</div>
+            <div style={{display:"flex",gap:5}}>
+              {[1,2,3,4].map(l=>(
+                <button key={l} onClick={()=>setSelLvl(l)} style={{
+                  flex:1,padding:"7px 0",border:"none",borderRadius:8,cursor:"pointer",
+                  fontSize:11,fontWeight:800,
+                  background:selLvl===l?"#f4bc2d":"rgba(255,255,255,.08)",
+                  color:selLvl===l?"#244169":"rgba(255,255,255,.45)",
+                }}>{l}</button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{marginBottom:14}}>
+            <div style={{fontSize:10,fontWeight:700,color:"rgba(255,255,255,.4)",letterSpacing:".08em",textTransform:"uppercase",marginBottom:6}}>Jump to Module</div>
+            <div style={{display:"flex",flexDirection:"column",gap:4}}>
+              {[1,2,3,4,5,6].map(m=>(
+                <button key={m} onClick={()=>setSelMod(m)} style={{
+                  padding:"7px 10px",border:"none",borderRadius:8,cursor:"pointer",
+                  textAlign:"left",fontSize:11,fontWeight:700,
+                  background:selMod===m?"rgba(244,188,45,.15)":"rgba(255,255,255,.05)",
+                  color:selMod===m?"#f4bc2d":"rgba(255,255,255,.45)",
+                  borderLeft:selMod===m?"2px solid #f4bc2d":"2px solid transparent",
+                }}>
+                  {selMod===m?"▶ ":"   "}M{m} — {modLabels[m]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{background:"rgba(255,255,255,.05)",borderRadius:8,padding:"8px 10px",marginBottom:12,fontSize:10.5,color:"rgba(255,255,255,.4)",lineHeight:1.6}}>
+            <span style={{color:"rgba(255,255,255,.6)",fontWeight:700}}>Participant:</span> Mike, L{selLvl}<br/>
+            <span style={{color:"rgba(255,255,255,.6)",fontWeight:700}}>Catalyst:</span> Jordan (direct report)<br/>
+            <span style={{color:"rgba(255,255,255,.6)",fontWeight:700}}>Forte:</span> Non-Dom · Extrovert · Impatient
+          </div>
+
+          <button onClick={handleJump} style={{
+            width:"100%",padding:10,background:"#f4bc2d",color:"#244169",
+            border:"none",borderRadius:10,fontSize:12,fontWeight:900,
+            cursor:"pointer",letterSpacing:".04em",
+          }}>
+            Jump to Module {selMod} →
+          </button>
+        </div>
+      )}
+    </>
+  );
+};
+
 export default function App() {
   const [screen,         setScreen]       = useState("home");
   const [level,          setLevel]         = useState(null);
@@ -3123,6 +3280,7 @@ export default function App() {
   },[]);
 
   const handleReset = async()=>{await clearSession();setScreen("home");setLevel(null);setParticipantName("");setSavedState(null);};
+  const handleDevJump = (lvl, name, jumpState) => { setLevel(lvl); setParticipantName(name); setSavedState(jumpState); setScreen("coach"); };
 
   if(!restored) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:"#1c1c2e"}}><style>{STYLES}</style><div style={{width:36,height:36,border:"3px solid rgba(244,188,45,.2)",borderTopColor:C.gold,borderRadius:"50%",animation:"spin .8s linear infinite"}} /></div>;
 
@@ -3144,6 +3302,7 @@ export default function App() {
           {screen==="coach" && <CoachScreen level={level} participantName={participantName} savedState={savedState} onSave={s=>saveSession({screen:"coach",level,participantName,...s})} onReset={handleReset} />}
         </div>
       </div>
+      <DevJumpPanel onJump={handleDevJump} />
     </>
   );
 }
