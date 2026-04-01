@@ -361,7 +361,7 @@ function parseAIResponse(text) {
   const catalystMatch = clean.match(/<CAPTURE_CATALYST>([\s\S]*?)<\/CAPTURE_CATALYST>/);
   if (catalystMatch) { artifacts.push({ type:"capture_catalyst", value:catalystMatch[1].trim() }); clean = clean.replace(catalystMatch[0],""); }
   const forteMatch = clean.match(/<SHOW_FORTE_UPLOAD\s*\/>/);
-  const forteGraphMatch = clean.match(/<SHOW_FORTE_GRAPH tab="([^"]+)"\/>/);
+  const forteGraphMatch = clean.match(/<SHOW_FORTE_GRAPH tab="([^"]+)"\s*\/>/);
   if (forteGraphMatch) { artifacts.push({ type:"show_forte_graph", tab:forteGraphMatch[1] }); clean = clean.replace(forteGraphMatch[0],""); }
   if (forteMatch) { artifacts.push({ type:"show_forte_upload" }); clean = clean.replace(forteMatch[0],""); }
   const switchesMatch = clean.match(/<SHOW_SWITCHES_KNOBS\s*\/>/);
@@ -374,7 +374,7 @@ function parseAIResponse(text) {
   if (questionMatch) { artifacts.push({ type:"show_questioning_tendencies" }); clean = clean.replace(questionMatch[0],""); }
   const crisisMatch = clean.match(/<SHOW_CRISIS_CHALLENGE\s*\/>/);
   if (crisisMatch) { artifacts.push({ type:"show_crisis_challenge" }); clean = clean.replace(crisisMatch[0],""); }
-  const profMatch = clean.match(/<SHOW_PROFICIENCY_RATING topic="([^"]+)"\/>/);
+  const profMatch = clean.match(/<SHOW_PROFICIENCY_RATING topic="([^"]+)"\s*\/>/);
   if (profMatch) { artifacts.push({ type:"show_proficiency_rating", topic:profMatch[1] }); clean = clean.replace(profMatch[0],""); }
   const adaptPlanMatch = clean.match(/<SHOW_ADAPT_PLANNER\s*\/>/);
   if (adaptPlanMatch) { artifacts.push({ type:"show_adapt_planner" }); clean = clean.replace(adaptPlanMatch[0],""); }
@@ -384,9 +384,9 @@ function parseAIResponse(text) {
   if (essentialsMatch) { artifacts.push({ type:"show_cq_essentials" }); clean = clean.replace(essentialsMatch[0],""); }
   const essentialsSummaryMatch = clean.match(/<SHOW_CQ_ESSENTIALS_SUMMARY\s*\/>/);
   if (essentialsSummaryMatch) { artifacts.push({ type:"show_cq_essentials_summary" }); clean = clean.replace(essentialsSummaryMatch[0],""); }
-  const teachMatch = clean.match(/<TEACH_MOMENT concept="([^"]+)"\/>/);
+  const teachMatch = clean.match(/<TEACH_MOMENT concept="([^"]+)"\s*\/>/);
   if (teachMatch) { artifacts.push({ type:"teach_moment", concept:teachMatch[1] }); clean = clean.replace(teachMatch[0],""); }
-  const moduleMatch = clean.match(/<MODULE_ADVANCE n="(\d+)"\/>/);
+  const moduleMatch = clean.match(/<MODULE_ADVANCE n="(\d+)"\s*\/>/);
   if (moduleMatch) { artifacts.push({ type:"module_advance", n:parseInt(moduleMatch[1]) }); clean = clean.replace(moduleMatch[0],""); }
   const insightMatch = clean.match(/<COACH_INSIGHT>([\s\S]*?)<\/COACH_INSIGHT>/);
   if (insightMatch) { artifacts.push({ type:"coach_insight", value:insightMatch[1].trim() }); clean = clean.replace(insightMatch[0],""); }
@@ -487,6 +487,7 @@ const Bubble = ({role,text,isLast,prevRole}) => {
 
   const bubbleStyle = {
     maxWidth:"82%",
+    minWidth: isCoach ? 0 : 44,
     padding: isCoach ? "11px 14px" : "11px 14px",
     fontSize:15,
     lineHeight:1.6,
