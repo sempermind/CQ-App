@@ -3299,7 +3299,7 @@ export default function App() {
           {screen==="home"  && <HomeScreen  onStart={s=>{const next=s==="level"?"level":"coach";setScreen(next);}} />}
           {screen==="level" && <LevelScreen onSelect={(l,n)=>{setLevel(l);setParticipantName(n);setScreen("intro");}} onBack={()=>setScreen("home")} />}
           {screen==="intro" && <CQIntroScreen participantName={participantName} level={level} onContinue={()=>setScreen("coach")} onBack={()=>setScreen("level")} />}
-          {screen==="coach" && <CoachScreen level={level} participantName={participantName} savedState={savedState} onSave={s=>saveSession({screen:"coach",level,participantName,...s})} onReset={handleReset} />}
+          {screen==="coach" && <CoachScreen key={savedState ? JSON.stringify(savedState.currentModule)+savedState.messages?.length : "fresh"} level={level} participantName={participantName} savedState={savedState} onSave={s=>saveSession({screen:"coach",level,participantName,...s})} onReset={handleReset} />}
         </div>
       </div>
       <DevJumpPanel onJump={handleDevJump} />
