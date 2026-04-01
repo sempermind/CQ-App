@@ -360,29 +360,29 @@ function parseAIResponse(text) {
   if (legacyMatch) { artifacts.push({ type:"capture_legacy", value:legacyMatch[1].trim() }); clean = clean.replace(legacyMatch[0],""); }
   const catalystMatch = clean.match(/<CAPTURE_CATALYST>([\s\S]*?)<\/CAPTURE_CATALYST>/);
   if (catalystMatch) { artifacts.push({ type:"capture_catalyst", value:catalystMatch[1].trim() }); clean = clean.replace(catalystMatch[0],""); }
-  const forteMatch = clean.match(/<SHOW_FORTE_UPLOAD\/>/);
+  const forteMatch = clean.match(/<SHOW_FORTE_UPLOAD\s*\/>/);
   const forteGraphMatch = clean.match(/<SHOW_FORTE_GRAPH tab="([^"]+)"\/>/);
   if (forteGraphMatch) { artifacts.push({ type:"show_forte_graph", tab:forteGraphMatch[1] }); clean = clean.replace(forteGraphMatch[0],""); }
   if (forteMatch) { artifacts.push({ type:"show_forte_upload" }); clean = clean.replace(forteMatch[0],""); }
-  const switchesMatch = clean.match(/<SHOW_SWITCHES_KNOBS\/>/);
+  const switchesMatch = clean.match(/<SHOW_SWITCHES_KNOBS\s*\/>/);
   if (switchesMatch) { artifacts.push({ type:"show_switches_knobs" }); clean = clean.replace(switchesMatch[0],""); }
-  const genMatch = clean.match(/<SHOW_GENERATIONS\/>/);
+  const genMatch = clean.match(/<SHOW_GENERATIONS\s*\/>/);
   if (genMatch) { artifacts.push({ type:"show_generations" }); clean = clean.replace(genMatch[0],""); }
-  const listenMatch = clean.match(/<SHOW_LISTENING_TENDENCIES\/>/);
+  const listenMatch = clean.match(/<SHOW_LISTENING_TENDENCIES\s*\/>/);
   if (listenMatch) { artifacts.push({ type:"show_listening_tendencies" }); clean = clean.replace(listenMatch[0],""); }
-  const questionMatch = clean.match(/<SHOW_QUESTIONING_TENDENCIES\/>/);
+  const questionMatch = clean.match(/<SHOW_QUESTIONING_TENDENCIES\s*\/>/);
   if (questionMatch) { artifacts.push({ type:"show_questioning_tendencies" }); clean = clean.replace(questionMatch[0],""); }
-  const crisisMatch = clean.match(/<SHOW_CRISIS_CHALLENGE\/>/);
+  const crisisMatch = clean.match(/<SHOW_CRISIS_CHALLENGE\s*\/>/);
   if (crisisMatch) { artifacts.push({ type:"show_crisis_challenge" }); clean = clean.replace(crisisMatch[0],""); }
   const profMatch = clean.match(/<SHOW_PROFICIENCY_RATING topic="([^"]+)"\/>/);
   if (profMatch) { artifacts.push({ type:"show_proficiency_rating", topic:profMatch[1] }); clean = clean.replace(profMatch[0],""); }
-  const adaptPlanMatch = clean.match(/<SHOW_ADAPT_PLANNER\/>/);
+  const adaptPlanMatch = clean.match(/<SHOW_ADAPT_PLANNER\s*\/>/);
   if (adaptPlanMatch) { artifacts.push({ type:"show_adapt_planner" }); clean = clean.replace(adaptPlanMatch[0],""); }
   const reflectMatch = clean.match(/<SHOW_REFLECTION section="([^"]+)" q1="([^"]+)"(?:\s+q2="([^"]+)")?\s*\/>/);
   if (reflectMatch) { artifacts.push({ type:"show_reflection", section:reflectMatch[1], q1:reflectMatch[2], q2:reflectMatch[3]||"" }); clean = clean.replace(reflectMatch[0],""); }
-  const essentialsMatch = clean.match(/<SHOW_CQ_ESSENTIALS\/>/);
+  const essentialsMatch = clean.match(/<SHOW_CQ_ESSENTIALS\s*\/>/);
   if (essentialsMatch) { artifacts.push({ type:"show_cq_essentials" }); clean = clean.replace(essentialsMatch[0],""); }
-  const essentialsSummaryMatch = clean.match(/<SHOW_CQ_ESSENTIALS_SUMMARY\/>/);
+  const essentialsSummaryMatch = clean.match(/<SHOW_CQ_ESSENTIALS_SUMMARY\s*\/>/);
   if (essentialsSummaryMatch) { artifacts.push({ type:"show_cq_essentials_summary" }); clean = clean.replace(essentialsSummaryMatch[0],""); }
   const teachMatch = clean.match(/<TEACH_MOMENT concept="([^"]+)"\/>/);
   if (teachMatch) { artifacts.push({ type:"teach_moment", concept:teachMatch[1] }); clean = clean.replace(teachMatch[0],""); }
@@ -510,8 +510,8 @@ const Bubble = ({role,text,isLast,prevRole}) => {
       display:"flex",
       flexDirection:"column",
       alignItems: isCoach ? "flex-start" : "flex-end",
-      // Extra top gap when switching sides
-      marginTop: prevRole && prevRole !== role ? 10 : 2,
+      // Extra top gap when switching sides; user bubbles get more breathing room
+      marginTop: prevRole && prevRole !== role ? 10 : (isCoach ? 2 : 6),
     }}>
       {/* Avatar only shows on first bubble in a coach run */}
       {isCoach && showAvatar && (
@@ -2563,13 +2563,41 @@ const ModulePreviewList = () => {
 const CQIntroScreen = ({participantName, level, onContinue, onBack}) => {
   const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
   const name = participantName || "there";
-  const QUOTES = [
-    "Every conversation has the power to change the trajectory of a life.",
-    "Communication is not a soft skill. It is the most consequential capability any professional can develop.",
-    "You cannot build relationships by changing people. You can only build them by understanding them.",
-    "The gap between who you are and how others experience you is where the most important coaching lives.",
-  ];
-  const quote = QUOTES[0];
+
+  // Level-specific headline, tagline, and quote
+  const LEVEL_INTRO = {
+    1: {
+      headline: "Your CQ Journey Starts Now",
+      tagline: "You are about to go through the Communication Intelligence program — built to help you develop the communication skills that build real influence, earn trust faster, and make every conversation count.",
+      quote: "Every conversation has the power to change the trajectory of a life.",
+      cqDesc: "Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to make every conversation more effective.",
+      cqSub: "It is not about being a better talker. It is about being someone others feel genuinely heard by — and someone who builds the kind of trust and credibility that opens doors.",
+    },
+    2: {
+      headline: "Lead Every Conversation With Intention",
+      tagline: "You are about to go through the Communication Intelligence program — built for leaders who want to close the gap between how they intend to show up and how their team actually experiences them.",
+      quote: "The most powerful thing a leader can do is make the people around them feel understood.",
+      cqDesc: "Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to make every conversation more effective.",
+      cqSub: "For managers, that means fewer misreads, less friction, and a team that actually hears what you are trying to say. It is the skill that multiplies every other leadership capability you have.",
+    },
+    3: {
+      headline: "Close the Gap Between Intent and Impact",
+      tagline: "You are about to go through the Communication Intelligence program — built for senior leaders who want to align their communication with the scale of their influence.",
+      quote: "The gap between who you are and how others experience you is where the most important leadership work lives.",
+      cqDesc: "Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to drive alignment, clarity, and organizational momentum.",
+      cqSub: "At your level, communication is strategy. The patterns you model get replicated across your organization. This program helps you see those patterns — and shape them deliberately.",
+    },
+    4: {
+      headline: "Communication as a Strategic Capability",
+      tagline: "You are about to go through the Communication Intelligence program — built for executives who understand that how they communicate determines what gets built, what gets aligned, and what gets done.",
+      quote: "Culture is not what leaders say. It is how they communicate — every day, in every room.",
+      cqDesc: "Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt with precision to drive outcomes at scale.",
+      cqSub: "This is not a training program. It is a diagnostic and development experience built around your specific profile, your key relationships, and the communication patterns that either accelerate or limit your impact.",
+    },
+  };
+
+  const intro = LEVEL_INTRO[level] || LEVEL_INTRO[1];
+  const quote = intro.quote;
 
   return (
     <div style={{flex:1,background:C.navy,display:"flex",flexDirection:"column",overflowY:"auto",position:"relative"}}>
@@ -2582,9 +2610,9 @@ const CQIntroScreen = ({participantName, level, onContinue, onBack}) => {
         {/* Welcome */}
         <div style={{marginBottom:28}}>
           <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".14em",textTransform:"uppercase",marginBottom:8}}>Welcome, {name}</div>
-          <div style={{fontSize:26,fontWeight:900,color:C.white,lineHeight:1.2,marginBottom:12}}>Your CQ Journey Starts Now</div>
+          <div style={{fontSize:26,fontWeight:900,color:C.white,lineHeight:1.2,marginBottom:12}}>{intro.headline}</div>
           <div style={{fontSize:13.5,color:"rgba(255,255,255,.65)",lineHeight:1.7}}>
-            You are about to go through the Communication Intelligence program -- designed specifically for {levelInfo.name}s who want to build the communication legacy that matters most to them.
+            {intro.tagline}
           </div>
         </div>
 
@@ -2592,10 +2620,10 @@ const CQIntroScreen = ({participantName, level, onContinue, onBack}) => {
         <div style={{background:"rgba(255,255,255,.07)",borderRadius:16,padding:"18px 18px",marginBottom:20}}>
           <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>What is Communication Intelligence?</div>
           <div style={{fontSize:13.5,color:"rgba(255,255,255,.8)",lineHeight:1.7,marginBottom:12}}>
-            Communication Intelligence -- CQ -- is the ability to understand your own communication style, read the styles of others, and adapt in real time to make every conversation more effective.
+            {intro.cqDesc}
           </div>
           <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.65}}>
-            It is not about being a better talker. It is about being someone others feel genuinely heard by -- and someone who creates trust, clarity, and momentum in every conversation that matters.
+            {intro.cqSub}
           </div>
         </div>
 
