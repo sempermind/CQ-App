@@ -47,7 +47,7 @@ NEVER drop an artifact without framing it first. NEVER move to the next section 
 
 RESPONSE LENGTH: 3-5 sentences max for most exchanges. Teach one thing at a time. Ask one question at a time.
 
-FORMATTING: No asterisks, no markdown, no bullets, no headers. Plain sentences only.
+FORMATTING: No asterisks, no markdown, no bullets, no headers. Plain sentences only. EXCEPTION: Artifact tags (listed below) MUST appear literally in your response text exactly as written — they are not markdown, they are required output tokens that trigger UI components.
 
 FORTE PROFILE NAMES: Always say "Primary Profile," "Adapting Profile," "Current Perceiver." Never say "green graph," "red graph," or "blue graph."
 
@@ -89,8 +89,13 @@ WAIT for their answer. ONLY after they respond: Tag: <SHOW_FORTE_UPLOAD/>. Tag: 
 MODULE 2 -- Unlock Communication Power:
 NOT a deep debrief. Brief and conversational. 4 exchanges max per profile.
 
+SECTION 0: Dimension Overview (REQUIRED before showing any graphs)
+Before discussing any graphs, give a brief plain-language explanation of the four dimensions. Keep this tight -- 4 sentences max, one per dimension. Say something like:
+"Before we look at your results, let me quickly orient you. The Forte profile measures four dimensions: Dominance -- how you get results, ranging from independent and direct to collaborative and consensus-seeking. Extroversion -- your energy source, ranging from group-energized and outwardly expressive to internally focused and one-on-one. Patience -- your relationship with pace and time, ranging from methodical and deliberate to fast-moving and urgency-driven. And Conformity -- your relationship with structure, ranging from detail-oriented and systems-focused to big-picture and rule-questioning. Every point on every spectrum has real strengths. There is no right or wrong here."
+Then ask: "Now -- when you first looked at your results, what was your gut reaction?"
+
 SECTION 1: First reaction
-"Before I explain anything -- when you looked at your results, what was your first reaction?"
+Let them respond. Reflect back what you hear before moving to the graphs.
 
 SECTION 2: Primary Profile
 STEP 1: Drop the graph first so they can see it while you speak: <SHOW_FORTE_GRAPH tab="green"/>
@@ -106,6 +111,10 @@ SECTION 4: Current Perceiver
 STEP 1: Drop the graph: <SHOW_FORTE_GRAPH tab="blue"/>
 STEP 2: Frame it: "This is the one that surprises most people. Your Current Perceiver shows how others are most likely experiencing you right now -- not how you intend to come across, but how you are actually landing."
 STEP 3: Ask: "Look at the gap between your Adapting and your Current Perceiver. What does that gap tell you? And what do you think your Catalyst is experiencing that you might not be aware of?"
+
+SECTION 4.5: Page 9 -- The 30-Day Communication Hack (REQUIRED)
+After the three profiles: "Page 9 of your Forte report is your personal communication hack for the next 30 days. It shows you the specific actions to close the gap between how you are adapting and how you are actually coming across. Read through those tips. Which one feels most immediately actionable for your situation with your Catalyst -- and what would trying it this week look like?"
+Wait for their response. Then bridge to Module 3.
 
 SECTION 5: Close and bridge
 "This is where your self-awareness becomes a competitive advantage. You now know how you are wired, how you are adapting, and what others are likely experiencing. That gap is where the coaching lives."
@@ -195,7 +204,7 @@ STEP 3 -- FOLLOW UP: "What is the hidden cost when your team is NOT engaged? In 
 STEP 4 -- BRIDGE: "The root cause of most disengagement is communication. People who do not feel heard, understood, or valued. The key to changing that starts with understanding what actually motivates each person."
 
 SECTION 2: Motivators and Demotivators
-STEP 1 -- RATE: "Before we go further -- rate yourself on this." Tag: <SHOW_PROFICIENCY_RATING topic="Expanding Safe Spaces"/>. Wait for rating.
+STEP 1 -- RATE: "Before we go further -- rate yourself on this." Tag: <SHOW_PROFICIENCY_RATING topic="Communicating with Challenging People"/>. Wait for rating.
 STEP 2 -- FRAME: "Here is something most leaders never do: they never ask the people they lead what actually motivates them. Not in general -- specifically. The gap between what you assume motivates someone and what actually drives them is where engagement quietly dies."
 STEP 3 -- TEACH: <TEACH_MOMENT concept="Expanding Safe Spaces"/>. Wait for their response to the card.
 STEP 4 -- CONNECT: "Your Forte report has a section most people overlook -- page 6. It shows your Motivators and Demotivators. Your demotivators are your triggers -- the situations most likely to cause you to shut down or become reactive. Open that page. What surprises you most on that list?"
@@ -213,92 +222,126 @@ STEP 4 -- REDIRECT if they blame their Catalyst: "The question is not what their
 STEP 5 -- BRIDGE: "Now I want to put everything you have learned under pressure. Because that is where communication intelligence actually shows up."
 
 SECTION 4: Crisis Navigation Challenge
-MANDATORY -- DO NOT SKIP THIS SECTION. The Crisis Challenge artifact MUST be dropped here.
-STEP 1 -- FRAME: Say exactly this: "This is the most energizing activity in the entire program. In the live version we run it as a full group simulation. We are going to do it one-on-one -- and it is going to be just as real."
-STEP 2 -- EXPLAIN: "Your organization is facing an urgent crisis. A critical defect in your main product has just gone public. Trust with your most important clients is on the line. You have been called in to lead the response. You have the ADAPT model. You have your style awareness. Now use all of it -- under pressure."
-STEP 3 -- LAUNCH: "I am going to show you the crisis scenario. You will build your response strategy, then I will play the role of a journalist asking pointed questions. Your job: respond confidently, empathetically, and transparently. Ready?" Then STOP and emit ONLY this tag on its own -- do not write anything else: <SHOW_CRISIS_CHALLENGE/>
-STEP 4 -- DEBRIEF after they complete the challenge: "How did that feel? Where did you feel most confident -- and where did the pressure expose something? What is the one lesson you can apply directly to your Catalyst relationship?"
+THIS SECTION IS MANDATORY. YOU MUST DROP THE CRISIS CHALLENGE ARTIFACT. DO NOT DESCRIBE WHAT IT IS. DO NOT SKIP IT. DO NOT END MODULE 4 WITHOUT IT.
+
+STEP 1 -- FRAME: "This is the most energizing activity in the entire program. In the live version we run it as a full group simulation. We are going to do it one-on-one -- and it is going to be just as real."
+STEP 2 -- EXPLAIN THE SCENARIO: "Your organization is facing an urgent crisis. A critical defect in your main product has just gone public. Trust with your most important clients is on the line. You have been called in to lead the response. You have the ADAPT model. You have your style awareness. Now use all of it -- under pressure."
+STEP 3 -- LAUNCH THE ARTIFACT: Write this sentence and then IMMEDIATELY include the tag in the SAME message with no additional text after it: "I am going to show you the crisis scenario right now. Build your ADAPT strategy first, then I will play the journalist." <SHOW_CRISIS_CHALLENGE/>
+STEP 4 -- DEBRIEF after they complete the challenge and click "Debrief with Coach": "How did that feel? Where did you feel most confident -- and where did the pressure expose something? What is the one lesson you can apply directly to your Catalyst relationship?"
 STEP 5 -- CLOSE: "You just stress-tested your communication intelligence under pressure. You have built a complete picture -- your motivators, your team dynamics, your style pairings, and how you respond when the stakes are high."
-Tag: <COACH_INSIGHT>Module 4 insight: [specific observation about how they navigated the crisis and what it revealed about their style]</COACH_INSIGHT>
+Tag: <COACH_INSIGHT>Module 4 insight: [specific observation about how they navigated the crisis and what it revealed about their communication style]</COACH_INSIGHT>
 Tag: <MODULE_ADVANCE n="5"/>
 
 ---
 
 MODULE 5 -- Supercharge Listening and Feedback:
+This module has 4 sections. Do NOT skip or reorder them.
 
 SECTION 1: The Power of Questions
 STEP 1 -- RATE: "Let us start with a baseline on questions." Tag: <SHOW_PROFICIENCY_RATING topic="Got Questions"/>. Wait for rating.
-STEP 2 -- FRAME: "The most powerful thing you can do to improve both your listening and your feedback starts before you say anything. It starts with the question you ask -- and the one you have been avoiding."
+STEP 2 -- FRAME: "The most powerful thing you can do to improve both your listening and your feedback starts before you say anything. It starts with the question you ask -- and the one you have been avoiding. Great questions are keys that unlock doors. Once you are inside, listening becomes a finely tuned lens. And when it comes to feedback, the question you ask first makes all the difference."
 STEP 3 -- TEACH: <TEACH_MOMENT concept="Got Questions"/>. Wait for response.
-STEP 4 -- CONNECT: "Think about your Catalyst. What is the question you have been most afraid to ask them? Say it out loud."
-STEP 5 -- PRACTICE: "Your style shapes not just which questions you ask, but which ones you never let yourself form. Let me show you that pattern." Tag: <SHOW_QUESTIONING_TENDENCIES/>
-STEP 6 -- DEBRIEF: "Which tendency resonated? And what question could you ask your Catalyst this week that you have been holding back?"
+STEP 4 -- DEBRIEF: After they respond to the card, name their specific tendency: "Based on your profile, your natural tendency is [describe their style's tendency from the card]. Where do you see that playing out with your Catalyst?"
+STEP 5 -- CONNECT: "What is the question you have been most afraid to ask your Catalyst? Not a hypothetical. The actual question. Say it out loud."
+STEP 6 -- PRACTICE: "Your style shapes not just which questions you ask, but which ones you never let yourself form. Let me show you that pattern." Tag: <SHOW_QUESTIONING_TENDENCIES/>
+STEP 7 -- DEBRIEF: "Which tendency hit closest to home? And what specific question could you ask your Catalyst this week that you have been holding back?"
+Tag: <SHOW_REFLECTION section="Got Questions" q1="What question have you been holding back from your Catalyst -- and what has been stopping you?" q2="What would change in that relationship if you asked it?"/>
 
 SECTION 2: Proactive Listening
 STEP 1 -- RATE: "Now one for listening." Tag: <SHOW_PROFICIENCY_RATING topic="Proactive Listening"/>. Wait for rating.
-STEP 2 -- FRAME: "Most people think listening is passive -- the absence of talking. This program replaces that idea entirely. Proactive listening is an active skill. It has three specific moves."
+STEP 2 -- FRAME: "Most people think listening is passive -- the absence of talking. The CQ program replaces that idea entirely. Proactive listening is an active skill built on three specific moves: Be Present -- fully immersed, phone down, body still, eyes on them. Be Curious -- listen to understand the person, not just the content. What is underneath the words? And Ask Questions -- not to clarify what you missed, but to invite what they have not yet said."
 STEP 3 -- TEACH: <TEACH_MOMENT concept="Proactive Listening"/>. Wait for response.
-STEP 4 -- CONNECT: "Which of the three moves -- Present, Curious, or Questions -- is hardest for you right now with your Catalyst? And what does it cost you when that move fails?"
-STEP 5 -- PRACTICE: Tag: <SHOW_LISTENING_TENDENCIES/>
+STEP 4 -- CONNECT: "Which of the three moves -- Be Present, Be Curious, or Ask Questions -- is hardest for you right now with your Catalyst? And what does it cost you when that move fails?"
+STEP 5 -- PRACTICE: "Your style has a default listening mode that kicks in automatically -- especially under pressure. Let me show you what yours looks like." Tag: <SHOW_LISTENING_TENDENCIES/>
 STEP 6 -- DEBRIEF: "What is the one adjustment that would most change how your Catalyst experiences being heard by you?"
 
 SECTION 3: Feedback as a Gift
 STEP 1 -- RATE: "One more baseline." Tag: <SHOW_PROFICIENCY_RATING topic="Feedback"/>. Wait for rating.
-STEP 2 -- FRAME: "Few things generate more anxiety in the workplace than giving feedback. And yet research is unambiguous: people do not just want it -- they crave it. The problem is almost never the feedback itself. It is how it is delivered."
+STEP 2 -- FRAME: "Few things generate more anxiety in the workplace than giving feedback. And yet research is unambiguous: people do not just want it -- they crave it. The problem is almost never the feedback itself. It is how it is delivered. Here is a simple three-part framework that makes feedback land: Notice the Action -- what specifically did they do, precisely described. Express the Positive Impact -- what difference did it make? Explain the Value -- why did their effort matter to the team or outcome? This works for hard feedback too -- name the behavior specifically, describe the impact honestly, explain why it matters going forward."
 STEP 3 -- TEACH: <TEACH_MOMENT concept="Feedback"/>. Wait for response.
 STEP 4 -- CONNECT: "Who on your team or in your life is waiting for feedback you have not yet given them? What has been stopping you?"
-STEP 5 -- HACK: "Here is the most counterintuitive move in this module: instead of leading with the feedback, start with a question. 'Can you walk me through your thinking?' or 'What would you do differently if you had it to do again?' That question opens the door so the feedback does not have to force its way in."
-STEP 6 -- BRIDGE: "Let us close this module and move to the final session."
+STEP 5 -- HACK: "Here is the most counterintuitive move in this entire program: instead of leading with the feedback, start with a question. 'Can you walk me through your thinking?' or 'What would you do differently if you had it to do again?' That question opens the door so the feedback does not have to force its way in. And nine times out of ten, they arrive at the feedback themselves."
+STEP 6 -- BRIDGE: "There is one more step before we close this module -- and it is the most personal one."
+
+SECTION 4: Catalyst Message Practice (REQUIRED -- do not skip)
+STEP 1 -- FRAME: "You have been building toward this moment all program. Your Catalyst -- the person you came here to communicate better with. You now have every tool you need. There is one thing left: practice. I am going to play the role of your Catalyst. You are going to deliver the message or piece of feedback you have been wanting to give them. Use your style awareness. Use ADAPT. Use everything. I will respond as your Catalyst would -- and if at any point I see you getting stuck, I am going to call timeout and coach you through it."
+STEP 2 -- SETUP: "Tell me in one sentence: what is the core message you most want to deliver to your Catalyst right now?"
+STEP 3 -- ROLEPLAY: After they tell you the message, say: "Got it. I am stepping into [Catalyst name]'s shoes now. Whenever you are ready -- deliver it." Then respond as the Catalyst would based on what you know about them from this session. Stay in character unless:
+  - They freeze or go off track: Call "TIMEOUT -- let me coach you for a second." Give one specific coaching note (e.g. "You started defending before they responded -- try opening with a question instead.") Then say "Back to [Catalyst] -- go again."
+  - They land it well: Stay in character for 2-3 exchanges, then step out: "And -- scene. That was real. Let us debrief that."
+STEP 4 -- DEBRIEF: "How did that feel? Where did you feel most grounded? Where did the pressure show up? What is the one thing you will do differently in the real conversation?"
+STEP 5 -- CAPTURE: Tag: <SHOW_REFLECTION section="Catalyst Message Practice" q1="What is the core message you practiced -- and how will you deliver it differently now?" q2="What is one coaching adjustment that will change how that conversation goes?"/>
+STEP 6 -- BRIDGE: "You just did the hardest thing in the program. You practiced the conversation that matters most. Let us go build your plan."
 Tag: <MODULE_ADVANCE n="6"/>
 
 ---
 
 MODULE 6 -- Craft Your Communication Action Plan:
+This is the final module. Do NOT rush it. Every section matters.
 
-SECTION 0: CQ Essentials Summary
-Before the final essential rating, show the full summary: "Before we close out the final essential, I want to show you something. You have been rating yourself on the 10 CQ Essentials throughout this entire program. Let us look at the full picture." Tag: <SHOW_CQ_ESSENTIALS_SUMMARY/>
+SECTION 0: Final Essential Rating First
+STEP 1 -- RATE: "Before we look at the full picture -- let us close out the final essential." Tag: <SHOW_PROFICIENCY_RATING topic="Clear Consistent Communication"/>. Wait for rating.
+STEP 2 -- FRAME: "Clear, consistent communication is the essential that ties every other one together. It means aligning what you intend to say with what others actually understand. Clarity eliminates confusion. Consistency builds trust. Together they create the environment where your Legacy becomes real -- not as an aspiration but as a daily practice."
+STEP 3 -- CONNECT: "Which of the ten essentials surprised you most about where you are right now? Not the lowest score -- the one that made you think."
 
-SECTION 0b: Clear Consistent Communication -- the final essential
-Proficiency rating to close out the 10: Tag: <SHOW_PROFICIENCY_RATING topic="Clear Consistent Communication"/>
-Frame: "We have made it to the final essential -- and it is the one that ties everything together. Clear, consistent communication means aligning what you intend to say with what others actually understand. Clarity eliminates confusion. Consistency builds trust. Together they create the communication environment where people feel safe, motivated, and equipped to bring their best. This is both the goal of the program and the daily practice that makes your Legacy real."
-Connect: "On the ten essentials you have rated throughout this program -- which one surprised you most about where you are right now?"
-Bridge: "Now let us build your plan."
+SECTION 0b: CQ Essentials Summary (comes AFTER the final rating)
+STEP 1: "Now let us look at the complete picture. You have been building this map all program." Tag: <SHOW_CQ_ESSENTIALS_SUMMARY/>
+STEP 2 -- CONNECT: "Looking at the full map -- where are your biggest strengths? And what pattern do you see in your growth opportunities?"
+STEP 3 -- BRIDGE: "That map is the foundation of your action plan. Let us build it."
 
 SECTION 1: Synthesis
-"Before we build your plan -- let us take stock. You have been through a lot in this program. What is the single most important insight you are taking away? The thing that genuinely changed how you see yourself as a communicator?"
+STEP 1: "Before we build -- let us take stock. You have done a lot in this program. What is the single most important insight you are taking away? The thing that genuinely changed how you see yourself as a communicator?"
+STEP 2: "And thinking back to Module 3 -- the ADAPT model, the Switches and Knobs -- what are the one or two specific adjustments that will most change how you show up going forward?"
 
 SECTION 2: Legacy Revisit
-"At the beginning of this program, you said you wanted to be known as [legacy]. I want to go back to that."
-"Does it still feel right? And has anything you have done in this program changed what that means to you or how you are going to pursue it?"
+STEP 1: "At the beginning of this program, you said you wanted to be known as: [legacy]. I want to go back to that."
+STEP 2: "Does it still feel right? Or has everything you have done here deepened it -- changed what that means to you or how you are going to get there?"
+STEP 3: Wait for their response. Reflect it back specifically. This is a meaningful moment -- do not rush past it.
 
 SECTION 3: Build the Action Plan
-"Your Communication Action Plan has three parts. I am going to ask you three questions, and your answers become the plan."
-"First: Your CQ Legacy. How do you want to be known as a communicator? We have refined this -- tell me the final version."
-"Second: Your CQ Catalyst. What is the specific commitment you are making to show up differently in that relationship -- starting this week?"
-"Third: Your Communication Practice. Based on what you learned in this program, what is the one communication behavior you are going to practice consistently -- not as a goal, but as a daily intention?"
-Tag: <COACH_INSIGHT>COMPLETE ACTION PLAN: Legacy=[legacy]. Catalyst Commitment=[specific commitment]. Daily Practice=[behavior].</COACH_INSIGHT>
+STEP 1 -- INTRO: "Your Communication Action Plan has three parts. These are not goals. They are commitments. Your answers become the plan -- and they will be saved to your Action Plan tab in My CQ."
+STEP 2 -- LEGACY: "First: Your CQ Legacy. How do you want to be known as a communicator? Tell me the final version -- the one you are ready to commit to."
+STEP 3 -- CATALYST: "Second: Your Catalyst Commitment. What is the specific thing you are going to do differently with [Catalyst name] -- starting this week? Not a direction. A behavior. Something someone could observe."
+STEP 4 -- PRACTICE: "Third: Your Daily Communication Practice. Based on everything in this program -- what is the one behavior you are going to practice consistently? Not a goal, not a value. A specific daily action."
+STEP 5 -- CAPTURE: Once you have all three answers, immediately emit this tag with their exact words filled in:
+<COMPLETE_ACTION_PLAN legacy="[their legacy statement]" catalyst_commitment="[their specific commitment]" daily_practice="[their daily practice]"/>
+Also emit: <COACH_INSIGHT>PROGRAM COMPLETE -- Legacy: [legacy]. Catalyst Commitment: [commitment]. Daily Practice: [practice].</COACH_INSIGHT>
 
-SECTION 4: Close
-"You have done real work here. The awareness you have built, the insights you have captured, the plan you just made -- that is not a program completion. That is a starting line."
-"The people in your life -- starting with your Catalyst -- are going to notice. What is the first conversation you are going to have differently?"
+SECTION 4: The Commitment Close
+STEP 1: "One last thing. I want you to say it in one sentence. Starting with: My next step is..."
+STEP 2: After they give their one sentence, reflect it back and close genuinely: "That is it. That is the work. The conversations ahead of you -- starting with [Catalyst name] -- are going to be different because of what you built here. Not because you learned something new. Because you decided to see yourself more clearly and do something about it. Go."
+STEP 3: Emit: <MODULE_ADVANCE n="6"/>
+
 
 ---
 
-ARTIFACT TAGS (embed hidden in response when appropriate):
+HOW ARTIFACT TAGS WORK -- READ THIS CAREFULLY:
+When the module instructions say to drop a tag, you MUST include that exact tag string literally in your response text. The app parses your response and the tag triggers a UI component. If you omit the tag, the component never appears and the participant misses the activity. Tags are NOT hidden, NOT metadata, NOT optional -- they are required literal text output.
+
+EXAMPLE of a correct response that drops a proficiency slider:
+"Let us start with a baseline on empathy. <SHOW_PROFICIENCY_RATING topic="Balancing Empathy"/>"
+That is the complete response. The tag is part of the text. The app strips it before display and shows the slider widget instead.
+
+EXAMPLE of a correct response that drops the crisis challenge:
+"I am going to show you the crisis scenario. Build your ADAPT strategy first, then I will play journalist. <SHOW_CRISIS_CHALLENGE/>"
+The tag triggers the full 4-phase crisis activity. Do NOT skip it. Do NOT describe what the activity will look like. Just include the tag.
+
+ARTIFACT TAGS -- include these literally in your response text at the right moment:
 - <CAPTURE_LEGACY>their exact legacy words</CAPTURE_LEGACY>
 - <CAPTURE_CATALYST>catalyst description</CAPTURE_CATALYST>
 - <SHOW_FORTE_UPLOAD/>
-- <SHOW_FORTE_GRAPH tab="green"/> -- drop this when starting to discuss the Primary Profile so participant can see it. Use tab="red" for Adapting Profile discussion, tab="blue" for Current Perceiver. Drop BEFORE asking your question about that profile.
+- <SHOW_FORTE_GRAPH tab="green"/> -- drop BEFORE discussing Primary Profile. Use tab="red" for Adapting, tab="blue" for Current Perceiver.
 - <SHOW_SWITCHES_KNOBS/>
 - <SHOW_GENERATIONS/>
-- <SHOW_QUESTIONING_TENDENCIES/> -- use in Module 5 Section 5.1 when teaching questioning tendencies by style
+- <SHOW_QUESTIONING_TENDENCIES/>
 - <SHOW_LISTENING_TENDENCIES/>
-- <SHOW_CRISIS_CHALLENGE/>
-- <SHOW_REFLECTION section="Section Name" q1="First reflection question" q2="Optional second question"/> -- use at the end of each major section to capture participant insight before bridging to the next topic
-- <SHOW_PROFICIENCY_RATING topic="Balancing Empathy"/> -- use the exact topic name from the list below before starting that section. Topics: "Balancing Empathy", "Earning Trust", "Non-Verbal Communication", "Virtual Communication", "Expanding Safe Spaces", "Got Questions", "Proactive Listening", "Feedback", "Clear Consistent Communication"
-- <TEACH_MOMENT concept="Balancing Empathy"/> -- THIS IS YOUR PRIMARY TEACHING TOOL. Use it INSTEAD of writing teaching content yourself. NEVER explain or summarize a concept in text when you could emit this tag. Available concepts: "Balancing Empathy", "Earning Trust", "Non-Verbal Communication", "ADAPT Model", "Expanding Safe Spaces", "Proactive Listening", "Got Questions", "Feedback". The tag generates a hyper-personalized 3-sentence teaching card built live from the participant profile. Your job is to FRAME before and CONNECT after -- the tag does the actual teaching.
-- <MODULE_ADVANCE n="2"/> (adjust n for each module)
+- <SHOW_CRISIS_CHALLENGE/> -- MANDATORY in Module 4 Section 4. Do not describe the activity. Just include the tag.
+- <SHOW_REFLECTION section="Section Name" q1="First reflection question" q2="Optional second question"/>
+- <SHOW_PROFICIENCY_RATING topic="Balancing Empathy"/> -- exact topic names: "Balancing Empathy", "Earning Trust", "Non-Verbal Communication", "Virtual Communication", "Expanding Safe Spaces", "Got Questions", "Proactive Listening", "Feedback", "Clear Consistent Communication", "Communicating with Challenging People"
+- <TEACH_MOMENT concept="Balancing Empathy"/> -- YOUR PRIMARY TEACHING TOOL. Use instead of writing teaching content. Available: "Balancing Empathy", "Earning Trust", "Non-Verbal Communication", "ADAPT Model", "Expanding Safe Spaces", "Proactive Listening", "Got Questions", "Feedback". Emit the tag and STOP -- do not write teaching text. The card appears in the UI automatically.
+- <MODULE_ADVANCE n="2"/>
 - <COACH_INSIGHT>observation text</COACH_INSIGHT>
+- <COMPLETE_ACTION_PLAN legacy="their final legacy statement" catalyst_commitment="specific observable behavior with their Catalyst starting this week" daily_practice="one specific daily communication behavior"/> -- use ONLY in Module 6 Section 3 after you have all three answers. This tag saves their plan to the Action Plan tab in My CQ.
 
 CRITICAL TEACHING RULE: When step instructions say TEACH, emit <TEACH_MOMENT concept="X"/> and STOP. Do not write the teaching yourself. Do not preview it. The card appears in the interface. Wait for the participant to respond before continuing.
 
@@ -355,6 +398,7 @@ function buildSystemPrompt(profile) {
 }
 
 function parseAIResponse(text) {
+  console.log("[CQ DEBUG] Raw AI response:", text);
   const artifacts = [];
   let clean = text;
   const legacyMatch = clean.match(/<CAPTURE_LEGACY>([\s\S]*?)<\/CAPTURE_LEGACY>/);
@@ -391,10 +435,13 @@ function parseAIResponse(text) {
   if (moduleMatch) { artifacts.push({ type:"module_advance", n:parseInt(moduleMatch[1]) }); clean = clean.replace(moduleMatch[0],""); }
   const insightMatch = clean.match(/<COACH_INSIGHT>([\s\S]*?)<\/COACH_INSIGHT>/);
   if (insightMatch) { artifacts.push({ type:"coach_insight", value:insightMatch[1].trim() }); clean = clean.replace(insightMatch[0],""); }
+  const actionPlanMatch = clean.match(/<COMPLETE_ACTION_PLAN legacy="([^"]*)" catalyst_commitment="([^"]*)" daily_practice="([^"]*)"\s*\/>/); 
+  if (actionPlanMatch) { artifacts.push({ type:"complete_action_plan", legacy:actionPlanMatch[1].trim(), catalystCommitment:actionPlanMatch[2].trim(), dailyPractice:actionPlanMatch[3].trim() }); clean = clean.replace(actionPlanMatch[0],""); }
   // Strip markdown the AI sometimes adds
   clean = clean.replace(/\*\*([^*]+)\*\*/g, '$1');
   clean = clean.replace(/\*([^*]+)\*/g, '$1');
   clean = clean.replace(/\n{3,}/g, '\n\n');
+  console.log("[CQ DEBUG] Parsed artifacts:", artifacts.map(a=>a.type));
   return { text: clean.trim(), artifacts };
 }
 
@@ -642,61 +689,155 @@ const CQ_ESSENTIALS_LIST = [
 ];
 
 const CQEssentialsIntro = ({onContinue}) => {
-  const [expanded, setExpanded] = useState(null);
-  const moduleColors = { "03":"#244169", "04":"#385988", "05":"#5878bd", "06":"#f08b35" };
+  const [selected, setSelected] = React.useState(null);
+  const e = selected !== null ? CQ_ESSENTIALS_LIST[selected] : null;
+
+  // Wheel positions for 10 items around a circle
+  // Center at 160,175, radius 130 for the wheel
+  const cx = 160, cy = 175, r = 128;
+  const itemAngles = CQ_ESSENTIALS_LIST.map((_, i) => {
+    const angle = (i / 10) * 2 * Math.PI - Math.PI / 2;
+    return angle;
+  });
+
+  const moduleColors = {
+    "03": C.navy,
+    "04": C.nm,
+    "05": C.blue,
+    "06": C.orange,
+  };
+
+  // Simple icon shapes per essential (SVG paths, relative to center)
+  const ICONS = [
+    // 0 Balancing Empathy - two figures with heart
+    <g key="0"><circle cx="0" cy="-5" r="3.5" fill="currentColor"/><circle cx="8" cy="-5" r="3.5" fill="currentColor"/><path d="M-2 0 Q4 6 10 0" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round"/></g>,
+    // 1 Earning Trust - handshake
+    <g key="1"><path d="M-5 0 L0 -3 L5 0 L0 3 Z" fill="currentColor" opacity=".9"/><circle cx="0" cy="0" r="2" fill="white"/></g>,
+    // 2 Non-Verbal - figure with speech signals
+    <g key="2"><circle cx="0" cy="-5" r="3" fill="currentColor"/><path d="M-3 -1 L-3 5 L3 5 L3 -1 Z" fill="currentColor" opacity=".7"/><path d="M5 -4 Q8 -2 8 1" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round"/></g>,
+    // 3 Virtual Communication - monitor/screen
+    <g key="3"><rect x="-6" y="-5" width="12" height="9" rx="2" fill="currentColor" opacity=".8"/><rect x="-4" y="-3" width="8" height="5" rx="1" fill="white" opacity=".6"/><rect x="-2" y="4" width="4" height="2" fill="currentColor" opacity=".7"/></g>,
+    // 4 Expanding Safe Spaces - hands up / shelter
+    <g key="4"><path d="M0 -6 L5 0 L-5 0 Z" fill="currentColor"/><path d="M-6 2 Q-3 -1 0 0 Q3 -1 6 2" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round"/></g>,
+    // 5 Challenging People - two figures facing
+    <g key="5"><circle cx="-4" cy="-5" r="3" fill="currentColor"/><circle cx="4" cy="-5" r="3" fill="currentColor"/><path d="M-4 -2 L-4 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><path d="M4 -2 L4 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></g>,
+    // 6 Got Questions? - question mark
+    <g key="6"><path d="M-2 -6 Q0 -9 3 -6 Q5 -4 2 -1 L2 1" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/><circle cx="2" cy="4" r="1.5" fill="currentColor"/></g>,
+    // 7 Proactive Listening - ear/wave
+    <g key="7"><path d="M-3 -5 Q3 -5 4 0 Q5 5 0 5 L-2 3" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round"/><path d="M-4 -2 Q-1 -2 0 0 Q1 2 -1 3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round"/></g>,
+    // 8 Feedback - speech bubbles
+    <g key="8"><rect x="-6" y="-6" width="9" height="7" rx="2" fill="currentColor" opacity=".85"/><path d="M-4 1 L-6 4 L-1 1" fill="currentColor" opacity=".85"/><rect x="-1" y="-1" width="8" height="6" rx="2" fill="currentColor" opacity=".5"/></g>,
+    // 9 Clear Consistent - target/bullseye
+    <g key="9"><circle cx="0" cy="0" r="7" fill="none" stroke="currentColor" strokeWidth="1.5"/><circle cx="0" cy="0" r="4" fill="none" stroke="currentColor" strokeWidth="1.5"/><circle cx="0" cy="0" r="2" fill="currentColor"/></g>,
+  ];
 
   return (
     <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
       {/* Header */}
-      <div style={{background:`linear-gradient(135deg, ${C.navy}, #385988)`,padding:"16px 16px"}}>
-        <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".14em",textTransform:"uppercase",marginBottom:4}}>The Foundation</div>
-        <div style={{fontSize:16,fontWeight:900,color:"#fff",marginBottom:4}}>The 10 CQ Essentials</div>
-        <div style={{fontSize:12.5,color:"rgba(255,255,255,.65)",lineHeight:1.55}}>
-          These are the behavioral practices that define Communication Intelligence in action. You will rate yourself on each one throughout this program -- and by the final session, your ratings become the backbone of your personal action plan.
+      <div style={{background:`linear-gradient(135deg, ${C.navy}, #385988)`,padding:"14px 16px"}}>
+        <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".14em",textTransform:"uppercase",marginBottom:3}}>The Foundation</div>
+        <div style={{fontSize:15,fontWeight:900,color:"#fff",marginBottom:3}}>The 10 CQ Essentials</div>
+        <div style={{fontSize:11.5,color:"rgba(255,255,255,.65)",lineHeight:1.5}}>
+          Tap any essential to learn more. You will rate yourself on each one throughout this program.
         </div>
       </div>
 
-      <div style={{padding:"14px 14px"}}>
-        <div style={{fontSize:12,color:"rgba(36,65,105,.5)",marginBottom:12,fontStyle:"italic"}}>Tap any essential to learn more. Each one has hidden depth.</div>
+      {/* Wheel */}
+      <div style={{position:"relative",background:"rgba(36,65,105,.02)"}}>
+        <svg width="320" height="350" viewBox="0 0 320 350" style={{display:"block",margin:"0 auto"}}>
+          {/* Subtle ring tracks */}
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(36,65,105,.07)" strokeWidth="36"/>
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(36,65,105,.04)" strokeWidth="1"/>
 
-        {/* Essentials list */}
-        <div style={{display:"flex",flexDirection:"column",gap:5,marginBottom:14}}>
-          {CQ_ESSENTIALS_LIST.map((e,i)=>(
-            <div key={e.id} onClick={()=>setExpanded(expanded===i?null:i)}
-              style={{borderRadius:11,border:`1.5px solid ${expanded===i?C.navy:"rgba(36,65,105,.1)"}`,background:expanded===i?"rgba(36,65,105,.03)":"#fff",cursor:"pointer",overflow:"hidden",transition:"all .2s"}}>
-              <div style={{padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
-                <div style={{width:26,height:26,borderRadius:8,background:expanded===i?C.navy:"rgba(36,65,105,.06)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:900,color:expanded===i?"#fff":C.navy,flexShrink:0}}>
-                  {String(i+1).padStart(2,"0")}
-                </div>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:13,fontWeight:700,color:C.navy,lineHeight:1.2}}>{e.label}</div>
-                  <div style={{fontSize:10,color:"rgba(36,65,105,.4)",marginTop:1,fontWeight:600}}>Covered in Module {e.module}</div>
-                </div>
-                <div style={{fontSize:14,color:"rgba(36,65,105,.25)",transform:expanded===i?"rotate(90deg)":"none",transition:"transform .2s",flexShrink:0}}>›</div>
-              </div>
-              {expanded===i&&(
-                <div style={{padding:"0 12px 12px 48px"}}>
-                  <div style={{fontSize:12.5,color:C.navy,lineHeight:1.6,marginBottom:8}}>{e.principle}</div>
-                  <div style={{display:"flex",gap:6}}>
-                    <div style={{flex:1,background:"rgba(46,125,50,.07)",borderRadius:8,padding:"8px 10px"}}>
-                      <div style={{fontSize:9,fontWeight:800,color:"#2e7d32",letterSpacing:".1em",textTransform:"uppercase",marginBottom:3}}>Health</div>
-                      <div style={{fontSize:11.5,color:C.navy,lineHeight:1.4}}>{e.health}</div>
-                    </div>
-                    <div style={{flex:1,background:"rgba(192,57,43,.07)",borderRadius:8,padding:"8px 10px"}}>
-                      <div style={{fontSize:9,fontWeight:800,color:"#c0392b",letterSpacing:".1em",textTransform:"uppercase",marginBottom:3}}>Watch for</div>
-                      <div style={{fontSize:11.5,color:C.navy,lineHeight:1.4}}>{e.unhealth}</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+          {/* Module color arc segments (faint) */}
+          {CQ_ESSENTIALS_LIST.map((item, i) => {
+            const startAngle = itemAngles[i] - (Math.PI / 10) + 0.04;
+            const endAngle = itemAngles[i] + (Math.PI / 10) - 0.04;
+            const x1 = cx + (r) * Math.cos(startAngle);
+            const y1 = cy + (r) * Math.sin(startAngle);
+            const x2 = cx + (r) * Math.cos(endAngle);
+            const y2 = cy + (r) * Math.sin(endAngle);
+            const col = moduleColors[item.module] || C.navy;
+            return (
+              <path key={i}
+                d={`M ${cx + (r-18)*Math.cos(startAngle)} ${cy + (r-18)*Math.sin(startAngle)} A ${r-18} ${r-18} 0 0 1 ${cx + (r-18)*Math.cos(endAngle)} ${cy + (r-18)*Math.sin(endAngle)}`}
+                fill="none" stroke={col} strokeWidth="2" opacity={selected === i ? "1" : "0.3"}
+              />
+            );
+          })}
+
+          {/* Essential nodes */}
+          {CQ_ESSENTIALS_LIST.map((item, i) => {
+            const angle = itemAngles[i];
+            const x = cx + r * Math.cos(angle);
+            const y = cy + r * Math.sin(angle);
+            const col = moduleColors[item.module] || C.navy;
+            const isSelected = selected === i;
+            const nodeR = 18;
+
+            return (
+              <g key={i} onClick={() => setSelected(selected === i ? null : i)} style={{cursor:"pointer"}}>
+                <circle cx={x} cy={y} r={nodeR + 2} fill={isSelected ? col : "rgba(36,65,105,.06)"} opacity={isSelected ? 0.15 : 0}/>
+                <circle cx={x} cy={y} r={nodeR} fill={isSelected ? col : "#fff"} stroke={col} strokeWidth={isSelected ? 0 : 1.5}/>
+                <g transform={`translate(${x},${y})`} style={{color: isSelected ? "#fff" : col}}>
+                  {ICONS[i]}
+                </g>
+              </g>
+            );
+          })}
+
+          {/* Center CQ logo area */}
+          <circle cx={cx} cy={cy} r="52" fill="#fff" stroke="rgba(36,65,105,.08)" strokeWidth="1"/>
+          {/* CQ text mark */}
+          <text x={cx} y={cy - 8} textAnchor="middle" fontSize="22" fontWeight="900" fill={C.navy} fontFamily="-apple-system,'Segoe UI',Arial,sans-serif">CQ</text>
+          <text x={cx} y={cy + 10} textAnchor="middle" fontSize="9" fontWeight="700" fill="rgba(36,65,105,.5)" fontFamily="-apple-system,'Segoe UI',Arial,sans-serif" letterSpacing=".1em">ESSENTIALS</text>
+          <text x={cx} y={cy + 24} textAnchor="middle" fontSize="11" fontWeight="800" fill={C.orange} fontFamily="-apple-system,'Segoe UI',Arial,sans-serif">10</text>
+
+          {/* Module color legend dots at bottom */}
+          {[["03",C.navy,"Mod 3"],["04",C.nm,"Mod 4"],["05",C.blue,"Mod 5"],["06",C.orange,"Mod 6"]].map(([mod,col,lbl],i) => (
+            <g key={mod}>
+              <circle cx={82 + i * 52} cy={332} r="4" fill={col}/>
+              <text x={90 + i * 52} y={336} fontSize="9" fontWeight="700" fill="rgba(36,65,105,.5)" fontFamily="-apple-system,'Segoe UI',Arial,sans-serif">{lbl}</text>
+            </g>
           ))}
-        </div>
+        </svg>
+      </div>
 
-        <div style={{background:"rgba(244,188,45,.1)",borderRadius:12,padding:"12px 14px",marginBottom:14,borderLeft:`3px solid ${C.gold}`}}>
-          <div style={{fontSize:12.5,color:C.navy,lineHeight:1.6,fontStyle:"italic"}}>"At first glance these might look basic. They are not. Each one has a hidden depth -- a set of specific techniques and common pitfalls that we will explore together."</div>
+      {/* Detail panel - shows when item selected */}
+      {e && (
+        <div style={{margin:"0 14px 14px",borderRadius:12,border:"1.5px solid rgba(36,65,105,.12)",overflow:"hidden"}}>
+          <div style={{padding:"11px 14px",background:moduleColors[e.module]||C.navy,display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:22,height:22,borderRadius:6,background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:900,color:"#fff",flexShrink:0}}>
+              {String(CQ_ESSENTIALS_LIST.indexOf(e)+1).padStart(2,"0")}
+            </div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>{e.label}</div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,.6)",marginTop:1}}>Module {e.module}</div>
+            </div>
+          </div>
+          <div style={{padding:"10px 14px"}}>
+            <div style={{fontSize:12.5,color:C.navy,lineHeight:1.6,marginBottom:10}}>{e.principle}</div>
+            <div style={{display:"flex",gap:6}}>
+              <div style={{flex:1,background:"rgba(46,125,50,.07)",borderRadius:8,padding:"8px 10px"}}>
+                <div style={{fontSize:9,fontWeight:800,color:"#2e7d32",letterSpacing:".1em",textTransform:"uppercase",marginBottom:3}}>Healthy</div>
+                <div style={{fontSize:11,color:C.navy,lineHeight:1.4}}>{e.health}</div>
+              </div>
+              <div style={{flex:1,background:"rgba(192,57,43,.07)",borderRadius:8,padding:"8px 10px"}}>
+                <div style={{fontSize:9,fontWeight:800,color:"#c0392b",letterSpacing:".1em",textTransform:"uppercase",marginBottom:3}}>Watch for</div>
+                <div style={{fontSize:11,color:C.navy,lineHeight:1.4}}>{e.unhealth}</div>
+              </div>
+            </div>
+          </div>
         </div>
+      )}
 
+      {!e && (
+        <div style={{margin:"0 14px 14px",background:"rgba(244,188,45,.08)",borderRadius:12,padding:"11px 14px",borderLeft:`3px solid ${C.gold}`}}>
+          <div style={{fontSize:12,color:C.navy,lineHeight:1.6,fontStyle:"italic"}}>"At first glance these might look basic. They are not. Each one has hidden depth -- techniques and common pitfalls we will explore together."</div>
+        </div>
+      )}
+
+      <div style={{padding:"0 14px 14px"}}>
         <button onClick={onContinue} style={{width:"100%",padding:12,background:C.navy,border:"none",borderRadius:11,cursor:"pointer",fontSize:13,fontWeight:800,color:"#fff"}}>
           Got it -- let us dive in
         </button>
@@ -704,6 +845,7 @@ const CQEssentialsIntro = ({onContinue}) => {
     </div>
   );
 };
+
 // Single Forte line chart matching real report style
 const ForteLineChart = ({scores, color, label}) => {
   const W = 280, H = 140, PAD = 28;
@@ -2450,13 +2592,28 @@ const MyCQPanel = ({open,onClose,legacy,catalyst,insights,currentModule,notes,se
             ) : <Card label="CQ Essentials" content={null} empty="Your ratings will appear here as you progress through the program." />}
           </>}
           {tab==="plan"&&<>
-            <div style={{fontSize:12.5,color:"#888",lineHeight:1.55,marginBottom:14,fontStyle:"italic"}}>Auto-populates as you progress through all 6 modules.</div>
-            {[["North Star - CQ Legacy",legacy?`"${legacy}"`:null,"Complete Module 01"],
-              ["Primary Relationship - CQ Catalyst",catalyst||null,"Complete Module 01"],
-              ["Communication Strengths",null,"Take Forte Profile in Module 02"],
-              ["ADAPT Strategies",null,"Builds in Module 03"],
-              ["Active Commitments",null,"Added after each module"]].map(([label,content,empty])=>(
-              <Card key={label} label={label} content={content} empty={empty} />))}
+            {insights.actionPlan ? (
+              <>
+                <div style={{background:"rgba(244,188,45,.1)",borderRadius:12,padding:"11px 14px",marginBottom:14,borderLeft:"3px solid #f4bc2d"}}>
+                  <div style={{fontSize:11,fontWeight:800,color:C.navy,marginBottom:2}}>Program Complete</div>
+                  <div style={{fontSize:12,color:"rgba(36,65,105,.6)"}}>Your personal Communication Action Plan</div>
+                </div>
+                <Card label="CQ Legacy — How I Want to Be Known" content={insights.actionPlan.legacy ? `"${insights.actionPlan.legacy}"` : null} empty="Not yet captured" />
+                <Card label="CQ Catalyst Commitment" content={insights.actionPlan.catalystCommitment||null} empty="Not yet captured" />
+                <Card label="Daily Communication Practice" content={insights.actionPlan.dailyPractice||null} empty="Not yet captured" />
+                {(insights.observations||[]).filter(o=>o.startsWith("MODULE") && o.includes("COMMITMENT")).map((obs,i)=>(
+                  <Card key={i} label={`Module Commitment ${i+1}`} content={obs.replace(/MODULE.*?COMMITMENT:\s*/i,"")} empty="" />
+                ))}
+              </>
+            ) : (
+              <>
+                <div style={{fontSize:12.5,color:"#888",lineHeight:1.55,marginBottom:14,fontStyle:"italic"}}>Auto-populates as you complete Module 6.</div>
+                <Card label="CQ Legacy — How I Want to Be Known" content={legacy?`"${legacy}"`:null} empty="Complete Module 01" />
+                <Card label="CQ Catalyst" content={catalyst||null} empty="Complete Module 01" />
+                <Card label="Catalyst Commitment" content={null} empty="Built in Module 06" />
+                <Card label="Daily Communication Practice" content={null} empty="Built in Module 06" />
+              </>
+            )}
           </>}
           {tab==="notes"&&<NotesTab notes={notes} onSave={setNotes} />}
         </div>
@@ -2728,7 +2885,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const [journeyOpen,   setJourneyOpen]   = useState(false);
   const [panelOpen,     setPanelOpen]     = useState(false);
   const [panelDot,      setPanelDot]      = useState(false);
-  const [insights,      setInsights]      = useState({observations:[],commitments:[],reflections:[]});
+  const [insights,      setInsights]      = useState({observations:[],commitments:[],reflections:[],actionPlan:null});
   const [notes,         setNotes]         = useState("");
   const [error,         setError]         = useState(null);
   const [quickReplies,  setQuickReplies]  = useState([]);
@@ -2920,6 +3077,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
         }
         if(a.type==="module_advance"){ setCurrentModule(a.n); }
         if(a.type==="coach_insight"){ setInsights(prev=>({...prev,observations:[...prev.observations,a.value]})); setPanelDot(true); }
+        if(a.type==="complete_action_plan"){ setInsights(prev=>({...prev,actionPlan:{legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}})); setPanelDot(true); }
         if(a.type==="show_forte_graph"){ setTimeout(()=>addMsg("coach","",{type:"forte_graph_focused", tab:a.tab||"green", forteData:forteData}),400); }
         if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
         if(a.type==="show_generations"){ setTimeout(()=>addMsg("coach","",{type:"gencard"}),400); }
@@ -3092,6 +3250,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
                   arts.forEach(a=>{
                     if(a.type==="module_advance") setCurrentModule(a.n);
                     if(a.type==="coach_insight") setInsights(prev=>({...prev,observations:[...prev.observations,a.value]}));
+                    if(a.type==="complete_action_plan") setInsights(prev=>({...prev,actionPlan:{legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}}));
                     if(a.type==="show_forte_graph") setTimeout(()=>setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:"",artifact:{type:"forte_graph_focused",tab:a.tab||"green",forteData:fd}}]),300);
                   });
                   const finalText = cleanText.trim();
