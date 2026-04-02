@@ -3148,15 +3148,34 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
       const finalText = cleanText.trim();
       if(finalText.length > 0) addMsg("coach", finalText);
 
-      // CRISIS CHALLENGE SAFETY NET: If Hoop mentions the crisis scenario in Module 4
-      // but the tag wasn't parsed (Claude skipped it), auto-inject the artifact.
-      // This fires 1.2s after the message so it appears after the text bubble settles.
+      // CRISIS CHALLENGE GUARANTEED TRIGGER
+      // Fires the crisis challenge artifact if ANY of these are true:
+      // 1. Claude emitted the tag (parsed above in artifacts array)
+      // 2. Claude's response mentions the crisis scenario with trigger phrases
+      // 3. The previous coach message set up the crisis challenge intro
       const crisisAlreadyDispatched = artifacts.some(a=>a.type==="show_crisis_challenge");
       const crisisAlreadyInChat = messages.some(m=>m.artifact&&m.artifact.type==="crisis_challenge");
-      if(!crisisAlreadyDispatched && !crisisAlreadyInChat && currentModule >= 4 &&
-         finalText.toLowerCase().includes("crisis scenario") &&
-         (finalText.toLowerCase().includes("adapt strategy") || finalText.toLowerCase().includes("play the journalist") || finalText.toLowerCase().includes("play journalist"))) {
-        setTimeout(()=>addMsg("coach","",{type:"crisis_challenge"}),1200);
+      if(!crisisAlreadyDispatched && !crisisAlreadyInChat && currentModule >= 4) {
+        const ft = finalText.toLowerCase();
+        // Trigger 1: Text mentions crisis scenario with key phrases
+        const textTrigger = ft.includes("crisis scenario") && (
+          ft.includes("adapt strategy") || ft.includes("play the journalist") ||
+          ft.includes("play journalist") || ft.includes("build your") || 
+          ft.includes("show you the crisis")
+        );
+        // Trigger 2: Previous coach message was the energizing activity setup
+        const prevCoachMsgs = messages.filter(m=>m.role==="coach"&&m.text);
+        const lastCoachText = prevCoachMsgs.length > 0 ? prevCoachMsgs[prevCoachMsgs.length-1].text.toLowerCase() : "";
+        const prevSetupTrigger = lastCoachText.includes("most energizing activity") || 
+                                  lastCoachText.includes("put everything you have learned under pressure");
+        // Trigger 3: Claude mentions crisis/pressure/hot seat in context of launching  
+        const contextTrigger = (ft.includes("crisis") || ft.includes("hot seat") || ft.includes("under pressure")) && 
+                                (ft.includes("scenario") || ft.includes("defect") || ft.includes("product") || ft.includes("clients") || ft.includes("response")) &&
+                                (ft.includes("adapt") || ft.includes("strategy") || ft.includes("build") || ft.includes("lead"));
+        
+        if(textTrigger || prevSetupTrigger || contextTrigger) {
+          setTimeout(()=>addMsg("coach","",{type:"crisis_challenge"}),1200);
+        }
       }
 
     } catch(err) {
