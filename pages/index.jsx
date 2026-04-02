@@ -535,7 +535,7 @@ const Bubble = ({role,text,isLast,prevRole}) => {
 
   const bubbleStyle = {
     maxWidth:"82%",
-    minWidth: isCoach ? 0 : 44,
+    minWidth: isCoach ? 0 : 52,
     padding: isCoach ? "11px 14px" : "11px 14px",
     fontSize:15,
     lineHeight:1.6,
@@ -560,7 +560,7 @@ const Bubble = ({role,text,isLast,prevRole}) => {
       flexDirection:"column",
       alignItems: isCoach ? "flex-start" : "flex-end",
       // Extra top gap when switching sides; user bubbles get more breathing room
-      marginTop: prevRole && prevRole !== role ? 10 : (isCoach ? 2 : 6),
+      marginTop: prevRole && prevRole !== role ? 14 : (isCoach ? 2 : 6),
     }}>
       {/* Avatar only shows on first bubble in a coach run */}
       {isCoach && showAvatar && (
@@ -3095,6 +3095,17 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
       // Only add text message if there's meaningful content after stripping tags
       const finalText = cleanText.trim();
       if(finalText.length > 0) addMsg("coach", finalText);
+
+      // CRISIS CHALLENGE SAFETY NET: If Hoop mentions the crisis scenario in Module 4
+      // but the tag wasn't parsed (Claude skipped it), auto-inject the artifact.
+      // This fires 1.2s after the message so it appears after the text bubble settles.
+      const crisisAlreadyDispatched = artifacts.some(a=>a.type==="show_crisis_challenge");
+      const crisisAlreadyInChat = messages.some(m=>m.artifact&&m.artifact.type==="crisis_challenge");
+      if(!crisisAlreadyDispatched && !crisisAlreadyInChat && currentModule >= 4 &&
+         finalText.toLowerCase().includes("crisis scenario") &&
+         (finalText.toLowerCase().includes("adapt strategy") || finalText.toLowerCase().includes("play the journalist") || finalText.toLowerCase().includes("play journalist"))) {
+        setTimeout(()=>addMsg("coach","",{type:"crisis_challenge"}),1200);
+      }
 
     } catch(err) {
       setError("Coach error: " + (err.message||"unknown error"));
