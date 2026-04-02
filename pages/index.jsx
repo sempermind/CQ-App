@@ -310,7 +310,7 @@ Also emit: <COACH_INSIGHT>PROGRAM COMPLETE -- Legacy: [legacy]. Catalyst Commitm
 SECTION 4: The Commitment Close
 STEP 1: "One last thing. I want you to say it in one sentence. Starting with: My next step is..."
 STEP 2: After they give their one sentence, reflect it back and close genuinely: "That is it. That is the work. The conversations ahead of you -- starting with [Catalyst name] -- are going to be different because of what you built here. Not because you learned something new. Because you decided to see yourself more clearly and do something about it. Go."
-STEP 3: Emit: <MODULE_ADVANCE n="6"/>
+STEP 3: Emit: <PROGRAM_COMPLETE/> and <MODULE_ADVANCE n="7"/>
 
 
 ---
@@ -342,6 +342,7 @@ ARTIFACT TAGS -- include these literally in your response text at the right mome
 - <MODULE_ADVANCE n="2"/>
 - <COACH_INSIGHT>observation text</COACH_INSIGHT>
 - <COMPLETE_ACTION_PLAN legacy="their final legacy statement" catalyst_commitment="specific observable behavior with their Catalyst starting this week" daily_practice="one specific daily communication behavior"/> -- use ONLY in Module 6 Section 3 after you have all three answers. This tag saves their plan to the Action Plan tab in My CQ.
+- <PROGRAM_COMPLETE/> -- emit ONCE at the very end of Module 6 after the commitment close. This triggers the program completion card and closes the session.
 
 CRITICAL TEACHING RULE: When step instructions say TEACH, emit <TEACH_MOMENT concept="X"/> and STOP. Do not write the teaching yourself. Do not preview it. The card appears in the interface. Wait for the participant to respond before continuing.
 
@@ -352,6 +353,14 @@ Legacy: {legacy}
 Catalyst: {catalyst}
 Forte Profile: {forteData}
 Current Module: {currentModule}
+
+CRITICAL -- MODULE LOCK: You are currently running MODULE {currentModule}. This is not informational -- it is a hard constraint.
+- ONLY execute the instructions for MODULE {currentModule} in this response.
+- Modules 1 through {currentModule} minus 1 are COMPLETE. Do NOT revisit, repeat, or reference their activities.
+- Do NOT jump ahead to modules above {currentModule}.
+- If you are unsure where the participant is within MODULE {currentModule}, look at the conversation history and continue from exactly where it left off.
+- The participant has NOT done the Generations card game, ADAPT planner, Switches/Knobs, or any other activity unless it appears in the conversation history above.
+- When in doubt about what to do next, ask yourself: "What does MODULE {currentModule} say to do next?" Then do exactly that.
 
 CQ PROGRAM QUOTES -- Use these naturally at powerful moments, when a participant has a breakthrough, or when bridging between sections. Do not force them -- let them land when the moment earns them:
 - "Every conversation has the power to change the trajectory of a life."
@@ -433,6 +442,8 @@ function parseAIResponse(text) {
   if (teachMatch) { artifacts.push({ type:"teach_moment", concept:teachMatch[1] }); clean = clean.replace(teachMatch[0],""); }
   const moduleMatch = clean.match(/<MODULE_ADVANCE n="(\d+)"\s*\/>/);
   if (moduleMatch) { artifacts.push({ type:"module_advance", n:parseInt(moduleMatch[1]) }); clean = clean.replace(moduleMatch[0],""); }
+  const programCompleteMatch = clean.match(/<PROGRAM_COMPLETE\s*\/>/);
+  if (programCompleteMatch) { artifacts.push({ type:"program_complete" }); clean = clean.replace(programCompleteMatch[0],""); }
   const insightMatch = clean.match(/<COACH_INSIGHT>([\s\S]*?)<\/COACH_INSIGHT>/);
   if (insightMatch) { artifacts.push({ type:"coach_insight", value:insightMatch[1].trim() }); clean = clean.replace(insightMatch[0],""); }
   const actionPlanMatch = clean.match(/<COMPLETE_ACTION_PLAN legacy="([^"]*)" catalyst_commitment="([^"]*)" daily_practice="([^"]*)"\s*\/>/); 
@@ -604,6 +615,45 @@ const ErrorBanner = ({msg,onDismiss}) => (
     <button onClick={onDismiss} style={{background:"none",border:"none",color:C.red,cursor:"pointer",fontSize:16,lineHeight:1,flexShrink:0}}>x</button>
   </div>
 );
+
+const ProgramCompleteCard = () => {
+  const C_navy = "#244169", C_gold = "#f4bc2d", C_orange = "#f08b35", C_white = "#ffffff";
+  return (
+    <div style={{margin:"12px 14px",borderRadius:20,overflow:"hidden",boxShadow:"0 4px 24px rgba(36,65,105,.15)"}}>
+      <div style={{background:`linear-gradient(135deg, ${C_navy}, #1a3052)`,padding:"28px 20px 24px",textAlign:"center"}}>
+        <div style={{fontSize:36,marginBottom:12}}>🎓</div>
+        <div style={{fontSize:11,fontWeight:800,color:C_gold,letterSpacing:".16em",textTransform:"uppercase",marginBottom:8}}>Program Complete</div>
+        <div style={{fontSize:20,fontWeight:900,color:C_white,lineHeight:1.3,marginBottom:8}}>Communication Intelligence Certified</div>
+        <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.6}}>You have completed all 6 modules of the CQ Program.</div>
+      </div>
+      <div style={{background:C_white,padding:"18px 20px"}}>
+        <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:16}}>
+          {[
+            ["Module 1","Commit to Become Your Best"],
+            ["Module 2","Unlock Your Communication Power"],
+            ["Module 3","Master the Art of Adapting"],
+            ["Module 4","Transform Your Team & Client Relationships"],
+            ["Module 5","Supercharge Listening & Feedback"],
+            ["Module 6","Craft Your Communication Action Plan"],
+          ].map(([mod,title])=>(
+            <div key={mod} style={{display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:20,height:20,borderRadius:"50%",background:C_gold,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <span style={{fontSize:10,fontWeight:900,color:C_navy}}>✓</span>
+              </div>
+              <div>
+                <span style={{fontSize:10,fontWeight:800,color:C_orange,textTransform:"uppercase",letterSpacing:".08em"}}>{mod} </span>
+                <span style={{fontSize:12,color:C_navy,fontWeight:600}}>{title}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{background:"rgba(244,188,45,.08)",borderRadius:12,padding:"12px 14px",borderLeft:"3px solid #f4bc2d"}}>
+          <div style={{fontSize:12,color:C_navy,lineHeight:1.6,fontStyle:"italic"}}>"Every conversation has the power to change the trajectory of a life. You now have the tools to make that happen."</div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const MilestoneCard = ({n,title,sub}) => (
   <div style={{margin:"6px 14px",padding:16,background:C.navy,borderRadius:16}}>
@@ -2882,6 +2932,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const [legacy,        setLegacy]        = useState("");
   const [catalyst,      setCatalyst]      = useState("");
   const [currentModule, setCurrentModule] = useState(1);
+  const [programComplete, setProgramComplete] = useState(false);
   const [journeyOpen,   setJourneyOpen]   = useState(false);
   const [panelOpen,     setPanelOpen]     = useState(false);
   const [panelDot,      setPanelDot]      = useState(false);
@@ -3075,7 +3126,8 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
           // Show the Forte entry screen after a brief delay so the coach message renders first
           setTimeout(()=>setShowForteUpload(true),1800); 
         }
-        if(a.type==="module_advance"){ setCurrentModule(a.n); }
+        if(a.type==="module_advance"){ setCurrentModule(a.n); if(a.n>=7) setProgramComplete(true); }
+        if(a.type==="program_complete"){ setProgramComplete(true); }
         if(a.type==="coach_insight"){ setInsights(prev=>({...prev,observations:[...prev.observations,a.value]})); setPanelDot(true); }
         if(a.type==="complete_action_plan"){ setInsights(prev=>({...prev,actionPlan:{legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}})); setPanelDot(true); }
         if(a.type==="show_forte_graph"){ setTimeout(()=>addMsg("coach","",{type:"forte_graph_focused", tab:a.tab||"green", forteData:forteData}),400); }
@@ -3118,6 +3170,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
   const renderArtifact = (a) => {
     if(!a) return null;
     if(a.type==="milestone") return <MilestoneCard n={a.n} title={a.title||""} sub={a.sub||""} />;
+    if(a.type==="program_complete") return <ProgramCompleteCard />;
     if(a.type==="legacy")    return <LegacyCard text={a.text||legacy} />;
     // For forte artifacts, prefer forteData passed directly in artifact object (avoids async state timing issues)
     const fd = a.forteData || forteData;
@@ -3259,7 +3312,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
                 if(aiText){
                   const {text:cleanText,artifacts:arts} = parseAIResponse(aiText);
                   arts.forEach(a=>{
-                    if(a.type==="module_advance") setCurrentModule(a.n);
+                    if(a.type==="module_advance"){ setCurrentModule(a.n); if(a.n>=7) setProgramComplete(true); }
                     if(a.type==="coach_insight") setInsights(prev=>({...prev,observations:[...prev.observations,a.value]}));
                     if(a.type==="complete_action_plan") setInsights(prev=>({...prev,actionPlan:{legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}}));
                     if(a.type==="show_forte_graph") setTimeout(()=>setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:"",artifact:{type:"forte_graph_focused",tab:a.tab||"green",forteData:fd}}]),300);
@@ -3310,16 +3363,25 @@ const DEV_MODULE_HISTORY = {
     { id:3.4, role:"coach", text:"You just did the thing. You named her behavior pattern without judging it. That is the foundation of adaptive communication. Let us take that lens into the generational layer now." },
   ],
   4: [
-    { id:4.1, role:"coach", text:"Mike — three modules in. You know your profile, you have started reading others, you have a toolkit for adapting. Now we go into the most complex territory: team and client dynamics." },
-    { id:4.2, role:"coach", text:"When your team is in a high-stakes situation, what do you notice about how the communication breaks down?" },
-    { id:4.3, role:"user",  text:"People go quiet or they start talking over each other. The introverts disappear and the extroverts take over and nothing actually gets decided." },
-    { id:4.4, role:"coach", text:"Classic pressure pattern. The extroverts fill the vacuum, the introverts read the room as unsafe. What does Jordan do when that happens?" },
+    { id:4.1, role:"coach", text:"Mike — three modules in. You know your profile, you have started reading others, you have the ADAPT toolkit. Module 4 is where we zoom out and look at the full landscape -- your team, your clients, the people you lead or influence." },
+    { id:4.2, role:"coach", text:"On a scale of one to ten -- how engaged are you feeling in your work right now? Not performing, not coping. Genuinely engaged. What is driving that number?" },
+    { id:4.3, role:"user",  text:"Maybe a 6. I am doing the work but Jordan still drains me more than it should." },
+    { id:4.4, role:"coach", text:"That drain is data. Most disengagement starts with one relationship that never got resolved. The root cause is almost always communication -- people who do not feel heard, understood, or valued. Let us look at what actually drives motivation." },
+    { id:4.5, role:"coach", text:"Looking at your Forte report page 6 -- your motivators and demotivators. Your demotivators are your triggers. What surprises you most on that list?" },
+    { id:4.6, role:"user",  text:"Lack of autonomy is number one. I did not expect that." },
+    { id:4.7, role:"coach", text:"That tracks with your Non-Conformist profile. Now flip it -- do you actually know what motivates Jordan specifically? Not in general. Specifically." },
+    { id:4.8, role:"user",  text:"Honestly, not really. I assume recognition but I have never asked." },
+    { id:4.9, role:"coach", text:"That is the gap most managers never close. Let us look at the style pairing. Your Extrovert drive against Jordan's Introvert need for processing time -- where does that create friction?" },
+    { id:4.10, role:"user", text:"I think I move too fast for them. I want to talk it out in real time and they need to think first." },
+    { id:4.11, role:"coach", text:"Exactly. Now I want to put everything you have learned under pressure. This is the most energizing activity in the entire program." },
   ],
   5: [
-    { id:5.1, role:"coach", text:"Mike — Module 5. Listening and feedback — the two skills most leaders think they have and most teams say they do not experience." },
-    { id:5.2, role:"coach", text:"Let us start with questions. Not how many you ask — but what kind, and when. What is your default question style when someone comes to you with a problem?" },
-    { id:5.3, role:"user",  text:"Honestly I probably jump to solutions. I ask a question or two but I think I am already formulating the answer while they are still talking." },
-    { id:5.4, role:"coach", text:"That is more self-aware than most. Your extrovert pattern processes out loud — your listening and your speaking are happening simultaneously. That is what we are working on." },
+    { id:5.1, role:"coach", text:"Mike — Module 4 is done. You stress-tested your CQ under pressure and built a complete picture of your team and client dynamics. Module 5 is where we supercharge the skills that make everything else land: listening and feedback." },
+    { id:5.2, role:"coach", text:"Let us start with a baseline on questions." },
+    { id:5.3, role:"user",  text:"Ready." },
+    { id:5.4, role:"coach", text:"Your natural tendency as an Extrovert is to ask questions that move things forward -- but sometimes that means you skip the questions that would actually open things up. What is your default question style when Jordan comes to you with a problem?" },
+    { id:5.5, role:"user",  text:"I probably ask one or two clarifying questions and then start problem-solving before they have finished." },
+    { id:5.6, role:"coach", text:"That is the pattern. You are processing and responding simultaneously -- the Extrovert listening trap. The shift is from questions that close the loop to questions that open a door. Let me show you what that looks like in your profile." },
   ],
   6: [
     { id:6.1, role:"coach", text:"Mike — this is the last module. Everything we have built — your profile, your Catalyst work with Jordan, your essential ratings — it all comes together into your personal action plan." },
