@@ -55,7 +55,7 @@ MOVE-ON TRIGGERS: When participant says "move on," "next," "keep going," "I'm go
 
 CORE RULES:
 - Every response ends with a question or a clear direction.
-- When capturing Legacy or Catalyst: acknowledge warmly, mention Insights Journal (tap My CQ top right), ask ONE follow-up question. Then wait. THEN bridge.
+- When capturing Legacy or Catalyst: acknowledge warmly, mention they can check their Insights tab, ask ONE follow-up question. Then wait. THEN bridge.
 - Never jump to the next artifact or screen without framing it first in conversation.
 
 ---
@@ -75,7 +75,7 @@ SECTION 3: Legacy
 Frame: "Here is the question that anchors everything we are going to do together."
 Question: "At the end of this year -- what do you want people to say about you as a communicator? Not your results. Not your title. How do you want people to describe the experience of talking with you?"
 Capture exact words. Tag: <CAPTURE_LEGACY>exact words</CAPTURE_LEGACY>
-Acknowledge: "I am writing that down exactly as you said it -- and I just saved it to your Insights Journal. Tap My CQ in the top right any time to see everything we capture together."
+Acknowledge: "I am writing that down exactly as you said it -- and I just saved it to your Insights Journal. You can check your Insights tab any time to see everything we capture together."
 Follow-up: "Does that feel right? Or is there a word you would change?"
 WAIT for their response. THEN bridge.
 
@@ -299,7 +299,7 @@ STEP 2: "Does it still feel right? Or has everything you have done here deepened
 STEP 3: Wait for their response. Reflect it back specifically. This is a meaningful moment -- do not rush past it.
 
 SECTION 3: Build the Action Plan
-STEP 1 -- INTRO: "Your Communication Action Plan has three parts. These are not goals. They are commitments. Your answers become the plan -- and they will be saved to your Action Plan tab in My CQ."
+STEP 1 -- INTRO: "Your Communication Action Plan has three parts. These are not goals. They are commitments. Your answers become the plan -- and they will be saved to your Insights tab."
 STEP 2 -- LEGACY: "First: Your CQ Legacy. How do you want to be known as a communicator? Tell me the final version -- the one you are ready to commit to."
 STEP 3 -- CATALYST: "Second: Your Catalyst Commitment. What is the specific thing you are going to do differently with [Catalyst name] -- starting this week? Not a direction. A behavior. Something someone could observe."
 STEP 4 -- PRACTICE: "Third: Your Daily Communication Practice. Based on everything in this program -- what is the one behavior you are going to practice consistently? Not a goal, not a value. A specific daily action."
@@ -341,7 +341,7 @@ ARTIFACT TAGS -- include these literally in your response text at the right mome
 - <TEACH_MOMENT concept="Balancing Empathy"/> -- YOUR PRIMARY TEACHING TOOL. Use instead of writing teaching content. Available: "Balancing Empathy", "Earning Trust", "Non-Verbal Communication", "ADAPT Model", "Expanding Safe Spaces", "Proactive Listening", "Got Questions", "Feedback". Emit the tag and STOP -- do not write teaching text. The card appears in the UI automatically.
 - <MODULE_ADVANCE n="2"/>
 - <COACH_INSIGHT>observation text</COACH_INSIGHT>
-- <COMPLETE_ACTION_PLAN legacy="their final legacy statement" catalyst_commitment="specific observable behavior with their Catalyst starting this week" daily_practice="one specific daily communication behavior"/> -- use ONLY in Module 6 Section 3 after you have all three answers. This tag saves their plan to the Action Plan tab in My CQ.
+- <COMPLETE_ACTION_PLAN legacy="their final legacy statement" catalyst_commitment="specific observable behavior with their Catalyst starting this week" daily_practice="one specific daily communication behavior"/> -- use ONLY in Module 6 Section 3 after you have all three answers. This tag saves their plan to the Insights tab.
 - <PROGRAM_COMPLETE/> -- emit ONCE at the very end of Module 6 after the commitment close. This triggers the program completion card and closes the session.
 
 CRITICAL TEACHING RULE: When step instructions say TEACH, emit <TEACH_MOMENT concept="X"/> and STOP. Do not write the teaching yourself. Do not preview it. The card appears in the interface. Wait for the participant to respond before continuing.
@@ -370,6 +370,14 @@ CQ PROGRAM QUOTES -- Use these naturally at powerful moments, when a participant
 - "Clarity is not about saying more. It is about saying exactly the right thing."
 
 MODULE COMMITMENT CAPTURE: At the end of EVERY module, before advancing, ask for a specific commitment: "Before we move on -- what is the one specific thing you are going to do differently this week based on what we just covered? Not a vague intention. A concrete behavior, with a specific person, in a specific situation." Then tag: <COACH_INSIGHT>MODULE [n] COMMITMENT: [their commitment]</COACH_INSIGHT>
+
+NAVIGATION CUES -- use these naturally when the moment is right:
+- After capturing Legacy or Catalyst: "I just saved that to your Insights tab -- you can check it any time."
+- After Forte upload: "Your Communication Profile is now live in your Profile tab -- take a look when you are ready."
+- When Crisis Challenge unlocks: "The Crisis Navigation Challenge is now available in your Practice tab -- you can launch it any time."
+- When Generations unlocks: "The Generations Card Game just unlocked in your Practice tab."
+- At module close: "Check your Journey tab -- you just completed Module [n]."
+- When discussing Forte graphs mid-session: "You can always review your full profile in the Profile tab."
 
 FORTE PAGE 9 -- THE 30-DAY COMMUNICATION HACK: In Module 2, after walking through the three profiles, always direct them to page 9: "Page 9 of your Forte report is where the practical application begins immediately. It shows you the specific tips for closing the gap between how you are adapting and how you are coming across. Read through the tips on page 9. Which one feels most immediately actionable for your situation with your Catalyst?" This is a required step in Module 2.
 
@@ -566,12 +574,12 @@ const Bubble = ({role,text,isLast,prevRole}) => {
 
   return (
     <div style={{
-      padding: isCoach ? "1px 14px 1px" : "1px 14px 1px",
+      padding: isCoach ? "2px 14px 2px" : "2px 14px 2px",
       display:"flex",
       flexDirection:"column",
       alignItems: isCoach ? "flex-start" : "flex-end",
       // Extra top gap when switching sides; user bubbles get more breathing room
-      marginTop: prevRole && prevRole !== role ? 14 : (isCoach ? 2 : 6),
+      marginTop: prevRole && prevRole !== role ? 16 : (isCoach ? 3 : 8),
     }}>
       {/* Avatar only shows on first bubble in a coach run */}
       {isCoach && showAvatar && (
@@ -615,6 +623,63 @@ const ErrorBanner = ({msg,onDismiss}) => (
     <button onClick={onDismiss} style={{background:"none",border:"none",color:C.red,cursor:"pointer",fontSize:16,lineHeight:1,flexShrink:0}}>x</button>
   </div>
 );
+
+// ── MODULE BRIDGE SCREEN ────────────────────────────────────────────────────
+const MOD_BRIDGE_DATA = {
+  1: { color:"#f4bc2d", textColor:"#244169", title:"Commit to Become Your Best",      nextTitle:"Unlock Your Communication Power",  preview:"Your Forte profile, 3 graphs, and perception gaps — the data behind how you communicate." },
+  2: { color:"#244169", textColor:"#ffffff", title:"Unlock Your Communication Power",  nextTitle:"Master the Art of Adapting",        preview:"The ADAPT model, generational dynamics, and your adaptive communication toolkit." },
+  3: { color:"#244169", textColor:"#ffffff", title:"Master the Art of Adapting",       nextTitle:"Transform Team & Client Dynamics",  preview:"Motivators, style pairings, and the Crisis Navigation Challenge." },
+  4: { color:"#385988", textColor:"#ffffff", title:"Transform Team & Client Dynamics", nextTitle:"Supercharge Listening & Feedback",  preview:"Proactive listening, feedback as a gift, and Catalyst message practice." },
+  5: { color:"#5878bd", textColor:"#ffffff", title:"Supercharge Listening & Feedback", nextTitle:"Craft Your Action Plan",            preview:"CQ Essentials summary, your Legacy revisit, and your 3-part action plan." },
+  6: { color:"#f08b35", textColor:"#ffffff", title:"Craft Your Action Plan",           nextTitle:null,                                preview:null },
+};
+
+const ModuleBridge = ({completedModule, commitment, onContinue}) => {
+  const d = MOD_BRIDGE_DATA[completedModule] || MOD_BRIDGE_DATA[1];
+  const nextN = completedModule + 1;
+  const nextD = MOD_BRIDGE_DATA[nextN];
+  const isGold = d.color === "#f4bc2d";
+  return (
+    <div style={{position:"absolute",inset:0,zIndex:500,background:d.color,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+      <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px 20px",textAlign:"center"}}>
+        <div style={{width:64,height:64,borderRadius:"50%",background:"rgba(255,255,255,.15)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:20,border:"2px solid rgba(255,255,255,.25)"}}>
+          <span style={{fontSize:26,color:d.textColor,fontWeight:900}}>✓</span>
+        </div>
+        <div style={{fontSize:10,fontWeight:800,letterSpacing:".14em",textTransform:"uppercase",color:isGold?"rgba(36,65,105,.5)":"rgba(255,255,255,.5)",marginBottom:8}}>
+          Module {String(completedModule).padStart(2,"0")} Complete
+        </div>
+        <div style={{fontSize:21,fontWeight:900,color:d.textColor,lineHeight:1.25,marginBottom:20}}>{d.title}</div>
+        {commitment && (
+          <div style={{background:"rgba(255,255,255,.12)",borderRadius:14,padding:"14px 16px",textAlign:"left",width:"100%",maxWidth:320,backdropFilter:"none"}}>
+            <div style={{fontSize:10,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:isGold?"rgba(36,65,105,.5)":"rgba(255,255,255,.45)",marginBottom:6}}>Your Commitment</div>
+            <div style={{fontSize:13,color:d.textColor,lineHeight:1.55,fontStyle:"italic"}}>"{commitment}"</div>
+          </div>
+        )}
+      </div>
+      {nextD && (
+        <div style={{background:"rgba(0,0,0,.15)",padding:"18px 24px 24px"}}>
+          <div style={{fontSize:10,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:isGold?"rgba(36,65,105,.4)":"rgba(255,255,255,.4)",marginBottom:8,textAlign:"center"}}>Up Next</div>
+          <div style={{background:"rgba(255,255,255,.1)",borderRadius:12,padding:"12px 14px",marginBottom:14}}>
+            <div style={{fontSize:10,fontWeight:700,color:isGold?"rgba(36,65,105,.4)":"rgba(255,255,255,.4)",marginBottom:3}}>Module {String(nextN).padStart(2,"0")}</div>
+            <div style={{fontSize:14,fontWeight:800,color:d.textColor,marginBottom:4}}>{nextD.nextTitle}</div>
+            <div style={{fontSize:11.5,color:isGold?"rgba(36,65,105,.55)":"rgba(255,255,255,.55)",lineHeight:1.5}}>{nextD.preview}</div>
+          </div>
+          <button onClick={onContinue} style={{width:"100%",padding:"14px 0",borderRadius:14,background:"rgba(255,255,255,.18)",border:"1.5px solid rgba(255,255,255,.3)",color:d.textColor,fontSize:15,fontWeight:900,cursor:"pointer"}}>
+            Continue to Module {String(nextN).padStart(2,"0")} →
+          </button>
+        </div>
+      )}
+      {!nextD && (
+        <div style={{padding:"18px 24px 28px"}}>
+          <button onClick={onContinue} style={{width:"100%",padding:"14px 0",borderRadius:14,background:"rgba(255,255,255,.18)",border:"1.5px solid rgba(255,255,255,.3)",color:d.textColor,fontSize:15,fontWeight:900,cursor:"pointer"}}>
+            View Your Action Plan →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 
 const ProgramCompleteCard = () => {
   const C_navy = "#244169", C_gold = "#f4bc2d", C_orange = "#f08b35", C_white = "#ffffff";
@@ -1756,7 +1821,7 @@ const ForteUploadScreen = ({onComplete, onSkip}) => {
   };
 
   return (
-    <div style={{position:"absolute",inset:0,background:"#f5f0e8",zIndex:300,display:"flex",flexDirection:"column",overflowY:"auto"}}>
+    <div style={{position:"absolute",inset:0,background:C.gold,zIndex:300,display:"flex",flexDirection:"column",overflowY:"auto"}}>
       <div style={{background:"#244169",padding:"16px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
         <div>
           <div style={{fontSize:15,fontWeight:800,color:"#fff"}}>Your Forte Profile</div>
@@ -2006,8 +2071,8 @@ const SectionReflection = ({question1, question2, sectionTitle, onSave}) => {
       {saved ? (
         <div style={{padding:"20px 16px",textAlign:"center"}}>
           <div style={{fontSize:24,marginBottom:8}}>✓</div>
-          <div style={{fontSize:14,fontWeight:700,color:C.navy,marginBottom:4}}>Saved to your Insights Journal</div>
-          <div style={{fontSize:12.5,color:"rgba(36,65,105,.5)"}}>Tap My CQ to review your reflections anytime.</div>
+          <div style={{fontSize:14,fontWeight:700,color:C.navy,marginBottom:4}}>Saved to your Insights tab</div>
+          <div style={{fontSize:12.5,color:"rgba(36,65,105,.5)"}}>Check your Insights tab to review your reflections anytime.</div>
         </div>
       ) : (
         <div style={{padding:"14px 16px"}}>
@@ -2027,7 +2092,7 @@ const SectionReflection = ({question1, question2, sectionTitle, onSave}) => {
           )}
           <button onClick={handleSave} disabled={!r1.trim()}
             style={{width:"100%",padding:12,background:r1.trim()?C.navy:"rgba(36,65,105,.2)",border:"none",borderRadius:11,cursor:r1.trim()?"pointer":"not-allowed",fontSize:13,fontWeight:800,color:"#fff"}}>
-            Save to Insights Journal
+            Save to Insights
           </button>
         </div>
       )}
@@ -2446,7 +2511,7 @@ const ProficiencyRating = ({topic, onComplete}) => {
       {committed ? (
         <div style={{padding:"20px 16px",textAlign:"center"}}>
           <div style={{fontSize:28,marginBottom:8}}>✓</div>
-          <div style={{fontSize:14,fontWeight:800,color:C.navy,marginBottom:3}}>Saved to your Insights Journal</div>
+          <div style={{fontSize:14,fontWeight:800,color:C.navy,marginBottom:3}}>Saved to your Insights tab</div>
           <div style={{display:"inline-flex",alignItems:"center",gap:8,background:`${color}15`,borderRadius:20,padding:"5px 14px",marginTop:4}}>
             <div style={{width:8,height:8,borderRadius:"50%",background:color}}/>
             <span style={{fontSize:12,fontWeight:800,color:color}}>{label} — {value}/10</span>
@@ -2549,226 +2614,6 @@ const ProficiencyRating = ({topic, onComplete}) => {
 };
 
 
-const NotesTab = ({notes, onSave}) => (
-  <div>
-    <div style={{fontSize:12.5,color:"#888",lineHeight:1.55,marginBottom:10,fontStyle:"italic"}}>Capture anything you want to remember -- insights, ideas, questions, commitments.</div>
-    <textarea value={notes} onChange={e=>onSave(e.target.value)}
-      placeholder="Type your notes here..."
-      rows={14}
-      style={{width:"100%",padding:"12px 14px",border:"1.5px solid rgba(36,65,105,.15)",borderRadius:12,fontSize:13,color:"#244169",fontFamily:"inherit",resize:"vertical",outline:"none",lineHeight:1.6,background:"#faf9f6"}} />
-  </div>
-);
-
-const MyCQPanel = ({open,onClose,legacy,catalyst,insights,currentModule,notes,setNotes}) => {
-  const [tab,setTab] = useState("journal");
-  const TabBtn = ({t,label}) => (
-    <button onClick={()=>setTab(t)} style={{flex:1,padding:"11px 8px",border:"none",cursor:"pointer",fontSize:12,fontWeight:700,
-      color:tab===t?C.navy:"rgba(36,65,105,.4)",borderBottom:`2px solid ${tab===t?C.orange:"transparent"}`,
-      background:tab===t?C.white:"transparent"}}>{label}</button>
-  );
-  const SectionTitle = ({children}) => <div style={{fontSize:10,fontWeight:800,letterSpacing:".12em",textTransform:"uppercase",color:"rgba(36,65,105,.4)",margin:"18px 0 7px 2px"}}>{children}</div>;
-  const Card = ({label,content,empty}) => (
-    <div style={{background:C.cream,borderRadius:14,padding:"13px 14px",marginBottom:10}}>
-      <div style={{fontSize:10,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:C.orange,marginBottom:5}}>{label}</div>
-      {content ? <div style={{fontSize:14,fontWeight:700,color:C.navy,lineHeight:1.5}}>{content}</div>
-                : <div style={{fontSize:13,color:"#bbb",fontStyle:"italic"}}>{empty}</div>}
-    </div>
-  );
-  return (
-    <>
-      {open&&<div onClick={onClose} style={{position:"absolute",inset:0,background:"rgba(0,0,0,.35)",zIndex:199}} />}
-      <div style={{position:"absolute",top:0,right:0,bottom:0,width:"88%",background:C.white,zIndex:200,display:"flex",flexDirection:"column",
-        transform:open?"translateX(0)":"translateX(102%)",transition:"transform .35s cubic-bezier(.25,.46,.45,.94)",
-        boxShadow:"-4px 0 24px rgba(0,0,0,.25)",overflow:"hidden"}}>
-        <div style={{background:C.navy,padding:"16px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-          <div>
-            <div style={{fontSize:16,fontWeight:800,color:C.white}}>My CQ</div>
-            <div style={{fontSize:11,color:"rgba(255,255,255,.5)",marginTop:2}}>Your personal communication system</div>
-          </div>
-          <button onClick={onClose} style={{background:"rgba(255,255,255,.15)",border:"none",borderRadius:8,padding:"7px 12px",cursor:"pointer",fontSize:16,color:C.white,fontWeight:700}}>x</button>
-        </div>
-        <div style={{display:"flex",background:C.cream,flexShrink:0,borderBottom:"1px solid rgba(36,65,105,.1)"}}>
-          <TabBtn t="journal" label="Insights Journal" />
-          <TabBtn t="plan"    label="Action Plan" />
-          <TabBtn t="notes"   label="My Notes" />
-        </div>
-        <div style={{flex:1,overflowY:"auto",padding:"14px 16px"}}>
-          {tab==="journal"&&<>
-            <SectionTitle>My CQ Legacy</SectionTitle>
-            <Card label="How I want to be known" content={legacy?`"${legacy}"`:null} empty="Your coach will help you define this in Module 01" />
-            <SectionTitle>My CQ Catalyst</SectionTitle>
-            <Card label="The relationship I am building toward" content={catalyst||null} empty="Your coach will identify this with you in Module 01" />
-            <SectionTitle>Section Reflections</SectionTitle>
-            {(insights.reflections||[]).length>0
-              ? (insights.reflections||[]).map((r,i)=>(
-                  <div key={i} style={{background:C.cream,borderRadius:14,padding:"13px 14px",marginBottom:10}}>
-                    <div style={{fontSize:10,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:C.navy,marginBottom:3}}>{r.section}</div>
-                    <div style={{fontSize:11,color:"rgba(36,65,105,.4)",marginBottom:6}}>{r.date}</div>
-                    <div style={{fontSize:12,color:C.navy,fontWeight:700,marginBottom:4}}>{r.q1}</div>
-                    <div style={{fontSize:13,color:C.navy,lineHeight:1.5,marginBottom:r.r2?8:0,fontStyle:"italic"}}>{r.r1}</div>
-                    {r.r2&&<><div style={{fontSize:12,color:C.navy,fontWeight:700,marginBottom:4,marginTop:8}}>{r.q2}</div><div style={{fontSize:13,color:C.navy,lineHeight:1.5,fontStyle:"italic"}}>{r.r2}</div></>}
-                  </div>))
-              : <Card label="Section reflections" content={null} empty="Your reflections from each section will appear here." />}
-            <SectionTitle>Coach Observations</SectionTitle>
-            {insights.observations.length>0
-              ? insights.observations.map((obs,i)=>(
-                  <div key={i} style={{background:C.cream,borderLeft:`3px solid ${C.orange}`,borderRadius:"0 14px 14px 0",padding:"13px 14px",marginBottom:10}}>
-                    <div style={{fontSize:10,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:C.orange,marginBottom:4}}>Insight</div>
-                    <div style={{fontSize:13,color:C.navy,lineHeight:1.5,fontStyle:"italic"}}>{obs}</div>
-                  </div>))
-              : <Card label="Coach observations" content={null} empty="Patterns from your sessions will appear here." />}
-            <SectionTitle>My CQ Essentials Ratings</SectionTitle>
-            {insights.essentialRatings && Object.keys(insights.essentialRatings).length > 0 ? (
-              <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                {Object.entries(insights.essentialRatings).map(([topic, rating])=>{
-                  const displayName = CQ_ESSENTIAL_LABELS[topic] || topic;
-                  // Parse color from rating label
-                  const ratingStr = String(rating);
-                  const col = ratingStr.includes("Novice") ? SLIDER_COLORS.low
-                             : ratingStr.includes("Mastery") ? SLIDER_COLORS.high
-                             : ratingStr.includes("Proficient") ? "#f4bc2d"
-                             : SLIDER_COLORS.mid;
-                  return (
-                    <div key={topic} style={{background:C.cream,borderRadius:12,padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
-                      <div style={{width:8,height:8,borderRadius:"50%",background:col,flexShrink:0}}/>
-                      <div style={{flex:1}}>
-                        <div style={{fontSize:11,fontWeight:700,color:C.navy,lineHeight:1.2}}>{displayName}</div>
-                      </div>
-                      <div style={{fontSize:11,fontWeight:800,color:col,whiteSpace:"nowrap"}}>{ratingStr}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : <Card label="CQ Essentials" content={null} empty="Your ratings will appear here as you progress through the program." />}
-          </>}
-          {tab==="plan"&&<>
-            {insights.actionPlan ? (
-              <>
-                <div style={{background:"rgba(244,188,45,.1)",borderRadius:12,padding:"11px 14px",marginBottom:14,borderLeft:"3px solid #f4bc2d"}}>
-                  <div style={{fontSize:11,fontWeight:800,color:C.navy,marginBottom:2}}>Program Complete</div>
-                  <div style={{fontSize:12,color:"rgba(36,65,105,.6)"}}>Your personal Communication Action Plan</div>
-                </div>
-                <Card label="CQ Legacy — How I Want to Be Known" content={insights.actionPlan.legacy ? `"${insights.actionPlan.legacy}"` : null} empty="Not yet captured" />
-                <Card label="CQ Catalyst Commitment" content={insights.actionPlan.catalystCommitment||null} empty="Not yet captured" />
-                <Card label="Daily Communication Practice" content={insights.actionPlan.dailyPractice||null} empty="Not yet captured" />
-                {(insights.observations||[]).filter(o=>o.startsWith("MODULE") && o.includes("COMMITMENT")).map((obs,i)=>(
-                  <Card key={i} label={`Module Commitment ${i+1}`} content={obs.replace(/MODULE.*?COMMITMENT:\s*/i,"")} empty="" />
-                ))}
-              </>
-            ) : (
-              <>
-                <div style={{fontSize:12.5,color:"#888",lineHeight:1.55,marginBottom:14,fontStyle:"italic"}}>Auto-populates as you complete Module 6.</div>
-                <Card label="CQ Legacy — How I Want to Be Known" content={legacy?`"${legacy}"`:null} empty="Complete Module 01" />
-                <Card label="CQ Catalyst" content={catalyst||null} empty="Complete Module 01" />
-                <Card label="Catalyst Commitment" content={null} empty="Built in Module 06" />
-                <Card label="Daily Communication Practice" content={null} empty="Built in Module 06" />
-              </>
-            )}
-          </>}
-          {tab==="notes"&&<NotesTab notes={notes} onSave={setNotes} />}
-        </div>
-      </div>
-    </>
-  );
-};
-
-const JourneyTracker = ({currentModule,open,onToggle}) => {
-  const labels = ["Commit","Strengths","Adapt","Team","Listen","Plan"];
-  return (
-    <>
-      <button onClick={onToggle} style={{width:"100%",padding:"8px 16px",background:"rgba(255,255,255,.08)",border:"none",borderBottom:"1px solid rgba(255,255,255,.1)",display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",flexShrink:0}}>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <span style={{fontSize:11,fontWeight:800,color:C.white}}>Module {String(currentModule).padStart(2,"0")}</span>
-          <span style={{fontSize:11,fontWeight:600,color:C.white,opacity:.6,maxWidth:180,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{MOD_NAMES[currentModule]}</span>
-        </div>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <div style={{display:"flex",gap:3}}>{[1,2,3,4,5,6].map(i=>(
-            <div key={i} style={{width:7,height:7,borderRadius:"50%",background:i<currentModule?C.gold:i===currentModule?C.orange:"rgba(255,255,255,.15)"}} />
-          ))}</div>
-          <span style={{fontSize:11,color:"rgba(255,255,255,.4)",fontWeight:700,display:"inline-block",transform:open?"rotate(180deg)":"none"}}>v</span>
-        </div>
-      </button>
-      {open&&(
-        <div style={{background:"rgba(255,255,255,.06)",borderBottom:"1px solid rgba(255,255,255,.08)",flexShrink:0,padding:"14px 16px"}}>
-          <div style={{display:"flex",position:"relative"}}>
-            <div style={{position:"absolute",top:13,left:13,right:13,height:2,background:"rgba(255,255,255,.12)"}} />
-            {[1,2,3,4,5,6].map(i=>(
-              <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:5,zIndex:1}}>
-                <div style={{width:26,height:26,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,
-                  background:i<currentModule?C.gold:i===currentModule?C.orange:"rgba(255,255,255,.15)",
-                  border:`2px solid ${i<currentModule?C.gold:i===currentModule?C.orange:"rgba(255,255,255,.2)"}`,
-                  color:i<currentModule?C.navy:i===currentModule?C.white:"rgba(255,255,255,.3)"}}>
-                  {i<currentModule?"v":i}
-                </div>
-                <div style={{fontSize:9,fontWeight:700,textAlign:"center",lineHeight:1.3,color:i<currentModule?C.gold:i===currentModule?C.orange:"rgba(255,255,255,.35)"}}>{labels[i-1]}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-const MicButton = ({onTranscript}) => {
-  const [rec,setRec] = useState(false);
-  const ref = useRef(null);
-  const toggle = () => {
-    if(rec){ref.current?.stop();setRec(false);return;}
-    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(!SR){alert("Voice not supported. Please type.");return;}
-    const r=new SR();r.continuous=false;r.interimResults=true;r.lang="en-US";
-    r.onresult=e=>{let t="";for(let i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript;onTranscript(t);};
-    r.onend=()=>setRec(false);r.onerror=()=>setRec(false);r.start();ref.current=r;setRec(true);
-  };
-  return (
-    <button onClick={toggle} style={{width:46,height:46,borderRadius:"50%",background:rec?C.gold:C.orange,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 2px 8px rgba(240,139,53,.4)"}}>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
-        <rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/>
-      </svg>
-    </button>
-  );
-};
-
-
-
-const MODULE_PREVIEWS = [
-  { n:"01", title:"Commit to Become Your Best",                            sub:"Peak performance, Legacy, Catalyst",         detail:"You will identify what it looks and feels like when you are at your best as a communicator, define your CQ Legacy -- how you want to be known -- and name your CQ Catalyst, the one relationship you most want to transform through this program." },
-  { n:"02", title:"Unlock Your Communication Power",                       sub:"Forte Profile, your three graphs",            detail:"You will explore your Forte Communication Style Profile -- your natural wiring, how you are adapting to your environment, and how others are most likely experiencing you right now. This is the intelligence that makes everything else in the program more precise." },
-  { n:"03", title:"Master Adaptive Techniques",                            sub:"ADAPT, Generations, Empathy",                 detail:"You will learn to read communication styles in others, navigate generational differences, balance empathy with effectiveness, and use the five-step ADAPT model to approach any conversation -- planned or sideways -- with intention and skill." },
-  { n:"04", title:"Transform Your Team and Client Relationships",          sub:"Motivators, Style Pairings, Crisis Challenge", detail:"You will discover what actually motivates and demotivates you and the people around you, learn how different communication style pairings create friction and synergy, and stress-test everything in the Crisis Navigation Challenge." },
-  { n:"05", title:"Supercharge Your Listening and Feedback Skills",        sub:"Proactive listening, Feedback as a gift",     detail:"You will replace passive listening with a three-part active practice, discover your natural questioning tendencies and how to expand them, and learn to give and receive feedback as a gift -- the insight others cannot access on their own." },
-  { n:"06", title:"Create Your Personal Communication Strategy and Action Plan", sub:"Legacy, commitments, next steps",       detail:"You will synthesize everything from the program into a personal Communication Strategy and Action Plan -- your Legacy, your commitment to your Catalyst, and the one specific behavior you will practice from this day forward." },
-];
-
-const ModulePreviewList = () => {
-  const [expanded, setExpanded] = useState(null);
-  return (
-    <div style={{marginBottom:28}}>
-      <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:12}}>Your 6-Module Journey</div>
-      <div style={{display:"flex",flexDirection:"column",gap:6}}>
-        {MODULE_PREVIEWS.map((m,i)=>(
-          <div key={m.n} onClick={()=>setExpanded(expanded===i?null:i)}
-            style={{borderRadius:12,border:"1px solid rgba(255,255,255,.1)",background:expanded===i?"rgba(255,255,255,.1)":"rgba(255,255,255,.05)",cursor:"pointer",overflow:"hidden",transition:"all .2s"}}>
-            <div style={{padding:"11px 14px",display:"flex",alignItems:"center",gap:12}}>
-              <div style={{width:28,height:28,borderRadius:8,background:expanded===i?"rgba(244,188,45,.2)":"rgba(255,255,255,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:C.gold,flexShrink:0}}>{m.n}</div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:12.5,fontWeight:700,color:C.white,lineHeight:1.2}}>{m.title}</div>
-                <div style={{fontSize:11,color:"rgba(255,255,255,.4)",marginTop:1}}>{m.sub}</div>
-              </div>
-              <div style={{fontSize:14,color:"rgba(255,255,255,.3)",transform:expanded===i?"rotate(90deg)":"none",transition:"transform .2s"}}>›</div>
-            </div>
-            {expanded===i&&(
-              <div style={{padding:"0 14px 14px 54px",fontSize:12.5,color:"rgba(255,255,255,.65)",lineHeight:1.6}}>
-                {m.detail}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
 const CQIntroScreen = ({participantName, level, onContinue, onBack}) => {
   const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
   const name = participantName || "there";
@@ -2842,14 +2687,296 @@ const CQIntroScreen = ({participantName, level, onContinue, onBack}) => {
           <div style={{fontSize:11,color:"rgba(255,255,255,.4)",fontWeight:600,letterSpacing:".08em"}}>COMMUNICATION INTELLIGENCE PROGRAM</div>
         </div>
 
-        {/* What is ahead -- interactive */}
-        <ModulePreviewList />
+        {/* What is ahead */}
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:11,fontWeight:800,color:"rgba(255,255,255,.4)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:12}}>Your 6-Module Journey</div>
+          {[
+            {n:"01",title:"Commit to Become Your Best",      sub:"Peak performance · Legacy · Catalyst"},
+            {n:"02",title:"Unlock Your Communication Power", sub:"Forte Profile · 3 graphs · perception gaps"},
+            {n:"03",title:"Master the Art of Adapting",      sub:"ADAPT model · Generations · style reading"},
+            {n:"04",title:"Transform Team & Client Dynamics",sub:"Motivators · style pairings · crisis sim"},
+            {n:"05",title:"Supercharge Listening & Feedback",sub:"Proactive listening · feedback as a gift"},
+            {n:"06",title:"Craft Your Action Plan",          sub:"CQ Essentials · Legacy · commitments"},
+          ].map((m,i)=>(
+            <div key={m.n} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<5?"1px solid rgba(255,255,255,.07)":"none"}}>
+              <div style={{width:28,height:28,borderRadius:8,background:"rgba(255,255,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:900,color:C.gold,flexShrink:0}}>{m.n}</div>
+              <div>
+                <div style={{fontSize:12,fontWeight:700,color:C.white,lineHeight:1.2}}>{m.title}</div>
+                <div style={{fontSize:10.5,color:"rgba(255,255,255,.45)",marginTop:1}}>{m.sub}</div>
+              </div>
+            </div>
+          ))}
+        </div>
 
         <button onClick={onContinue} style={{width:"100%",padding:16,background:C.gold,color:C.navy,border:"none",borderRadius:14,fontSize:15,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 18px rgba(244,188,45,.3)"}}>
           I am ready -- let us begin
         </button>
       </div>
     </div>
+  );
+};
+
+// ============================================================
+// TAB COMPONENTS
+// ============================================================
+
+const JourneyTab = ({currentModule, onGoToCoach}) => {
+  const modules = [
+    {n:1, title:"Commit to Become Your Best",      sub:"Peak performance · Legacy · Catalyst"},
+    {n:2, title:"Unlock Your Communication Power", sub:"Forte Profile · 3 graphs · perception gaps"},
+    {n:3, title:"Master the Art of Adapting",      sub:"ADAPT model · Generations · style reading"},
+    {n:4, title:"Transform Team & Client Dynamics",sub:"Motivators · style pairings · crisis sim"},
+    {n:5, title:"Supercharge Listening & Feedback",sub:"Proactive listening · feedback as a gift"},
+    {n:6, title:"Craft Your Action Plan",          sub:"CQ Essentials · Legacy · commitments"},
+  ];
+  const pct = Math.round(((currentModule-1)/6)*100);
+  return (
+    <div style={{flex:1,overflowY:"auto",padding:"20px 18px",display:"flex",flexDirection:"column",gap:14}}>
+      {/* Progress bar */}
+      <div style={{background:"rgba(255,255,255,.1)",borderRadius:12,padding:"16px",marginBottom:4}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+          <span style={{fontSize:12,fontWeight:700,color:"rgba(255,255,255,.6)",letterSpacing:".06em",textTransform:"uppercase"}}>Your Progress</span>
+          <span style={{fontSize:14,fontWeight:900,color:C.gold}}>{pct}%</span>
+        </div>
+        <div style={{height:8,background:"rgba(255,255,255,.12)",borderRadius:4,overflow:"hidden"}}>
+          <div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${C.gold},${C.orange})`,borderRadius:4,transition:"width .6s ease"}} />
+        </div>
+        <div style={{fontSize:11,color:"rgba(255,255,255,.4)",marginTop:8}}>Module {currentModule} of 6 active</div>
+      </div>
+      {/* Module cards */}
+      {modules.map(mod => {
+        const done   = mod.n < currentModule;
+        const active = mod.n === currentModule;
+        const locked = mod.n > currentModule;
+        return (
+          <div key={mod.n}
+            onClick={!locked ? onGoToCoach : undefined}
+            style={{
+              background: active ? "rgba(240,139,53,.15)" : done ? "rgba(255,255,255,.07)" : "rgba(255,255,255,.03)",
+              border: active ? `2px solid ${C.orange}` : done ? `1px solid rgba(244,188,45,.4)` : "1px solid rgba(255,255,255,.08)",
+              borderRadius:14, padding:"14px 16px", display:"flex", alignItems:"center", gap:14,
+              cursor: locked ? "default" : "pointer", opacity: locked ? .45 : 1,
+              transition:"all .2s"
+            }}>
+            {/* Badge */}
+            <div style={{width:36,height:36,borderRadius:10,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",
+              background: done ? C.gold : active ? C.orange : "rgba(255,255,255,.1)",
+              fontSize: done ? 16 : 13, fontWeight:900, color: done||active ? C.navy : "rgba(255,255,255,.4)"}}>
+              {done ? "✓" : locked ? "🔒" : "0"+mod.n}
+            </div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:13,fontWeight:700,color: done ? C.gold : active ? C.white : "rgba(255,255,255,.5)",lineHeight:1.3,marginBottom:3}}>{mod.title}</div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,.35)",lineHeight:1.4}}>{mod.sub}</div>
+            </div>
+            {active && <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".04em"}}>ACTIVE →</div>}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const PracticeTab = ({currentModule, forteData, catalyst, onCoachTalk}) => {
+  const [active, setActive] = React.useState(null);
+  const activities = [
+    {id:"generations",  title:"Generations Card Game",         sub:"Read communication styles across generations",  unlocks:3, component:"GenerationsGame"},
+    {id:"switches",     title:"Switches & Knobs",              sub:"Map your natural vs adapted style tendencies",  unlocks:3, component:"SwitchesKnobs"},
+    {id:"crisis",       title:"Crisis Navigation Challenge",   sub:"Lead under pressure with your CQ style",        unlocks:4, component:"CrisisChallenge"},
+    {id:"catalyst",     title:"Catalyst Role-Play",            sub:"Practice your Catalyst communication message",  unlocks:5, component:"CatalystRolePlay"},
+  ];
+  if (active === "crisis") {
+    return <CrisisChallenge onCoachTalk={(responses,strategy)=>{setActive(null);onCoachTalk("I just completed the Crisis Navigation Challenge. Here are my responses: "+responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ")+" What do you think?");}} onBack={()=>setActive(null)} />;
+  }
+  return (
+    <div style={{flex:1,overflowY:"auto",padding:"20px 18px",display:"flex",flexDirection:"column",gap:14}}>
+      <div style={{fontSize:12,color:"rgba(255,255,255,.5)",fontWeight:600,letterSpacing:".06em",textTransform:"uppercase",marginBottom:4}}>Hands-On Activities</div>
+      {activities.map(act => {
+        const unlocked = currentModule >= act.unlocks;
+        return (
+          <div key={act.id}
+            onClick={unlocked ? ()=>setActive(act.id) : undefined}
+            style={{
+              background: unlocked ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.03)",
+              border: `1px solid ${unlocked ? "rgba(255,255,255,.18)" : "rgba(255,255,255,.07)"}`,
+              borderRadius:16, padding:"18px", cursor: unlocked ? "pointer" : "default",
+              opacity: unlocked ? 1 : .4
+            }}>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:42,height:42,borderRadius:12,background: unlocked ? C.orange : "rgba(255,255,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>
+                {unlocked ? "▶" : "🔒"}
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:14,fontWeight:700,color: unlocked ? C.white : "rgba(255,255,255,.4)",marginBottom:3}}>{act.title}</div>
+                <div style={{fontSize:12,color:"rgba(255,255,255,.4)",lineHeight:1.4}}>{act.sub}</div>
+              </div>
+            </div>
+            {!unlocked && (
+              <div style={{marginTop:10,fontSize:11,color:"rgba(255,255,255,.3)",fontWeight:600}}>Unlocks in Module {act.unlocks}</div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const ProfileTab = ({forteData}) => {
+  const [view, setView] = React.useState("green");
+  const tabs = [{id:"green",label:"Natural"},{id:"red",label:"Adapting"},{id:"blue",label:"Perceived"}];
+  const dims = ["Dominance","Extroversion","Patience","Conformity"];
+  const descs = {
+    Dominance:   ["Collaborative, consensus-seeking",    "Assertive, direct, results-focused"],
+    Extroversion:["Reserved, thinks before speaking",    "Expressive, energized by people"],
+    Patience:    ["Flexible, fast-paced, variety-driven","Steady, consistent, loyal, methodical"],
+    Conformity:  ["Independent, questions the rules",    "Detail-oriented, follows systems"],
+  };
+  const data = forteData && forteData[view];
+  const hasData = data && data.scores && data.scores.length === 4;
+  return (
+    <div style={{flex:1,overflowY:"auto",padding:"20px 18px",background:"#0f1c2e"}}>
+      {/* Switcher */}
+      <div style={{display:"flex",background:"rgba(255,255,255,.06)",borderRadius:12,padding:3,marginBottom:20}}>
+        {tabs.map(t=>(
+          <button key={t.id} onClick={()=>setView(t.id)}
+            style={{flex:1,padding:"8px 0",borderRadius:10,border:"none",cursor:"pointer",fontSize:12,fontWeight:700,
+              background: view===t.id ? (t.id==="green"?"#2e7d32":t.id==="red"?"#c0392b":"#1565c0") : "transparent",
+              color: view===t.id ? C.white : "rgba(255,255,255,.4)",transition:"all .2s"}}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+      {!hasData ? (
+        <div style={{textAlign:"center",padding:"60px 20px",color:"rgba(255,255,255,.4)"}}>
+          <div style={{fontSize:40,marginBottom:16}}>📊</div>
+          <div style={{fontSize:15,fontWeight:700,color:"rgba(255,255,255,.6)",marginBottom:8}}>No Forte Data Yet</div>
+          <div style={{fontSize:13,lineHeight:1.6}}>Upload your Forte Profile report when Hoop prompts you in Module 2.</div>
+        </div>
+      ) : (
+        <div style={{display:"flex",flexDirection:"column",gap:16}}>
+          {dims.map((dim,i) => {
+            const score = data.scores[i];
+            const pct   = data.pcts ? data.pcts[i] : Math.round((score/10)*100);
+            const side  = pct >= 50 ? "High" : "Low";
+            const color = view==="green"?"#2e7d32":view==="red"?"#c0392b":"#1565c0";
+            return (
+              <div key={dim} style={{background:"rgba(255,255,255,.05)",borderRadius:14,padding:"16px"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                  <span style={{fontSize:13,fontWeight:700,color:C.white}}>{dim}</span>
+                  <span style={{fontSize:12,fontWeight:800,color:color}}>{side} — {pct}%</span>
+                </div>
+                <div style={{height:6,background:"rgba(255,255,255,.1)",borderRadius:3,marginBottom:10,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:pct+"%",background:color,borderRadius:3,transition:"width .5s ease"}} />
+                </div>
+                <div style={{fontSize:12,color:"rgba(255,255,255,.45)",lineHeight:1.5}}>
+                  {pct >= 50 ? descs[dim][1] : descs[dim][0]}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const InsightsTab = ({legacy, catalyst, insights, forteData}) => {
+  const hasAny = legacy || catalyst || (insights && (insights.observations?.length || insights.reflections?.length || Object.keys(insights.essentialRatings||{}).length || insights.actionPlan?.legacy));
+  return (
+    <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:12,background:"#f5f0e8"}}>
+      {!hasAny && (
+        <div style={{textAlign:"center",padding:"60px 20px",color:"rgba(36,65,105,.4)"}}>
+          <div style={{fontSize:40,marginBottom:16}}>💡</div>
+          <div style={{fontSize:15,fontWeight:700,color:"rgba(36,65,105,.6)",marginBottom:8}}>Your insights will appear here</div>
+          <div style={{fontSize:13,lineHeight:1.6}}>As you work through the program, Hoop will capture your key moments, reflections, and commitments.</div>
+        </div>
+      )}
+      {legacy && (
+        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
+          <div style={{fontSize:10,fontWeight:800,color:C.orange,letterSpacing:".1em",textTransform:"uppercase",marginBottom:6}}>Your CQ Legacy</div>
+          <div style={{fontSize:14,color:C.navy,lineHeight:1.6}}>{legacy}</div>
+        </div>
+      )}
+      {catalyst && (
+        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
+          <div style={{fontSize:10,fontWeight:800,color:C.blue,letterSpacing:".1em",textTransform:"uppercase",marginBottom:6}}>Your CQ Catalyst</div>
+          <div style={{fontSize:14,color:C.navy,lineHeight:1.6}}>{catalyst}</div>
+        </div>
+      )}
+      {insights?.observations?.length > 0 && (
+        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
+          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>AI-Detected Patterns</div>
+          {insights.observations.map((o,i)=>(
+            <div key={i} style={{fontSize:13,color:C.navy,lineHeight:1.6,padding:"6px 0",borderBottom:i<insights.observations.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>{o}</div>
+          ))}
+        </div>
+      )}
+      {insights?.reflections?.length > 0 && (
+        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
+          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>Reflections</div>
+          {insights.reflections.map((r,i)=>(
+            <div key={i} style={{marginBottom:12,paddingBottom:12,borderBottom:i<insights.reflections.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
+              <div style={{fontSize:11,fontWeight:700,color:C.orange,marginBottom:4}}>{r.section}</div>
+              {r.answers?.map((a,j)=>(<div key={j} style={{fontSize:13,color:C.navy,lineHeight:1.6,marginBottom:2}}>{a}</div>))}
+            </div>
+          ))}
+        </div>
+      )}
+      {Object.keys(insights?.essentialRatings||{}).length > 0 && (
+        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
+          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>Essential Ratings</div>
+          {Object.entries(insights.essentialRatings).map(([k,v])=>(
+            <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:"1px solid rgba(36,65,105,.07)"}}>
+              <span style={{fontSize:12,color:C.navy,flex:1}}>{k}</span>
+              <span style={{fontSize:14,fontWeight:900,color:C.navy,width:28,textAlign:"right"}}>{v}</span>
+              <div style={{width:80,height:6,background:"rgba(36,65,105,.1)",borderRadius:3,marginLeft:10,overflow:"hidden"}}>
+                <div style={{height:"100%",width:(v/10*100)+"%",background:v>=8?C.orange:v>=5?C.blue:C.navy,borderRadius:3}} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {insights?.actionPlan?.legacy && (
+        <div style={{background:C.navy,borderRadius:14,padding:"18px",boxShadow:"0 2px 12px rgba(36,65,105,.15)"}}>
+          <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".1em",textTransform:"uppercase",marginBottom:14}}>Your Action Plan</div>
+          {[{label:"Legacy Commitment",val:insights.actionPlan.legacy},{label:"Catalyst Message",val:insights.actionPlan.catalystCommitment},{label:"Daily Practice",val:insights.actionPlan.dailyPractice}].filter(x=>x.val).map((item,i)=>(
+            <div key={i} style={{marginBottom:14}}>
+              <div style={{fontSize:11,fontWeight:700,color:C.gold,marginBottom:4}}>{item.label}</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.85)",lineHeight:1.6}}>{item.val}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MicButton = ({onTranscript}) => {
+  const [listening, setListening] = React.useState(false);
+  const recRef = React.useRef(null);
+  const start = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    const rec = new SR();
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.lang = 'en-US';
+    rec.onstart = () => setListening(true);
+    rec.onend = () => setListening(false);
+    rec.onresult = e => { const t = e.results[0][0].transcript; onTranscript(prev => prev ? prev + ' ' + t : t); };
+    rec.onerror = () => setListening(false);
+    recRef.current = rec;
+    rec.start();
+  };
+  const stop = () => { recRef.current && recRef.current.stop(); setListening(false); };
+  if (!(window.SpeechRecognition || window.webkitSpeechRecognition)) return null;
+  return (
+    <button onClick={listening ? stop : start} style={{height:44,width:44,borderRadius:'50%',background:listening?C.red:'rgba(36,65,105,.08)',border:'none',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'background .2s'}}>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill={listening?'white':'#244169'}>
+        <rect x="9" y="2" width="6" height="12" rx="3"/>
+        <path d="M5 10a7 7 0 0014 0" stroke={listening?'white':'#244169'} strokeWidth="2" fill="none" strokeLinecap="round"/>
+        <line x1="12" y1="19" x2="12" y2="22" stroke={listening?'white':'#244169'} strokeWidth="2" strokeLinecap="round"/>
+      </svg>
+    </button>
   );
 };
 const HomeScreen = ({onStart}) => (
@@ -2933,11 +3060,17 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const [catalyst,      setCatalyst]      = useState("");
   const [currentModule, setCurrentModule] = useState(1);
   const [programComplete, setProgramComplete] = useState(false);
-  const [journeyOpen,   setJourneyOpen]   = useState(false);
-  const [panelOpen,     setPanelOpen]     = useState(false);
+  const [bridgeData, setBridgeData] = useState(null); // {module, commitment} — shows bridge screen
+  const [lastCommitment, setLastCommitment] = useState(""); // tracks most recent module commitment
+  const [journeyDot, setJourneyDot] = useState(false); // notif dot on Journey tab when module advances
+  const [showCrisisChallenge, setShowCrisisChallenge] = useState(false);
+  const [showQuestioningTendencies, setShowQuestioningTendencies] = useState(false);
+  const [showListeningTendencies, setShowListeningTendencies] = useState(false);
+  const [activeTab,     setActiveTab]     = useState("coach");
+
   const [panelDot,      setPanelDot]      = useState(false);
   const [insights,      setInsights]      = useState({observations:[],commitments:[],reflections:[],actionPlan:null});
-  const [notes,         setNotes]         = useState("");
+
   const [error,         setError]         = useState(null);
   const [quickReplies,  setQuickReplies]  = useState([]);
   const [forteData,     setForteData]     = useState(null);
@@ -2971,12 +3104,14 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
         }, cumulativeDelay);
       });
     } else {
-      setMessages(prev=>[...prev,{
+      const newMsg = {
         id: Date.now()+Math.random(),
         role,
         text: text||"",
         artifact,
-      }]);
+      };
+      if(artifact) console.log("[CQ ADDMSG] Adding artifact message:", artifact.type);
+      setMessages(prev=>[...prev, newMsg]);
     }
   },[]);
 
@@ -2992,6 +3127,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
       if(savedState.currentModule) setCurrentModule(savedState.currentModule);
       if(savedState.insights) setInsights(savedState.insights);
       if(savedState.forteData) setForteData(savedState.forteData);
+      setActiveTab("coach"); // Always land on Coach tab when restoring session
     } else {
       // Generate personalized opening via API using name and level
       const timer = setTimeout(async ()=>{
@@ -3126,16 +3262,33 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
           // Show the Forte entry screen after a brief delay so the coach message renders first
           setTimeout(()=>setShowForteUpload(true),1800); 
         }
-        if(a.type==="module_advance"){ setCurrentModule(a.n); if(a.n>=7) setProgramComplete(true); }
+        if(a.type==="module_advance"){
+          // Show bridge screen first, then advance when participant taps Continue
+          const completedMod = a.n - 1;
+          if(completedMod >= 1 && completedMod <= 6) {
+            setBridgeData({module: completedMod, nextModule: a.n});
+            setJourneyDot(true);
+          }
+          if(a.n >= 7) setProgramComplete(true);
+          else setCurrentModule(a.n);
+        }
         if(a.type==="program_complete"){ setProgramComplete(true); }
-        if(a.type==="coach_insight"){ setInsights(prev=>({...prev,observations:[...prev.observations,a.value]})); setPanelDot(true); }
+        if(a.type==="coach_insight"){
+          setInsights(prev=>({...prev,observations:[...prev.observations,a.value]}));
+          setPanelDot(true);
+          // Capture module commitment for bridge screen
+          if(a.value && (a.value.toUpperCase().includes("COMMITMENT") || a.value.toUpperCase().includes("MODULE") && a.value.toUpperCase().includes("COMMIT"))) {
+            const match = a.value.match(/:\s*(.+)$/);
+            if(match) setLastCommitment(match[1].trim());
+          }
+        }
         if(a.type==="complete_action_plan"){ setInsights(prev=>({...prev,actionPlan:{legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}})); setPanelDot(true); }
         if(a.type==="show_forte_graph"){ setTimeout(()=>addMsg("coach","",{type:"forte_graph_focused", tab:a.tab||"green", forteData:forteData}),400); }
         if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
         if(a.type==="show_generations"){ setTimeout(()=>addMsg("coach","",{type:"gencard"}),400); }
-        if(a.type==="show_listening_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}),400); }
-        if(a.type==="show_questioning_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"questioning_tendencies"}),400); }
-        if(a.type==="show_crisis_challenge"){ setTimeout(()=>addMsg("coach","",{type:"crisis_challenge"}),400); }
+        if(a.type==="show_listening_tendencies"){ setTimeout(()=>setShowListeningTendencies(true),400); }
+        if(a.type==="show_questioning_tendencies"){ setTimeout(()=>setShowQuestioningTendencies(true),400); }
+        if(a.type==="show_crisis_challenge"){ setTimeout(()=>setShowCrisisChallenge(true),400); }
         if(a.type==="show_proficiency_rating"){ setTimeout(()=>addMsg("coach","",{type:"proficiency_rating",topic:a.topic}),400); }
         if(a.type==="show_adapt_planner"){ setTimeout(()=>addMsg("coach","",{type:"adapt_planner"}),400); }
         if(a.type==="show_reflection"){ setTimeout(()=>addMsg("coach","",{type:"reflection",section:a.section,q1:a.q1,q2:a.q2}),400); }
@@ -3174,7 +3327,26 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
                                 (ft.includes("adapt") || ft.includes("strategy") || ft.includes("build") || ft.includes("lead"));
         
         if(textTrigger || prevSetupTrigger || contextTrigger) {
-          setTimeout(()=>addMsg("coach","",{type:"crisis_challenge"}),1200);
+          console.log("[CQ CRISIS] Trigger fired - setting showCrisisChallenge=true");
+          setTimeout(()=>setShowCrisisChallenge(true), 800);
+        }
+      }
+
+      // QUESTIONING TENDENCIES SAFETY NET
+      if(currentModule >= 5 && !showQuestioningTendencies) {
+        const ft2 = finalText.toLowerCase();
+        if(ft2.includes("question") && (ft2.includes("pattern") || ft2.includes("tendency") || ft2.includes("tendencies") || ft2.includes("your profile") || ft2.includes("show you"))) {
+          const alreadyDispatched = artifacts.some(a=>a.type==="show_questioning_tendencies");
+          if(!alreadyDispatched) setTimeout(()=>setShowQuestioningTendencies(true), 800);
+        }
+      }
+
+      // LISTENING TENDENCIES SAFETY NET
+      if(currentModule >= 5 && !showListeningTendencies) {
+        const ft3 = finalText.toLowerCase();
+        if(ft3.includes("listen") && (ft3.includes("tendency") || ft3.includes("tendencies") || ft3.includes("default") || ft3.includes("automatic") || ft3.includes("your style"))) {
+          const alreadyDispatched = artifacts.some(a=>a.type==="show_listening_tendencies");
+          if(!alreadyDispatched) setTimeout(()=>setShowListeningTendencies(true), 800);
         }
       }
 
@@ -3197,7 +3369,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
     if(a.type==="forte_graph_focused") return <ForteGraphFocused forteData={fd} initialTab={a.tab||"green"} />;
     if(a.type==="gap")       return <GapAlert />;
     if(a.type==="gencard")   return <GenCardArtifact onCoachTalk={card=>handleSend("Tell me about the " + card.g + " scenario")} />;
-    if(a.type==="crisis_challenge") return <CrisisChallenge onCoachTalk={(responses,strategy)=>handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?")} />;
+    if(a.type==="crisis_challenge") { console.log("[CQ RENDER] Rendering CrisisChallenge"); return <CrisisChallenge onCoachTalk={(responses,strategy)=>handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?")} />; }
     if(a.type==="switches_knobs") return <SwitchesKnobsArtifact catalyst={catalyst} onCoachTalk={(item,t)=>handleSend("Let us talk about the " + item.label + " " + t + " for my Catalyst")} />;
     if(a.type==="questioning_tendencies") return <QuestioningTendencies forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " questioning tendency")} />;
     if(a.type==="listening_tendencies") return <ListeningTendenciesArtifact forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " listening tendency")} />;
@@ -3222,34 +3394,68 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
     return null;
   };
 
+  // Tab SVG icons
+  const TabIcon = ({id}) => {
+    if(id==="journey") return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>;
+    if(id==="coach")   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+    if(id==="practice")return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>;
+    if(id==="profile") return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>;
+    if(id==="insights")return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>;
+    return null;
+  };
+
+  const tabs = [
+    {id:"journey",  label:"Journey"},
+    {id:"coach",    label:"Coach"},
+    {id:"practice", label:"Practice"},
+    {id:"profile",  label:"Profile"},
+    {id:"insights", label:"Insights"},
+  ];
+
   return (
     <div style={{flex:1,background:C.navy,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden"}}>
-      <div style={{background:C.navy,padding:"14px 18px",display:"flex",alignItems:"center",gap:12,flexShrink:0,boxShadow:"0 2px 12px rgba(0,0,0,.2)"}}>
-        <div style={{width:44,height:44,borderRadius:12,background:C.gold,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
-          <Logo size={30} />
+      {/* Top header - only show on Coach tab */}
+      {activeTab==="coach" && (
+        <div style={{background:C.navy,padding:"12px 18px",display:"flex",alignItems:"center",gap:12,flexShrink:0}}>
+          <div style={{width:38,height:38,borderRadius:10,background:C.gold,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
+            <Logo size={26} />
+          </div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:15,fontWeight:800,color:C.white}}>Your CQ Coach</div>
+            <div style={{fontSize:11,color:"rgba(255,255,255,.5)",display:"flex",alignItems:"center",gap:4}}>
+              <div style={{width:6,height:6,borderRadius:"50%",background:"#4cd96b"}} />
+              Online · here for you
+            </div>
+          </div>
+          <button onClick={()=>{if(window.confirm("Start a new session? Progress will be cleared."))onReset?.();}} style={{background:"rgba(255,255,255,.08)",border:"1px solid rgba(255,255,255,.12)",borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700,color:"rgba(255,255,255,.4)"}}>✕</button>
         </div>
-        <div style={{flex:1}}>
-          <div style={{fontSize:16,fontWeight:800,color:C.white}}>CQ Coach</div>
-          <div style={{fontSize:12,color:"rgba(255,255,255,.55)",marginTop:2,display:"flex",alignItems:"center",gap:5}}>
-            <div style={{width:7,height:7,borderRadius:"50%",background:"#4cd96b",flexShrink:0}} />
-            Session 1 - Private and secure
+      )}
+
+      {/* Non-coach tab headers */}
+      {activeTab!=="coach" && (
+        <div style={{background:activeTab==="practice"?C.orange:activeTab==="profile"?"#0f1c2e":C.navy,padding:"16px 18px",flexShrink:0}}>
+          <div style={{fontSize:10,fontWeight:800,color:"rgba(255,255,255,.5)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:2}}>
+            {activeTab==="journey"?"Your Journey":activeTab==="practice"?"Practice Lab":activeTab==="profile"?"Forte Profile":"Your Insights"}
+          </div>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <div style={{fontSize:17,fontWeight:900,color:C.white}}>
+              {activeTab==="journey"?"Communication Intelligence":activeTab==="practice"?"Communication Tools":activeTab==="profile"?"Your Communication Profile":"What Your Coach Knows"}
+            </div>
+            {panelDot && activeTab!=="insights" && (
+              <div onClick={()=>{setActiveTab("insights");setPanelDot(false);}} style={{width:8,height:8,borderRadius:"50%",background:C.gold,cursor:"pointer",flexShrink:0}} />
+            )}
           </div>
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <button onClick={()=>{setPanelOpen(true);setPanelDot(false);}} style={{background:"rgba(255,255,255,.15)",border:"1.5px solid rgba(255,255,255,.25)",borderRadius:20,padding:"7px 14px",display:"flex",alignItems:"center",gap:5,cursor:"pointer",flexShrink:0,position:"relative"}}>
-            <span style={{fontSize:12,fontWeight:800,color:C.white}}>My CQ</span>
-            {panelDot&&<div style={{width:7,height:7,borderRadius:"50%",background:C.gold}} />}
-          </button>
-          <button onClick={()=>{if(window.confirm("Start a new session? Your current progress will be cleared."))onReset?.();}} style={{background:"rgba(255,255,255,.1)",border:"1.5px solid rgba(255,255,255,.15)",borderRadius:"50%",width:34,height:34,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" strokeWidth="2.2" strokeLinecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-          </button>
-          <button onClick={()=>onReset?.()} title="Exit session" style={{background:"rgba(255,255,255,.07)",border:"1px solid rgba(255,255,255,.12)",borderRadius:8,padding:"6px 10px",cursor:"pointer",fontSize:11,fontWeight:700,color:"rgba(255,255,255,.4)"}}>✕</button>
-        </div>
-      </div>
+      )}
 
-      <JourneyTracker currentModule={currentModule} open={journeyOpen} onToggle={()=>setJourneyOpen(o=>!o)} />
-
-      <div style={{flex:1,overflowY:"auto",padding:"0 0 16px",display:"flex",flexDirection:"column",background:C.cream}}>
+      {/* Tab content */}
+      <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+        {activeTab==="journey" && <JourneyTab currentModule={currentModule} onGoToCoach={()=>setActiveTab("coach")} />}
+        {activeTab==="practice" && <PracticeTab currentModule={currentModule} forteData={forteData} catalyst={catalyst} onCoachTalk={(msg)=>{setActiveTab("coach");setTimeout(()=>handleSend(msg),300);}} />}
+        {activeTab==="profile" && <ProfileTab forteData={forteData} />}
+        {activeTab==="insights" && <InsightsTab legacy={legacy} catalyst={catalyst} insights={insights} forteData={forteData} />}
+        {activeTab==="coach" && (
+        <div style={{flex:1,overflowY:"auto",padding:"0 0 16px",display:"flex",flexDirection:"column",background:C.cream}}>
         <div style={{textAlign:"center",padding:"22px 0 14px",fontSize:10,fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",color:"rgba(36,65,105,.3)"}}>FIRST SESSION — TODAY</div>
         {messages.map((msg,idx)=>{
           const prevRole = idx > 0 ? messages[idx-1].role : null;
@@ -3266,24 +3472,65 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
         {typing&&<TypingIndicator />}
         {error&&<ErrorBanner msg={error} onDismiss={()=>setError(null)} />}
         {quickReplies.length>0&&<QuickReplies opts={quickReplies} onSelect={opt=>{setQuickReplies([]);handleSend(opt);}} />}
+        {showCrisisChallenge&&<CrisisChallenge onCoachTalk={(responses,strategy)=>{setShowCrisisChallenge(false);handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?");}} />}
+        {showQuestioningTendencies&&<QuestioningTendencies forteData={forteData} onCoachTalk={(style,item)=>{setShowQuestioningTendencies(false);handleSend("Let us talk about my " + style + " questioning tendency");}} />}
+        {showListeningTendencies&&<ListeningTendenciesArtifact forteData={forteData} onCoachTalk={(style,item)=>{setShowListeningTendencies(false);handleSend("Let us talk about my " + style + " listening tendency");}} />}
         <div ref={scrollRef} />
       </div>
-
-      <div style={{padding:"10px 12px 22px",background:C.white,borderTop:"1px solid rgba(36,65,105,.08)",flexShrink:0,display:"flex",gap:8,alignItems:"flex-end",boxShadow:"0 -2px 12px rgba(0,0,0,.04)"}}>
-        <MicButton onTranscript={setInput} />
-        <input value={input} onChange={e=>setInput(e.target.value)}
-          onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend(input);}}}
-          placeholder="Type or use mic..."
-          style={{flex:1,background:C.white,border:"1.5px solid rgba(36,65,105,.15)",borderRadius:20,padding:"10px 15px",color:C.navy,fontSize:15,outline:"none",fontFamily:"inherit",lineHeight:1.4}} />
-        <button onClick={()=>handleSend(input)} disabled={typing} style={{height:46,padding:"0 18px",borderRadius:23,background:typing?"rgba(36,65,105,.4)":C.navy,border:"none",cursor:typing?"not-allowed":"pointer",fontSize:13,fontWeight:800,color:C.white,whiteSpace:"nowrap"}}>Send</button>
+        )}
       </div>
 
-      <MyCQPanel open={panelOpen} onClose={()=>setPanelOpen(false)} legacy={legacy} catalyst={catalyst} insights={insights} currentModule={currentModule} notes={notes} setNotes={setNotes} />
+      {activeTab==="coach" && (
+        <div style={{padding:"8px 12px 10px",background:C.white,borderTop:"1px solid rgba(36,65,105,.08)",flexShrink:0,display:"flex",gap:8,alignItems:"flex-end"}}>
+          <MicButton onTranscript={setInput} />
+          <input value={input} onChange={e=>setInput(e.target.value)}
+            onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend(input);}}}
+            placeholder="Type or use mic..."
+            style={{flex:1,background:"rgba(36,65,105,.05)",border:"1.5px solid rgba(36,65,105,.12)",borderRadius:20,padding:"10px 15px",color:C.navy,fontSize:15,outline:"none",fontFamily:"inherit",lineHeight:1.4}} />
+          <button onClick={()=>handleSend(input)} disabled={typing} style={{height:44,width:44,borderRadius:"50%",background:typing?"rgba(36,65,105,.3)":C.navy,border:"none",cursor:typing?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+          </button>
+        </div>
+      )}
+
+      {/* 5-Tab Bottom Navigation */}
+      <div style={{background:C.white,borderTop:"1px solid rgba(36,65,105,.08)",flexShrink:0,display:"flex",padding:"6px 0 16px",boxShadow:"0 -2px 12px rgba(0,0,0,.06)"}}>
+        {tabs.map(t=>{
+          const isActive = activeTab===t.id;
+          const hasNotif = (t.id==="insights" && panelDot) || (t.id==="journey" && journeyDot);
+          return (
+            <button key={t.id} onClick={()=>{setActiveTab(t.id);if(t.id==="insights")setPanelDot(false);if(t.id==="journey")setJourneyDot(false);}}
+              style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,background:"none",border:"none",cursor:"pointer",padding:"4px 0",
+                color:isActive?C.orange:"rgba(36,65,105,.35)",position:"relative"}}>
+              {hasNotif && <div style={{position:"absolute",top:2,right:"calc(50% - 14px)",width:7,height:7,borderRadius:"50%",background:C.gold}} />}
+              <TabIcon id={t.id} />
+              <div style={{fontSize:9.5,fontWeight:isActive?800:600,letterSpacing:".02em"}}>{t.label}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      {bridgeData && (
+        <ModuleBridge
+          completedModule={bridgeData.module}
+          commitment={lastCommitment}
+          onContinue={()=>{
+            const nextMod = bridgeData.nextModule;
+            setBridgeData(null);
+            setLastCommitment("");
+            if(nextMod >= 7) { setProgramComplete(true); setActiveTab("insights"); }
+            else { setCurrentModule(nextMod); setActiveTab("coach"); }
+          }}
+        />
+      )}
       {showForteUpload && (
         <ForteUploadScreen
           onComplete={(fd)=>{
             setForteData(fd);
             setShowForteUpload(false);
+            // Flash Profile tab so participant sees data populate
+            setActiveTab("profile");
+            setTimeout(()=>setActiveTab("coach"), 2200);
             // Use a small delay to ensure state update commits before rendering graph
             setTimeout(()=>{
               setMessages(prev=>[...prev,{
@@ -3331,7 +3578,12 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
                 if(aiText){
                   const {text:cleanText,artifacts:arts} = parseAIResponse(aiText);
                   arts.forEach(a=>{
-                    if(a.type==="module_advance"){ setCurrentModule(a.n); if(a.n>=7) setProgramComplete(true); }
+                    if(a.type==="module_advance"){
+                      const completedMod = a.n - 1;
+                      if(completedMod >= 1 && completedMod <= 6) setBridgeData({module: completedMod, nextModule: a.n});
+                      if(a.n >= 7) setProgramComplete(true);
+                      else setCurrentModule(a.n);
+                    }
                     if(a.type==="coach_insight") setInsights(prev=>({...prev,observations:[...prev.observations,a.value]}));
                     if(a.type==="complete_action_plan") setInsights(prev=>({...prev,actionPlan:{legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}}));
                     if(a.type==="show_forte_graph") setTimeout(()=>setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:"",artifact:{type:"forte_graph_focused",tab:a.tab||"green",forteData:fd}}]),300);
@@ -3344,7 +3596,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
               });
             },600);
           }}
-          onSkip={()=>{ setShowForteUpload(false); addMsg("coach","No problem -- you can add your scores any time from the My CQ panel. Let us keep going."); }}
+          onSkip={()=>{ setShowForteUpload(false); addMsg("coach","No problem -- you can add your scores any time. Let us keep going."); }}
         />
       )}
     </div>
