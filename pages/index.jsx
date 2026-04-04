@@ -403,7 +403,104 @@ LEVEL CALIBRATION -- apply this throughout the entire program, not just the open
 
 {levelCoaching}`;
 
+const FORTE_INTELLIGENCE_BLOCK = `
+═══════════════════════════════════════════════════════════
+FORTE PROFILE INTELLIGENCE — CERTIFIED COACH REFERENCE
+═══════════════════════════════════════════════════════════
+
+THREE GRAPHS — WHAT EACH MEANS:
+• PRIMARY (Green): Natural, genetic communication style. Who they really are. Stable across their lifetime. Constitutes 50-60% of how they communicate.
+• ADAPTING (Red): How they have been adapting to their environment in the last 30 days. Shows the "stretch" — how hard they are working to meet environmental demands. When Adapting moves far from Primary on any dimension, that dimension is under stress.
+• PERCEIVED (Blue): How they are most likely coming across to others RIGHT NOW. Calculated as a correlation of Primary + Adapting. This is the gap the participant usually cannot see themselves.
+
+READING THE NUMBERS (scale -36 to +36, center = 0):
+• Positive = above centerline (Dominant, Extrovert, Patient, Conformist)
+• Negative = below centerline (Non-Dominant, Introvert, Impatient, Non-Conformist)
+• Distance from center = intensity of that strength. 0-7: flexible zone. 8-15: moderate. 16-25: strong. 26-36: very intense.
+• Primary strength = dimension farthest ABOVE centerline. Secondary strength = dimension farthest BELOW centerline.
+• Ambivert zone: Ext score between -7 and +7. Individual moves fluidly between outgoing and reserved — not "moody," just task-driven.
+
+THE GAP THAT MATTERS MOST — ADAPTING vs. PRIMARY:
+When Adapting moves across the centerline away from Primary, the person is fundamentally shifting how they show up. That shift costs energy and creates stress. Example: Primary Extrovert (score +14) adapting to Introvert (-5) = significant energy drain. Always name this gap: "Your natural style is [X] but right now you are operating more like [Y]. That gap is where your energy is going."
+
+THE PERCEIVER GAP — THE COACHING GOLD:
+Perceived shows what others experience, not what the participant intends. When Perceived differs from Primary:
+• Perceived MORE dominant than Primary: Others see them as more controlling/aggressive than they feel inside.
+• Perceived LESS extroverted than Primary: Others see them as more reserved/cold than they intend — they are over-suppressing their warmth.
+• Perceived MORE impatient than Primary: They are coming across as rushed or pressuring even when they do not feel that way.
+• Perceived MORE conformist than Primary: Others see rigidity; the participant may not realize how rule-bound they are appearing.
+Always connect Perceived to their Catalyst relationship: "This is how [Catalyst name] is likely experiencing you right now."
+
+THE 4 DIMENSIONS — COACHING TRIGGERS:
+DOMINANT (+): Results-first. Will steamroll relationships to hit goals. Gets impatient with indecision. Coaching push: "Before you solved it — what did you notice about the person?" Sensitive area: being second-guessed or micromanaged.
+NON-DOMINANT (-): Seeks input before deciding. Conflict-averse. Can hold back strong views. Coaching push: "You clearly have a position here. What is it?" Sensitive area: arbitrary directives, disrespect.
+EXTROVERT (+): People-driven. Persuasive. Needs to be liked. Will over-talk. May think they communicated when they did not. Coaching push: "Let us stay with them — what do you think they were experiencing?" Sensitive area: feeling excluded or unappreciated.
+INTROVERT (-): Selective. Thinks before speaking. Appears reserved but has depth. Best 1:1. Coaching push: "Where does this not quite fit for you — say it out loud." Sensitive area: being pushed to perform extroversion; exposed in groups.
+PATIENT (+): Steady. Warmth. Great listener. First answer not best answer — give them processing time. Coaching push: "It sounds like this might have been more uncomfortable than you are letting on." Sensitive area: sudden change, being rushed.
+IMPATIENT (-): Action-oriented. Sense of urgency. Jumps to solutions. Multiple simultaneous projects, few closures. Coaching push: "Before we figure out what to do — what do you think they were feeling?" Sensitive area: repetition, slow pace, delays.
+CONFORMIST (+): Accurate. Systems-oriented. Sensitive to criticism. Needs to understand WHY before changing. Coaching push: "Step back from what happened — what was the emotional impact?" Sensitive area: public criticism, rule violations, being rushed into decisions.
+NON-CONFORMIST (-): Independent. Big-picture. Dislikes detail and controls. Resists structure. Coaching push: "Before you reframe their perspective — did you fully receive it?" Sensitive area: micromanagement, excessive process, being boxed in.
+
+LOGIC STYLE (how they are making decisions right now):
+• FACTS: Objective. Mathematical. Data-driven. Needs evidence, not stories.
+• FACTS/FEELINGS: Balanced. "Does this feel right given the data?" Practical.
+• FEELINGS: Gut-guided. Relational. Needs to connect emotionally to commit.
+• INTUITIVE FEELINGS: Pure instinct. Little need for facts. Trusts the read.
+
+STAMINA (current energy reserve):
+• VERY HIGH / HIGH: Can weather sustained pressure. Risk: takes on too much.
+• ABOVE AVERAGE: Sufficient for most demands. Moderate stress is manageable.
+• AVERAGE: Routine environment is fine. High-stress periods deplete quickly.
+• BELOW AVERAGE: Pacing is essential. Extra projects cause productivity drop. Morale vulnerable under sustained distress.
+When stamina is below average, acknowledge it: "Your energy profile right now tells me you are running leaner than usual — that context matters for everything we are about to work on."
+
+GOALS INDEX:
+• MEETING GOALS: Environment handled, confident, on track.
+• MOST GOALS: Some concern, but generally managing.
+• SOME GOALS: Worried about environment and capacity.
+• FEW GOALS: Either others expect too much, or serious self-criticism is present. Investigate gently.
+
+RESILIENCY ZONE: When BOTH stamina is High/Very High AND Goals is Meeting/Most — this person is in their resilience zone. Ask: "What are you doing differently right now that is working? Let us name it so you can replicate it."
+
+38 MASTER PATTERNS — use to identify participant's pattern and name it:
+DOMINANCE PATTERNS:
+D1: Results + big-picture + calculated risk (Dom, NCon) | D2: High urgency + decisive + analytical + competitive (Dom, IPat, NCon, Int) | D3: Authoritative presence + socially adept + competitive (Dom, Ext, IPat, NCon) | D4: High standards + systems control + develops people after proving loyalty (Dom, Int, IPat, Con) | D5: Perfectionist executor + creative accuracy + skeptical of exaggeration (Dom, Con, Int) | D6: Independent creator + persistent + unconcerned with outside opinion (Dom, Int, NCon, Pat) | D7: Conscientious + constructive critic + high urgency + persuasive (Dom, Ext, Con, IPat) | D8: Independent big-picture + strong interpersonal warmth (Dom, NCon, Ext) | D9: Creative specialist + persistent + deliberate + systems-builder (Dom, Int, Con, Pat) | D10: Personable commander + results-driven + quick-thinking risk-taker (Dom, Ext, NCon, IPat)
+EXTROVERSION PATTERNS:
+E1: Outgoing leader + urgent + delegates everything (Ext, Dom, IPat, NCon) | E2: Exciting + influential + big-picture + needs to be liked (Ext, IPat, NCon, NDom) | E3: Warm + easygoing + attentive listener + loyal friend (Ext, Pat, NDom, Con) | E4: Persuasive + principled + genuinely concerned for others (Ext, NDom, Con) | E5: Convincing + delegates details + independent + big-picture (Ext, Dom, NCon) | E6: Persuasive + tenacious + negotiator + likeable (Ext, Dom, Pat, NCon) | E7: Organized + accurate + self-motivated leader + systems + people (Ext, Con, Dom, IPat) | E8: Warm influencer + delegates authority + strong urgency (Ext, NDom, NCon, IPat) | E9: Easygoing + persuasive + big-picture + fosters participation (Ext, Pat, NDom, NCon)
+PATIENCE PATTERNS:
+P1: Steady + process-improver + prefers proven systems (Pat, Con, NDom) | P2: Cooperative + dependable + warm + sensitive to criticism (Pat, NDom, Ext, Con) | P3: Warm talker + good listener + independent + persuasive (Pat, Ext, NDom, NCon) | P4: Steady + warm + conflict-avoidant + deliberate (Pat, NDom, Ext, Con) | P5: Persistent + big-picture planner + direct + innovative (Pat, NCon, Int, NDom) | P6: Independent + sees big picture AND details + dependable (Pat, NCon, Int, NDom) | P7: Warm + patient timing + big-picture initiator + good listener (Pat, Ext, Dom, NCon) | P8: Steady + creative within expertise + persistent + direct 1:1 (Pat, Con, Dom, Int) | P9: Persistent big-picture + long-range planner + confident "take it or leave it" (Pat, Dom, Int, NCon)
+CONFORMITY PATTERNS:
+C1: Scientific problem-solver + rules-based + strong memory (Con, Int, Pat, Dom) | C2: Precise specialist + direct + strict + responds best to tactful critique (Con, Dom, Int) | C3: Careful + cautious with new ideas + loyal + responds to tact (Con, Int, NDom, Pat) | C4: Thorough + methodical + cautious + loyal + does not like to be rushed (Con, Pat, Int, NDom) | C5: Mild + right-and-wrong oriented + steady + gentle persuasion (Con, Pat, NDom, Int) | C6: Personable + authoritative + action-oriented + competitive (Con, Dom, Ext, IPat) | C7: Loyal + fairness-driven + persuasive + friendly + precise (Con, Ext, Pat, NDom) | C8: Careful + systematic + dutiful + persuasive in small groups (Con, NDom, Pat, Int) | C9: Systems-oriented + people-skilled + disciplined leader + committed to doing things right (Con, Ext, Dom, IPat) | C10: Principled + persuasive + unselfish concern for others + structured (Con, Ext, NDom, IPat)
+
+CROSS-STRENGTH DYNAMICS — use when coaching style pairings or team dynamics:
+DOM + EXT: Can clash — Dom wants control, Ext wants center. Complement: Dom provides technical edge, Ext provides people energy.
+DOM + PAT: Dom creates time pressure and conflict; Pat wants to plan and preserve relationships. Complement: together they get results while keeping the peace.
+DOM + CON: Dom too critical and change-happy; Con demands details and resists change. Complement: Dom sees forest, Con sees trees.
+EXT + PAT: Ext seems insincere to Pat; Pat seems unenthusiastic to Ext. Complement: balance enthusiasm with planning in people work.
+EXT + CON: Ext's verbal flamboyance vs. Con's need for facts in writing. Complement: Ext brings people energy; Con brings discipline and order.
+PAT + CON: Pat too easygoing for Con; Con too intense for Pat. Both respond to strong leadership. Complement: Con brings intensity and discipline; Pat brings calm and shortcuts.
+DOM + DOM: Periodic conflict over control. Ground rules required. Will challenge leadership.
+EXT + EXT: Work well together but talk too much — little gets done. Need technical support.
+PAT + PAT: Harmonious but may need external pace-setter to be productive.
+CON + CON: Get along unless their definitions of "right" differ — then serious conflict. Slow to change; lack big-picture thinking.
+NDom + DOM: NDom finds Dom abrupt; Dom frustrated by NDom's slow decisions.
+EXT + INT: Ext seems insincere to Int; Int seems unfriendly and reserved to Ext.
+PAT + IPAT: Impatient jumps and never finishes; Patient seems lazy and boring.
+CON + NCON: Conformist sees Non-Con as unreliable and detail-averse; Non-Con sees Conformist as rigid and perfectionistic.
+
+HOW TO USE THIS IN SESSION:
+1. When participant uploads Forte, immediately identify: Primary strength, Secondary strength, any major Adapting gaps, Perceiver pattern.
+2. Name the Master Pattern: "Based on your profile you look like a [D3/E5/P7/etc.] — here is what that typically means..."
+3. Connect Perceiver to the Catalyst: "Right now [Catalyst] is likely experiencing you as [Perceived pattern]. Does that land?"
+4. When stamina is low, acknowledge the energy cost before going deeper.
+5. Use cross-strength dynamics when discussing the participant's Catalyst relationship in Module 4.
+═══════════════════════════════════════════════════════════
+`;
+
 function buildSystemPrompt(profile) {
+  const forteBlock = profile.forteData && profile.forteData !== "Not yet uploaded"
+    ? FORTE_INTELLIGENCE_BLOCK
+    : "";
   return SYSTEM_PROMPT_TEMPLATE
     .replace("{participantName}", profile.participantName || "the participant")
     .replace("{levelName}", profile.levelName || "Not selected")
@@ -411,7 +508,8 @@ function buildSystemPrompt(profile) {
     .replace("{catalyst}", profile.catalyst || "Not yet identified")
     .replace("{forteData}", profile.forteData || "Not yet uploaded")
     .replace("{currentModule}", profile.currentModule || "1")
-    .replace("{levelCoaching}", profile.levelCoaching || "");
+    .replace("{levelCoaching}", profile.levelCoaching || "")
+    + forteBlock;
 }
 
 function parseAIResponse(text) {
@@ -3224,7 +3322,11 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
       participantName: participantName || "the participant",
       legacy: legacyRef.current,
       catalyst: catalystRef.current,
-      forteData: forteData ? "Primary Profile -- Dom:" + forteData.green.scores[0] + ", Ext:" + forteData.green.scores[1] + ", Pat:" + forteData.green.scores[2] + ", Con:" + forteData.green.scores[3] : "Not yet uploaded",
+      forteData: forteData ? (
+        "Primary (Natural) -- Dom:" + forteData.green.scores[0] + ", Ext:" + forteData.green.scores[1] + ", Pat:" + forteData.green.scores[2] + ", Con:" + forteData.green.scores[3] +
+        " | Adapting (30-day) -- Dom:" + forteData.red.scores[0] + ", Ext:" + forteData.red.scores[1] + ", Pat:" + forteData.red.scores[2] + ", Con:" + forteData.red.scores[3] +
+        " | Perceived (how others see them) -- Dom:" + forteData.blue.scores[0] + ", Ext:" + forteData.blue.scores[1] + ", Pat:" + forteData.blue.scores[2] + ", Con:" + forteData.blue.scores[3]
+      ) : "Not yet uploaded",
       currentModule,
     };
 
@@ -3518,6 +3620,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
             const nextMod = bridgeData.nextModule;
             setBridgeData(null);
             setLastCommitment("");
+            setJourneyDot(false); // clear dot — they just visited Journey via bridge
             if(nextMod >= 7) { setProgramComplete(true); setActiveTab("insights"); }
             else { setCurrentModule(nextMod); setActiveTab("coach"); }
           }}
@@ -3530,7 +3633,11 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
             setShowForteUpload(false);
             // Flash Profile tab so participant sees data populate
             setActiveTab("profile");
-            setTimeout(()=>setActiveTab("coach"), 2200);
+            setTimeout(()=>{
+              setActiveTab("coach");
+              // Guaranteed nav cue — not left to AI to organically include
+              setTimeout(()=>addMsg("coach","Your Communication Profile is now live in your Profile tab — you can check it any time during our session."),400);
+            }, 2200);
             // Use a small delay to ensure state update commits before rendering graph
             setTimeout(()=>{
               setMessages(prev=>[...prev,{
