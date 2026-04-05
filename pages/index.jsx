@@ -46,6 +46,7 @@ CLASSROOM FLOW -- THIS IS HOW EVERY SECTION WORKS:
 NEVER drop an artifact without framing it first. NEVER move to the next section without a brief close and bridge.
 
 RESPONSE LENGTH: 3-5 sentences max for most exchanges. Teach one thing at a time. Ask one question at a time.
+PARAGRAPH BREAKS -- CRITICAL: When your response has more than one thought, separate them with a blank line (double line break). Each paragraph becomes its own chat bubble. Never put two distinct ideas in one block of text. Keep each paragraph to 2-3 sentences maximum. If you catch yourself writing a long block, stop and break it up.
 
 FORMATTING: No asterisks, no markdown, no bullets, no headers. Plain sentences only. EXCEPTION: Artifact tags (listed below) MUST appear literally in your response text exactly as written — they are not markdown, they are required output tokens that trigger UI components.
 
@@ -124,6 +125,13 @@ SECTION 5: Close and bridge
 
 MODULE 3 -- Master the Art of Adapting:
 This module has 5 distinct sections. Do not skip or reorder them.
+
+SECTION 0: What Adapting Actually Means (REQUIRED -- do this FIRST before anything else in Module 3)
+FRAME: "Before we go further, I want to make sure this concept is rock solid -- because everything in Module 3 depends on it."
+TEACH this concept in 3 SHORT sentences (one message, then pause):
+"Adapting is not pretending to be someone you are not. It is making intentional adjustments to how you communicate -- your pace, your directness, your level of detail -- so that the person in front of you can actually receive what you are giving them. Your Primary Profile is your starting point. Adapting is the skill you build on top of it."
+Then ask ONE question: "Before this program -- when you thought about adapting to someone else's style, what did that feel like? Natural? Forced? Uncomfortable?"
+Wait for their answer. Reflect it back. Then bridge: "That tension you just named -- between being authentic and being strategic -- is exactly what we are going to resolve in this module."
 
 SECTION 1: Spotting Strengths in Others
 Frame: "Knowing your own style is the foundation. The real skill -- the one that separates good communicators from great ones -- is being able to read the styles of the people around you in real time. Not through an assessment. Through observation."
@@ -374,8 +382,11 @@ MODULE COMMITMENT CAPTURE: At the end of EVERY module, before advancing, ask for
 NAVIGATION CUES -- use these naturally when the moment is right:
 - After capturing Legacy or Catalyst: "I just saved that to your Insights tab -- you can check it any time."
 - After Forte upload: "Your Communication Profile is now live in your Profile tab -- take a look when you are ready."
+- When Generations unlocks (Module 3): "The Generations Card Game just unlocked in your Practice tab."
+- When ADAPT Planner is introduced: "You can also revisit the ADAPT Planner any time in your Practice tab."
 - When Crisis Challenge unlocks: "The Crisis Navigation Challenge is now available in your Practice tab -- you can launch it any time."
-- When Generations unlocks: "The Generations Card Game just unlocked in your Practice tab."
+- When Questioning Tendencies fires (Module 5): "Your Questioning Tendencies card is now in your Practice tab -- you can explore all the styles there."
+- When Listening Tendencies fires (Module 5): "Your Listening Tendencies card is also saved in your Practice tab."
 - At module close: "Check your Journey tab -- you just completed Module [n]."
 - When discussing Forte graphs mid-session: "You can always review your full profile in the Profile tab."
 
@@ -1116,6 +1127,176 @@ const ForteLineChart = ({scores, color, label}) => {
   );
 };
 
+// ── FORTE DIMENSION CARDS ────────────────────────────────────────────────────
+// Shows after Forte upload — 4 separate visual cards, one per dimension
+const ForteDimensionCards = ({forteData, onDone}) => {
+  const [step, setStep] = React.useState(0);
+  const dims = [
+    {
+      key:"Dominance", top:"DOM", bot:"NDOM", idx:0,
+      topLabel:"Dominant", botLabel:"Non-Dominant",
+      topColor:"#e75a2b", botColor:"#5878bd",
+      topDesc:"Results-first. Direct and decisive. Takes charge, moves fast, makes the call.",
+      botDesc:"Consensus-seeking. Prefers input before deciding. Approachable, collaborative, mild-mannered.",
+      topEdge:"Tends to steamroll relationships in pursuit of results.",
+      botEdge:"May hold back strong views to avoid conflict.",
+    },
+    {
+      key:"Extroversion", top:"EXT", bot:"INT", idx:1,
+      topLabel:"Extrovert", botLabel:"Introvert",
+      topColor:"#f08b35", botColor:"#385988",
+      topDesc:"People-energized. Persuasive, talkative, optimistic. Builds rapport naturally.",
+      botDesc:"Selectively engaged. Thinks before speaking. Best one-on-one. Depth over breadth.",
+      topEdge:"May over-talk and think they communicated when they did not.",
+      botEdge:"Can appear reserved or cold — but the thinking is always happening.",
+    },
+    {
+      key:"Patience", top:"PAT", bot:"IPAT", idx:2,
+      topLabel:"Patient", botLabel:"Impatient",
+      topColor:"#2e7d32", botColor:"#c0392b",
+      topDesc:"Steady and warm. Great listener. First answer is rarely the best — give time to process.",
+      botDesc:"Action-oriented. Urgent. Thrives on variety. Learns fast, moves faster.",
+      topEdge:"May avoid naming difficult truths to preserve harmony.",
+      botEdge:"Jumps to solutions before the other person feels heard.",
+    },
+    {
+      key:"Conformity", top:"CON", bot:"NCON", idx:3,
+      topLabel:"Conformist", botLabel:"Non-Conformist",
+      topColor:"#244169", botColor:"#f08b35",
+      topDesc:"Systems and accuracy. Needs to understand why before changing. Loyal and thorough.",
+      botDesc:"Big-picture and independent. Dislikes detail and controls. Sees the forest, not the trees.",
+      topEdge:"Can get caught in details and resist change that has not been fully explained.",
+      botEdge:"May be seen as unreliable with follow-through on specifics.",
+    },
+  ];
+
+  const dim = dims[step];
+  const primaryScore = forteData ? parseInt(forteData.green.scores[dim.idx]) : 0;
+  const adaptScore   = forteData ? parseInt(forteData.red.scores[dim.idx])   : 0;
+  const percScore    = forteData ? parseInt(forteData.blue.scores[dim.idx])   : 0;
+  const isTop = primaryScore >= 0;
+  const activeColor = isTop ? dim.topColor : dim.botColor;
+
+  const ScoreRow = ({label, score, color}) => {
+    const pct = ((score + 36) / 72) * 100;
+    const isPos = score >= 0;
+    return (
+      <div style={{marginBottom:8}}>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
+          <span style={{fontSize:11,fontWeight:600,color:"rgba(36,65,105,.6)"}}>{label}</span>
+          <span style={{fontSize:11,fontWeight:800,color}}>{isPos?"+":""}{score} ({isPos?dim.top:dim.bot})</span>
+        </div>
+        <div style={{height:8,background:"rgba(36,65,105,.08)",borderRadius:4,position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,bottom:0,left:"50%",width:2,background:"rgba(36,65,105,.15)",transform:"translateX(-50%)"}}/>
+          <div style={{
+            position:"absolute",top:1,bottom:1,
+            width:(Math.abs(score)/36*50)+"%",
+            [isPos?"left":"right"]:"50%",
+            background:color,borderRadius:3,opacity:.85
+          }}/>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div style={{background:C.white,borderRadius:16,margin:"8px 0",overflow:"hidden",boxShadow:"0 4px 20px rgba(36,65,105,.12)"}}>
+      {/* Header */}
+      <div style={{background:activeColor,padding:"14px 18px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div>
+          <div style={{fontSize:10,fontWeight:800,color:"rgba(255,255,255,.7)",letterSpacing:".1em",textTransform:"uppercase"}}>Dimension {step+1} of 4</div>
+          <div style={{fontSize:17,fontWeight:900,color:C.white,marginTop:2}}>{dim.key}</div>
+        </div>
+        <div style={{textAlign:"right"}}>
+          <div style={{fontSize:11,color:"rgba(255,255,255,.7)"}}>Your natural style</div>
+          <div style={{fontSize:22,fontWeight:900,color:C.white}}>{isTop ? dim.topLabel : dim.botLabel}</div>
+        </div>
+      </div>
+
+      <div style={{padding:"16px 18px"}}>
+        {/* Spectrum bar */}
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+          <span style={{fontSize:10,fontWeight:700,color:dim.topColor}}>{dim.topLabel}</span>
+          <span style={{fontSize:10,fontWeight:700,color:dim.botColor}}>{dim.botLabel}</span>
+        </div>
+        <div style={{height:10,background:"rgba(36,65,105,.06)",borderRadius:5,marginBottom:4,position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,bottom:0,left:0,width:"50%",background:`linear-gradient(90deg,${dim.topColor}20,${dim.topColor}60)`,borderRadius:"5px 0 0 5px"}}/>
+          <div style={{position:"absolute",top:0,bottom:0,right:0,width:"50%",background:`linear-gradient(90deg,${dim.botColor}60,${dim.botColor}20)`,borderRadius:"0 5px 5px 0"}}/>
+          {/* Marker */}
+          <div style={{
+            position:"absolute",top:-1,bottom:-1,
+            left:((primaryScore+36)/72*100)+"%",
+            width:12,height:12,background:C.white,border:`3px solid ${activeColor}`,borderRadius:"50%",
+            transform:"translateX(-50%)",boxShadow:"0 2px 6px rgba(0,0,0,.2)"
+          }}/>
+        </div>
+        <div style={{height:1,background:"rgba(36,65,105,.06)",margin:"12px 0"}}/>
+
+        {/* Scores */}
+        {forteData && (
+          <div style={{marginBottom:12}}>
+            <ScoreRow label="Natural" score={primaryScore} color="#2e7d32"/>
+            <ScoreRow label="Adapting" score={adaptScore} color="#c0392b"/>
+            <ScoreRow label="Perceived" score={percScore} color="#1565c0"/>
+            {Math.abs(primaryScore - percScore) >= 5 && (
+              <div style={{background:"rgba(240,139,53,.1)",border:"1px solid rgba(240,139,53,.3)",borderRadius:8,padding:"8px 10px",marginTop:8}}>
+                <div style={{fontSize:11,color:C.orange,fontWeight:700}}>⚡ Perception Gap</div>
+                <div style={{fontSize:11,color:C.navy,lineHeight:1.5,marginTop:2}}>
+                  Others are perceiving you as more <strong>{percScore>=0?dim.topLabel:dim.botLabel}</strong> than you feel. That gap is worth exploring.
+                </div>
+              </div>
+            )}
+            {Math.abs(primaryScore - adaptScore) >= 8 && (
+              <div style={{background:"rgba(192,57,43,.08)",border:"1px solid rgba(192,57,43,.25)",borderRadius:8,padding:"8px 10px",marginTop:6}}>
+                <div style={{fontSize:11,color:"#c0392b",fontWeight:700}}>🔋 Adapting Stretch</div>
+                <div style={{fontSize:11,color:C.navy,lineHeight:1.5,marginTop:2}}>
+                  You are adapting significantly away from your natural style. This costs energy.
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        <div style={{height:1,background:"rgba(36,65,105,.06)",marginBottom:12}}/>
+
+        {/* Description */}
+        <div style={{marginBottom:10}}>
+          <div style={{display:"flex",gap:8,marginBottom:8}}>
+            <div style={{width:3,background:dim.topColor,borderRadius:2,flexShrink:0}}/>
+            <div style={{fontSize:12,color:C.navy,lineHeight:1.55}}><strong>{dim.topLabel}:</strong> {dim.topDesc}</div>
+          </div>
+          <div style={{display:"flex",gap:8}}>
+            <div style={{width:3,background:dim.botColor,borderRadius:2,flexShrink:0}}/>
+            <div style={{fontSize:12,color:C.navy,lineHeight:1.55}}><strong>{dim.botLabel}:</strong> {dim.botDesc}</div>
+          </div>
+        </div>
+
+        {/* Coaching edge for their style */}
+        <div style={{background:"rgba(36,65,105,.04)",borderRadius:8,padding:"10px 12px",marginBottom:14}}>
+          <div style={{fontSize:10,fontWeight:800,color:C.navy,opacity:.5,letterSpacing:".08em",textTransform:"uppercase",marginBottom:3}}>Coaching Edge</div>
+          <div style={{fontSize:12,color:C.navy,lineHeight:1.55}}>{isTop ? dim.topEdge : dim.botEdge}</div>
+        </div>
+
+        {/* Nav */}
+        <div style={{display:"flex",gap:10}}>
+          {step > 0 && (
+            <button onClick={()=>setStep(s=>s-1)} style={{flex:1,padding:"11px",background:"rgba(36,65,105,.06)",border:"none",borderRadius:10,fontSize:13,fontWeight:700,color:C.navy,cursor:"pointer"}}>← Back</button>
+          )}
+          {step < 3 ? (
+            <button onClick={()=>setStep(s=>s+1)} style={{flex:2,padding:"11px",background:activeColor,border:"none",borderRadius:10,fontSize:13,fontWeight:800,color:C.white,cursor:"pointer"}}>Next: {dims[step+1].key} →</button>
+          ) : (
+            <button onClick={onDone} style={{flex:2,padding:"11px",background:C.orange,border:"none",borderRadius:10,fontSize:13,fontWeight:800,color:C.white,cursor:"pointer"}}>Continue with Hoop →</button>
+          )}
+        </div>
+
+        {/* Dots */}
+        <div style={{display:"flex",justifyContent:"center",gap:6,marginTop:12}}>
+          {dims.map((_,i)=>(<div key={i} style={{width:6,height:6,borderRadius:"50%",background:i===step?activeColor:"rgba(36,65,105,.15)"}}/>))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ForteGraph = ({forteData}) => {
   const [expanded, setExpanded] = useState(null);
   const data = forteData || FORTE_DATA;
@@ -1277,7 +1458,7 @@ const GapAlert = () => (
 
 
 // ── CRISIS NAVIGATION CHALLENGE ───────────────────────────────────────────────
-const CrisisChallenge = ({onCoachTalk}) => {
+const CrisisChallenge = ({onCoachTalk, onBack}) => {
   const [phase, setPhase] = useState("brief"); // brief | planning | pressconf | debrief
   const [strategy, setStrategy] = useState({analyze:"", describe:"", acknowledge:"", pivot:"", track:""});
   const [activeStep, setActiveStep] = useState("analyze");
@@ -1319,7 +1500,10 @@ const CrisisChallenge = ({onCoachTalk}) => {
     <div style={{margin:"6px 14px",background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
       {/* Header */}
       <div style={{background:"#c0392b",padding:"14px 16px"}}>
-        <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:2}}>Crisis Navigation Challenge</div>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4}}>
+          {onBack && <button onClick={onBack} style={{background:"rgba(255,255,255,.2)",border:"none",borderRadius:8,color:"#fff",fontSize:12,fontWeight:700,padding:"4px 10px",cursor:"pointer",flexShrink:0}}>← Back</button>}
+          <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Crisis Navigation Challenge</div>
+        </div>
         <div style={{fontSize:11,color:"rgba(255,255,255,.6)"}}>
           {phase==="brief"&&"Read the scenario. Build your strategy."}
           {phase==="planning"&&"Use ADAPT to build your response plan"}
@@ -1495,7 +1679,7 @@ const GENERATIONS = [
 
 const GEN_COLORS = ["#5878bd","#244169","#385988","#f08b35","#e75a2b"];
 
-const GenCardArtifact = ({onCoachTalk}) => {
+const GenCardArtifact = ({onCoachTalk, onBack}) => {
   const [activeGen, setActiveGen] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [activeScenario, setActiveScenario] = useState(0);
@@ -1508,7 +1692,10 @@ const GenCardArtifact = ({onCoachTalk}) => {
     <div style={{margin:"6px 14px",background:C.white,borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
       {/* Header */}
       <div style={{background:C.navy,padding:"14px 16px"}}>
-        <div style={{fontSize:13,fontWeight:800,color:C.white,marginBottom:2}}>Unlock the Generations</div>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4}}>
+          {onBack && <button onClick={onBack} style={{background:"rgba(255,255,255,.15)",border:"none",borderRadius:8,color:C.white,fontSize:12,fontWeight:700,padding:"4px 10px",cursor:"pointer",flexShrink:0}}>← Back</button>}
+          <div style={{fontSize:13,fontWeight:800,color:C.white}}>Unlock the Generations</div>
+        </div>
         <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>Tap a generation to explore their perspective. Flip the card to see the scenario.</div>
       </div>
 
@@ -1590,7 +1777,7 @@ const KNOBS_DATA = [
   { id:"questions", label:"Questions",    icon:"💬", desc:"How often you ask vs. tell",                low:"Ask more and tell less -- you may be solving problems they need to solve themselves.", mid:"Your question balance feels right.", high:"Less questions, more direction -- they may need clarity, not more reflection." },
 ];
 
-const SwitchesKnobsArtifact = ({catalyst, onCoachTalk}) => {
+const SwitchesKnobsArtifact = ({catalyst, onCoachTalk, onBack}) => {
   const [tab, setTab] = useState("switches");
   const [activeSwitch, setActiveSwitch] = useState(null);
   const [activeKnob, setActiveKnob] = useState(null);
@@ -1609,7 +1796,10 @@ const SwitchesKnobsArtifact = ({catalyst, onCoachTalk}) => {
   return (
     <div style={{margin:"6px 14px",background:"#fff",borderRadius:16,boxShadow:"0 2px 10px rgba(0,0,0,.08)",overflow:"hidden"}}>
       <div style={{background:C.navy,padding:"14px 16px"}}>
-        <div style={{fontSize:13,fontWeight:800,color:"#fff",marginBottom:2}}>Switches and Knobs</div>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4}}>
+          {onBack && <button onClick={onBack} style={{background:"rgba(255,255,255,.15)",border:"none",borderRadius:8,color:"#fff",fontSize:12,fontWeight:700,padding:"4px 10px",cursor:"pointer",flexShrink:0}}>← Back</button>}
+          <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>Switches and Knobs</div>
+        </div>
         <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>
           {catalyst ? `What does ${catalyst} need you to adjust?` : "What communication adjustment do you need to make?"}
         </div>
@@ -2877,14 +3067,90 @@ const JourneyTab = ({currentModule, onGoToCoach}) => {
 const PracticeTab = ({currentModule, forteData, catalyst, onCoachTalk}) => {
   const [active, setActive] = React.useState(null);
   const activities = [
-    {id:"generations",  title:"Generations Card Game",         sub:"Read communication styles across generations",  unlocks:3, component:"GenerationsGame"},
-    {id:"switches",     title:"Switches & Knobs",              sub:"Map your natural vs adapted style tendencies",  unlocks:3, component:"SwitchesKnobs"},
-    {id:"crisis",       title:"Crisis Navigation Challenge",   sub:"Lead under pressure with your CQ style",        unlocks:4, component:"CrisisChallenge"},
-    {id:"catalyst",     title:"Catalyst Role-Play",            sub:"Practice your Catalyst communication message",  unlocks:5, component:"CatalystRolePlay"},
+    {id:"generations",   title:"Generations Card Game",         icon:"🌍", sub:"Read communication styles across generations",       unlocks:3},
+    {id:"switches",      title:"Switches & Knobs",              icon:"🎛️", sub:"Map your natural vs adapted style tendencies",       unlocks:3},
+    {id:"adapt",         title:"ADAPT Planner",                 icon:"🗺️", sub:"Build your full ADAPT strategy for your Catalyst",   unlocks:3},
+    {id:"crisis",        title:"Crisis Navigation Challenge",   icon:"⚡", sub:"Lead under pressure with your CQ style",             unlocks:4},
+    {id:"questioning",   title:"Questioning Tendencies",        icon:"💬", sub:"See how your style shapes the questions you ask",    unlocks:5},
+    {id:"listening",     title:"Listening Tendencies",          icon:"👂", sub:"See your default listening mode by style",           unlocks:5},
+    {id:"catalyst",      title:"Catalyst Role-Play",            icon:"🎯", sub:"Practice your Catalyst communication message",       unlocks:5},
   ];
-  if (active === "crisis") {
-    return <CrisisChallenge onCoachTalk={(responses,strategy)=>{setActive(null);onCoachTalk("I just completed the Crisis Navigation Challenge. Here are my responses: "+responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ")+" What do you think?");}} onBack={()=>setActive(null)} />;
+
+  // Full-screen renders for each activity
+  if (active === "generations") {
+    return <GenCardArtifact
+      onCoachTalk={(card)=>{ setActive(null); onCoachTalk("I just explored the " + (card?.g||"Generations") + " card game. " + (card?.scenario?"Scenario: "+card.scenario:"")); }}
+      onBack={()=>setActive(null)}
+    />;
   }
+  if (active === "adapt") {
+    return (
+      <div style={{flex:1,overflowY:"auto",background:C.cream}}>
+        <div style={{background:C.navy,padding:"14px 18px",display:"flex",alignItems:"center",gap:12}}>
+          <button onClick={()=>setActive(null)} style={{background:"rgba(255,255,255,.15)",border:"none",borderRadius:8,color:C.white,fontSize:12,fontWeight:700,padding:"4px 10px",cursor:"pointer"}}>← Back</button>
+          <div style={{fontSize:14,fontWeight:800,color:C.white}}>ADAPT Planner</div>
+        </div>
+        <div style={{padding:"8px 0"}}>
+          <ADAPTPlanner
+            catalyst={catalyst}
+            onComplete={(vals)=>{ setActive(null); onCoachTalk("Here is my ADAPT plan: Analyze: " + vals.analyze + " | Describe: " + vals.describe + " | Acknowledge: " + vals.acknowledge + " | Pivot: " + vals.pivot + " | Track: " + vals.track); }}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (active === "questioning") {
+    return (
+      <div style={{flex:1,overflowY:"auto",background:C.cream}}>
+        <div style={{background:C.navy,padding:"14px 18px",display:"flex",alignItems:"center",gap:12}}>
+          <button onClick={()=>setActive(null)} style={{background:"rgba(255,255,255,.15)",border:"none",borderRadius:8,color:C.white,fontSize:12,fontWeight:700,padding:"4px 10px",cursor:"pointer"}}>← Back</button>
+          <div style={{fontSize:14,fontWeight:800,color:C.white}}>Questioning Tendencies</div>
+        </div>
+        <div style={{padding:"8px 0"}}>
+          <QuestioningTendencies
+            forteData={forteData}
+            onCoachTalk={(style,item)=>{ setActive(null); onCoachTalk("Let us talk about my " + style + " questioning tendency"); }}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (active === "listening") {
+    return (
+      <div style={{flex:1,overflowY:"auto",background:C.cream}}>
+        <div style={{background:C.navy,padding:"14px 18px",display:"flex",alignItems:"center",gap:12}}>
+          <button onClick={()=>setActive(null)} style={{background:"rgba(255,255,255,.15)",border:"none",borderRadius:8,color:C.white,fontSize:12,fontWeight:700,padding:"4px 10px",cursor:"pointer"}}>← Back</button>
+          <div style={{fontSize:14,fontWeight:800,color:C.white}}>Listening Tendencies</div>
+        </div>
+        <div style={{padding:"8px 0"}}>
+          <ListeningTendenciesArtifact
+            forteData={forteData}
+            onCoachTalk={(style,item)=>{ setActive(null); onCoachTalk("Let us talk about my " + style + " listening tendency"); }}
+          />
+        </div>
+      </div>
+    );
+  }
+  if (active === "switches") {
+    return <SwitchesKnobsArtifact
+      catalyst={catalyst}
+      onCoachTalk={(item,t)=>{ setActive(null); onCoachTalk("I just completed Switches and Knobs. I identified: " + (item?.label||"a key adjustment") + " as a " + t + "."); }}
+      onBack={()=>setActive(null)}
+    />;
+  }
+  if (active === "crisis") {
+    return <CrisisChallenge
+      onCoachTalk={(responses,strategy)=>{ setActive(null); onCoachTalk("I just completed the Crisis Navigation Challenge. Here are my responses: "+responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ")+" What do you think?"); }}
+      onBack={()=>setActive(null)}
+    />;
+  }
+  if (active === "catalyst") {
+    // Catalyst role-play: send a message to the coach tab to kick off the practice
+    setActive(null);
+    onCoachTalk("I am ready to practice my Catalyst message. Let us run the role-play.");
+    return null;
+  }
+
   return (
     <div style={{flex:1,overflowY:"auto",padding:"20px 18px",display:"flex",flexDirection:"column",gap:14}}>
       <div style={{fontSize:12,color:"rgba(255,255,255,.5)",fontWeight:600,letterSpacing:".06em",textTransform:"uppercase",marginBottom:4}}>Hands-On Activities</div>
@@ -2900,13 +3166,14 @@ const PracticeTab = ({currentModule, forteData, catalyst, onCoachTalk}) => {
               opacity: unlocked ? 1 : .4
             }}>
             <div style={{display:"flex",alignItems:"center",gap:12}}>
-              <div style={{width:42,height:42,borderRadius:12,background: unlocked ? C.orange : "rgba(255,255,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>
-                {unlocked ? "▶" : "🔒"}
+              <div style={{width:42,height:42,borderRadius:12,background: unlocked ? C.orange : "rgba(255,255,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:unlocked?20:16,flexShrink:0}}>
+                {unlocked ? act.icon : "🔒"}
               </div>
               <div style={{flex:1}}>
                 <div style={{fontSize:14,fontWeight:700,color: unlocked ? C.white : "rgba(255,255,255,.4)",marginBottom:3}}>{act.title}</div>
                 <div style={{fontSize:12,color:"rgba(255,255,255,.4)",lineHeight:1.4}}>{act.sub}</div>
               </div>
+              {unlocked && <div style={{color:"rgba(255,255,255,.3)",fontSize:18}}>›</div>}
             </div>
             {!unlocked && (
               <div style={{marginTop:10,fontSize:11,color:"rgba(255,255,255,.3)",fontWeight:600}}>Unlocks in Module {act.unlocks}</div>
@@ -2978,7 +3245,29 @@ const ProfileTab = ({forteData}) => {
 };
 
 const InsightsTab = ({legacy, catalyst, insights, forteData}) => {
-  const hasAny = legacy || catalyst || (insights && (insights.observations?.length || insights.reflections?.length || Object.keys(insights.essentialRatings||{}).length || insights.actionPlan?.legacy));
+  const commitments = (insights?.observations||[]).filter(o=>o.toUpperCase().includes("COMMITMENT"));
+  const patterns    = (insights?.observations||[]).filter(o=>!o.toUpperCase().includes("COMMITMENT"));
+  const dimNames = ["Dominance","Extroversion","Patience","Conformity"];
+  const dimTop   = ["Dom","Ext","Pat","Con"];
+  const dimBot   = ["NDom","Int","IPat","NCon"];
+  const dimColor = {"green":"#2e7d32","red":"#c0392b","blue":"#1565c0"};
+  const dimLabel = {"green":"Natural","red":"Adapting","blue":"Perceived"};
+
+  const MiniBar = ({score, color}) => {
+    const pct = ((parseInt(score)+36)/72)*100;
+    const side = parseInt(score) >= 0 ? "right" : "left";
+    return (
+      <div style={{display:"flex",alignItems:"center",gap:6,flex:1}}>
+        <div style={{width:6,fontSize:9,color:"rgba(36,65,105,.4)",textAlign:"right",flexShrink:0}}>{score>0?"+":""}{score}</div>
+        <div style={{flex:1,height:6,background:"rgba(36,65,105,.08)",borderRadius:3,position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,bottom:0,left:"50%",width:1,background:"rgba(36,65,105,.15)"}}/>
+          <div style={{position:"absolute",top:0,bottom:0,width:(Math.abs(parseInt(score))/36*50)+"%", [side==="right"?"left":"right"]:"50%",background:color,borderRadius:3,opacity:.8}}/>
+        </div>
+      </div>
+    );
+  };
+
+  const hasAny = legacy || catalyst || forteData || (insights && (insights.observations?.length || insights.reflections?.length || Object.keys(insights.essentialRatings||{}).length || insights.actionPlan?.legacy));
   return (
     <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:12,background:"#f5f0e8"}}>
       {!hasAny && (
@@ -2988,40 +3277,96 @@ const InsightsTab = ({legacy, catalyst, insights, forteData}) => {
           <div style={{fontSize:13,lineHeight:1.6}}>As you work through the program, Hoop will capture your key moments, reflections, and commitments.</div>
         </div>
       )}
+
+      {/* CQ Legacy */}
       {legacy && (
         <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.orange,letterSpacing:".1em",textTransform:"uppercase",marginBottom:6}}>Your CQ Legacy</div>
-          <div style={{fontSize:14,color:C.navy,lineHeight:1.6}}>{legacy}</div>
+          <div style={{fontSize:10,fontWeight:800,color:C.orange,letterSpacing:".1em",textTransform:"uppercase",marginBottom:6}}>⭐ Your CQ Legacy</div>
+          <div style={{fontSize:14,color:C.navy,lineHeight:1.6,fontStyle:"italic"}}>"{legacy}"</div>
         </div>
       )}
+
+      {/* CQ Catalyst */}
       {catalyst && (
         <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.blue,letterSpacing:".1em",textTransform:"uppercase",marginBottom:6}}>Your CQ Catalyst</div>
+          <div style={{fontSize:10,fontWeight:800,color:C.blue,letterSpacing:".1em",textTransform:"uppercase",marginBottom:6}}>🎯 Your CQ Catalyst</div>
           <div style={{fontSize:14,color:C.navy,lineHeight:1.6}}>{catalyst}</div>
         </div>
       )}
-      {insights?.observations?.length > 0 && (
+
+      {/* Forte Profile Summary */}
+      {forteData && (
         <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>AI-Detected Patterns</div>
-          {insights.observations.map((o,i)=>(
-            <div key={i} style={{fontSize:13,color:C.navy,lineHeight:1.6,padding:"6px 0",borderBottom:i<insights.observations.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>{o}</div>
+          <div style={{fontSize:10,fontWeight:800,color:"#2e7d32",letterSpacing:".1em",textTransform:"uppercase",marginBottom:12}}>📊 Your Forte Profile</div>
+          {["green","red","blue"].map(tab=>{
+            const d = forteData[tab];
+            if(!d) return null;
+            return (
+              <div key={tab} style={{marginBottom:tab==="blue"?0:14}}>
+                <div style={{fontSize:11,fontWeight:700,color:dimColor[tab],marginBottom:6}}>{dimLabel[tab]} Profile</div>
+                {dimNames.map((dim,i)=>{
+                  const score = parseInt(d.scores[i]);
+                  const label = score >= 0 ? dimTop[i] : dimBot[i];
+                  return (
+                    <div key={dim} style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                      <div style={{fontSize:11,color:"rgba(36,65,105,.6)",width:74,flexShrink:0}}>{dim}</div>
+                      <MiniBar score={score} color={dimColor[tab]}/>
+                      <div style={{fontSize:10,fontWeight:700,color:dimColor[tab],width:36,flexShrink:0,textAlign:"right"}}>{label}</div>
+                    </div>
+                  );
+                })}
+                {tab!=="blue" && <div style={{height:1,background:"rgba(36,65,105,.06)",margin:"10px 0"}}/>}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Module Commitments */}
+      {commitments.length > 0 && (
+        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
+          <div style={{fontSize:10,fontWeight:800,color:C.orange,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>🤝 Module Commitments</div>
+          {commitments.map((o,i)=>{
+            const parts = o.replace(/^MODULE\s*\d+\s*COMMITMENT:\s*/i,"").split(":");
+            const label = o.match(/MODULE\s*(\d+)/i)?.[0] || `Commitment ${i+1}`;
+            const text  = parts.slice(-1)[0]?.trim() || o;
+            return (
+              <div key={i} style={{padding:"8px 0",borderBottom:i<commitments.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
+                <div style={{fontSize:10,fontWeight:700,color:C.orange,marginBottom:3,textTransform:"uppercase",letterSpacing:".06em"}}>{label}</div>
+                <div style={{fontSize:13,color:C.navy,lineHeight:1.6}}>{text}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* AI-Detected Patterns */}
+      {patterns.length > 0 && (
+        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
+          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>🔍 AI-Detected Patterns</div>
+          {patterns.map((o,i)=>(
+            <div key={i} style={{fontSize:13,color:C.navy,lineHeight:1.6,padding:"6px 0",borderBottom:i<patterns.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>{o}</div>
           ))}
         </div>
       )}
+
+      {/* Reflections */}
       {insights?.reflections?.length > 0 && (
         <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>Reflections</div>
+          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>✍️ Reflections</div>
           {insights.reflections.map((r,i)=>(
             <div key={i} style={{marginBottom:12,paddingBottom:12,borderBottom:i<insights.reflections.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
-              <div style={{fontSize:11,fontWeight:700,color:C.orange,marginBottom:4}}>{r.section}</div>
-              {r.answers?.map((a,j)=>(<div key={j} style={{fontSize:13,color:C.navy,lineHeight:1.6,marginBottom:2}}>{a}</div>))}
+              <div style={{fontSize:11,fontWeight:700,color:C.orange,marginBottom:6}}>{r.section}</div>
+              {r.answers?.map((a,j)=>(<div key={j} style={{fontSize:13,color:C.navy,lineHeight:1.6,marginBottom:4,paddingLeft:10,borderLeft:"2px solid rgba(36,65,105,.1)"}}>{a}</div>))}
             </div>
           ))}
         </div>
       )}
+
+      {/* Essential Ratings */}
       {Object.keys(insights?.essentialRatings||{}).length > 0 && (
         <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>Essential Ratings</div>
+          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>📈 CQ Essential Ratings</div>
           {Object.entries(insights.essentialRatings).map(([k,v])=>(
             <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:"1px solid rgba(36,65,105,.07)"}}>
               <span style={{fontSize:12,color:C.navy,flex:1}}>{k}</span>
@@ -3033,13 +3378,15 @@ const InsightsTab = ({legacy, catalyst, insights, forteData}) => {
           ))}
         </div>
       )}
+
+      {/* Action Plan */}
       {insights?.actionPlan?.legacy && (
         <div style={{background:C.navy,borderRadius:14,padding:"18px",boxShadow:"0 2px 12px rgba(36,65,105,.15)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".1em",textTransform:"uppercase",marginBottom:14}}>Your Action Plan</div>
-          {[{label:"Legacy Commitment",val:insights.actionPlan.legacy},{label:"Catalyst Message",val:insights.actionPlan.catalystCommitment},{label:"Daily Practice",val:insights.actionPlan.dailyPractice}].filter(x=>x.val).map((item,i)=>(
-            <div key={i} style={{marginBottom:14}}>
-              <div style={{fontSize:11,fontWeight:700,color:C.gold,marginBottom:4}}>{item.label}</div>
-              <div style={{fontSize:13,color:"rgba(255,255,255,.85)",lineHeight:1.6}}>{item.val}</div>
+          <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".1em",textTransform:"uppercase",marginBottom:14}}>🏆 Your Communication Action Plan</div>
+          {[{label:"CQ Legacy",val:insights.actionPlan.legacy},{label:"Catalyst Commitment",val:insights.actionPlan.catalystCommitment},{label:"Daily Practice",val:insights.actionPlan.dailyPractice}].filter(x=>x.val).map((item,i)=>(
+            <div key={i} style={{marginBottom:14,paddingBottom:14,borderBottom:i<2?"1px solid rgba(255,255,255,.1)":"none"}}>
+              <div style={{fontSize:10,fontWeight:700,color:C.gold,marginBottom:6,letterSpacing:".06em",textTransform:"uppercase"}}>{item.label}</div>
+              <div style={{fontSize:13,color:"rgba(255,255,255,.9)",lineHeight:1.6}}>{item.val}</div>
             </div>
           ))}
         </div>
@@ -3388,9 +3735,9 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
         if(a.type==="show_forte_graph"){ setTimeout(()=>addMsg("coach","",{type:"forte_graph_focused", tab:a.tab||"green", forteData:forteData}),400); }
         if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
         if(a.type==="show_generations"){ setTimeout(()=>addMsg("coach","",{type:"gencard"}),400); }
-        if(a.type==="show_listening_tendencies"){ setTimeout(()=>setShowListeningTendencies(true),400); }
-        if(a.type==="show_questioning_tendencies"){ setTimeout(()=>setShowQuestioningTendencies(true),400); }
-        if(a.type==="show_crisis_challenge"){ setTimeout(()=>setShowCrisisChallenge(true),400); }
+        if(a.type==="show_listening_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}),400); }
+        if(a.type==="show_questioning_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"questioning_tendencies"}),400); }
+        if(a.type==="show_crisis_challenge"){ setTimeout(()=>addMsg("coach","",{type:"crisis_challenge_inline"}),400); }
         if(a.type==="show_proficiency_rating"){ setTimeout(()=>addMsg("coach","",{type:"proficiency_rating",topic:a.topic}),400); }
         if(a.type==="show_adapt_planner"){ setTimeout(()=>addMsg("coach","",{type:"adapt_planner"}),400); }
         if(a.type==="show_reflection"){ setTimeout(()=>addMsg("coach","",{type:"reflection",section:a.section,q1:a.q1,q2:a.q2}),400); }
@@ -3409,46 +3756,44 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
       // 2. Claude's response mentions the crisis scenario with trigger phrases
       // 3. The previous coach message set up the crisis challenge intro
       const crisisAlreadyDispatched = artifacts.some(a=>a.type==="show_crisis_challenge");
-      const crisisAlreadyInChat = messages.some(m=>m.artifact&&m.artifact.type==="crisis_challenge");
+      const crisisAlreadyInChat = messages.some(m=>m.artifact&&(m.artifact.type==="crisis_challenge"||m.artifact.type==="crisis_challenge_inline"));
       if(!crisisAlreadyDispatched && !crisisAlreadyInChat && currentModule >= 4) {
         const ft = finalText.toLowerCase();
-        // Trigger 1: Text mentions crisis scenario with key phrases
         const textTrigger = ft.includes("crisis scenario") && (
           ft.includes("adapt strategy") || ft.includes("play the journalist") ||
-          ft.includes("play journalist") || ft.includes("build your") || 
+          ft.includes("play journalist") || ft.includes("build your") ||
           ft.includes("show you the crisis")
         );
-        // Trigger 2: Previous coach message was the energizing activity setup
         const prevCoachMsgs = messages.filter(m=>m.role==="coach"&&m.text);
         const lastCoachText = prevCoachMsgs.length > 0 ? prevCoachMsgs[prevCoachMsgs.length-1].text.toLowerCase() : "";
-        const prevSetupTrigger = lastCoachText.includes("most energizing activity") || 
+        const prevSetupTrigger = lastCoachText.includes("most energizing activity") ||
                                   lastCoachText.includes("put everything you have learned under pressure");
-        // Trigger 3: Claude mentions crisis/pressure/hot seat in context of launching  
-        const contextTrigger = (ft.includes("crisis") || ft.includes("hot seat") || ft.includes("under pressure")) && 
+        const contextTrigger = (ft.includes("crisis") || ft.includes("hot seat") || ft.includes("under pressure")) &&
                                 (ft.includes("scenario") || ft.includes("defect") || ft.includes("product") || ft.includes("clients") || ft.includes("response")) &&
                                 (ft.includes("adapt") || ft.includes("strategy") || ft.includes("build") || ft.includes("lead"));
-        
         if(textTrigger || prevSetupTrigger || contextTrigger) {
-          console.log("[CQ CRISIS] Trigger fired - setting showCrisisChallenge=true");
-          setTimeout(()=>setShowCrisisChallenge(true), 800);
+          console.log("[CQ CRISIS] Keyword trigger fired - adding inline");
+          setTimeout(()=>addMsg("coach","",{type:"crisis_challenge_inline"}), 800);
         }
       }
 
       // QUESTIONING TENDENCIES SAFETY NET
-      if(currentModule >= 5 && !showQuestioningTendencies) {
+      if(currentModule >= 5) {
         const ft2 = finalText.toLowerCase();
-        if(ft2.includes("question") && (ft2.includes("pattern") || ft2.includes("tendency") || ft2.includes("tendencies") || ft2.includes("your profile") || ft2.includes("show you"))) {
-          const alreadyDispatched = artifacts.some(a=>a.type==="show_questioning_tendencies");
-          if(!alreadyDispatched) setTimeout(()=>setShowQuestioningTendencies(true), 800);
+        const qAlreadyInChat = messages.some(m=>m.artifact&&m.artifact.type==="questioning_tendencies");
+        const qAlreadyDispatched = artifacts.some(a=>a.type==="show_questioning_tendencies");
+        if(!qAlreadyInChat && !qAlreadyDispatched && ft2.includes("question") && (ft2.includes("pattern") || ft2.includes("tendency") || ft2.includes("tendencies") || ft2.includes("your profile") || ft2.includes("show you"))) {
+          setTimeout(()=>addMsg("coach","",{type:"questioning_tendencies"}), 800);
         }
       }
 
       // LISTENING TENDENCIES SAFETY NET
-      if(currentModule >= 5 && !showListeningTendencies) {
+      if(currentModule >= 5) {
         const ft3 = finalText.toLowerCase();
-        if(ft3.includes("listen") && (ft3.includes("tendency") || ft3.includes("tendencies") || ft3.includes("default") || ft3.includes("automatic") || ft3.includes("your style"))) {
-          const alreadyDispatched = artifacts.some(a=>a.type==="show_listening_tendencies");
-          if(!alreadyDispatched) setTimeout(()=>setShowListeningTendencies(true), 800);
+        const lAlreadyInChat = messages.some(m=>m.artifact&&m.artifact.type==="listening_tendencies");
+        const lAlreadyDispatched = artifacts.some(a=>a.type==="show_listening_tendencies");
+        if(!lAlreadyInChat && !lAlreadyDispatched && ft3.includes("listen") && (ft3.includes("tendency") || ft3.includes("tendencies") || ft3.includes("default") || ft3.includes("automatic") || ft3.includes("your style"))) {
+          setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}), 800);
         }
       }
 
@@ -3468,10 +3813,11 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
     // For forte artifacts, prefer forteData passed directly in artifact object (avoids async state timing issues)
     const fd = a.forteData || forteData;
     if(a.type==="forte" || a.type==="forte_all") return <ForteGraph forteData={fd} />;
+    if(a.type==="forte_dimension_cards") return <ForteDimensionCards forteData={fd} onDone={()=>handleSend("I just reviewed all four dimensions of my Forte profile. Ready to go deeper.")} />;
     if(a.type==="forte_graph_focused") return <ForteGraphFocused forteData={fd} initialTab={a.tab||"green"} />;
     if(a.type==="gap")       return <GapAlert />;
     if(a.type==="gencard")   return <GenCardArtifact onCoachTalk={card=>handleSend("Tell me about the " + card.g + " scenario")} />;
-    if(a.type==="crisis_challenge") { console.log("[CQ RENDER] Rendering CrisisChallenge"); return <CrisisChallenge onCoachTalk={(responses,strategy)=>handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?")} />; }
+    if(a.type==="crisis_challenge" || a.type==="crisis_challenge_inline") { return <CrisisChallenge onCoachTalk={(responses,strategy)=>handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?")} />; }
     if(a.type==="switches_knobs") return <SwitchesKnobsArtifact catalyst={catalyst} onCoachTalk={(item,t)=>handleSend("Let us talk about the " + item.label + " " + t + " for my Catalyst")} />;
     if(a.type==="questioning_tendencies") return <QuestioningTendencies forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " questioning tendency")} />;
     if(a.type==="listening_tendencies") return <ListeningTendenciesArtifact forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " listening tendency")} />;
@@ -3574,9 +3920,7 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
         {typing&&<TypingIndicator />}
         {error&&<ErrorBanner msg={error} onDismiss={()=>setError(null)} />}
         {quickReplies.length>0&&<QuickReplies opts={quickReplies} onSelect={opt=>{setQuickReplies([]);handleSend(opt);}} />}
-        {showCrisisChallenge&&<CrisisChallenge onCoachTalk={(responses,strategy)=>{setShowCrisisChallenge(false);handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?");}} />}
-        {showQuestioningTendencies&&<QuestioningTendencies forteData={forteData} onCoachTalk={(style,item)=>{setShowQuestioningTendencies(false);handleSend("Let us talk about my " + style + " questioning tendency");}} />}
-        {showListeningTendencies&&<ListeningTendenciesArtifact forteData={forteData} onCoachTalk={(style,item)=>{setShowListeningTendencies(false);handleSend("Let us talk about my " + style + " listening tendency");}} />}
+        {/* Questioning/Listening/Crisis now render inline via renderArtifact */}
         <div ref={scrollRef} />
       </div>
         )}
@@ -3646,6 +3990,15 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
                 text:"",
                 artifact:{type:"forte_all", forteData:fd}
               }]);
+              // Dimension cards follow the graph so participant can explore each dimension visually
+              setTimeout(()=>{
+                setMessages(prev=>[...prev,{
+                  id: Date.now()+Math.random(),
+                  role:"coach",
+                  text:"Before I share my read of your full profile — tap through the four dimensions below. Each one tells part of your story.",
+                  artifact:{type:"forte_dimension_cards", forteData:fd}
+                }]);
+              },600);
             },150);
             // Then fire API for the first-reaction question — pass forteData directly
             // in the user message content so it doesn't appear as a fake bubble
