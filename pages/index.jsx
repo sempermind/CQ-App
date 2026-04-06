@@ -3573,6 +3573,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const [quickReplies,  setQuickReplies]  = useState([]);
   const [forteData,     setForteData]     = useState(null);
   const [showForteUpload, setShowForteUpload] = useState(false);
+  const [showJourneyCard, setShowJourneyCard] = useState(false);
   const scrollRef = useRef(null);
   const legacyRef = useRef("");
   const catalystRef = useRef("");
@@ -3779,10 +3780,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
       // Add text bubble
       setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"Here is what we are going to build together. Six modules — each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.", artifact:null }]);
       // Add journey card immediately after — same state batch where possible
-      setMessages(prev => {
-        console.log("[JOURNEY] Adding journey_card to messages, prev count:", prev.length);
-        return [...prev, { id: Date.now()+Math.random()+0.1, role:"coach", text:"", artifact:{ type:"journey_card" } }];
-      });
+      setShowJourneyCard(true);
 
       // Module 1 transition
       await wait(8000);
@@ -4072,6 +4070,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
             </React.Fragment>
           );
         })}
+        {showJourneyCard && <ModuleJourneyCard />}
         {typing&&<TypingIndicator />}
         {error&&<ErrorBanner msg={error} onDismiss={()=>setError(null)} />}
         {quickReplies.length>0&&<QuickReplies opts={quickReplies} onSelect={opt=>{setQuickReplies([]);handleSend(opt);}} />}
