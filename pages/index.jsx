@@ -864,31 +864,66 @@ const QuoteCard = () => (
 
 // ── MODULE JOURNEY CARD ───────────────────────────────────────────────────────
 const ModuleJourneyCard = () => {
+  const [expanded, setExpanded] = React.useState(null);
   const modules = [
-    { n:"01", title:"Commit to Become Your Best",              sub:"Peak performance · Legacy · Catalyst" },
-    { n:"02", title:"Unlock Your Communication Power",         sub:"Forte Profile · 3 graphs · perception gaps" },
-    { n:"03", title:"Master the Art of Adapting",              sub:"ADAPT model · Generations · style reading" },
-    { n:"04", title:"Transform Team & Client Dynamics",        sub:"Motivators · style pairings · crisis sim" },
-    { n:"05", title:"Supercharge Listening & Feedback",        sub:"Proactive listening · feedback as a gift" },
-    { n:"06", title:"Craft Your Action Plan",                  sub:"CQ Essentials · Legacy · commitments" },
+    {
+      n:"01", title:"Commit to Become Your Best", sub:"Peak performance · Legacy · Catalyst",
+      details:"You will define your peak performance as a communicator, identify the one relationship that matters most to grow (your CQ Catalyst), and set the communication legacy you want to build. This module is your north star for everything that follows."
+    },
+    {
+      n:"02", title:"Unlock Your Communication Power", sub:"Forte Profile · 3 graphs · perception gaps",
+      details:"You will explore your Forte Communication Style Profile -- how you are naturally wired, how you have been adapting to your environment, and how others are likely experiencing you right now. Most people find this one eye-opening."
+    },
+    {
+      n:"03", title:"Master the Art of Adapting", sub:"ADAPT model · Generations · style reading",
+      details:"You will learn the ADAPT framework for reading anyone in real time and adjusting your approach to land with them specifically. You will also explore generational communication differences and practice style-reading with real scenarios."
+    },
+    {
+      n:"04", title:"Transform Team & Client Dynamics", sub:"Motivators · style pairings · crisis sim",
+      details:"You will apply what you know about communication styles to your real team and client relationships -- understanding what motivates different styles, how to pair styles effectively, and navigating high-stakes situations under pressure."
+    },
+    {
+      n:"05", title:"Supercharge Listening & Feedback", sub:"Proactive listening · feedback as a gift",
+      details:"You will build the two skills that make everything else work: listening in a way that makes people feel genuinely understood, and giving feedback that lands -- not as criticism, but as something the other person actually wants to receive."
+    },
+    {
+      n:"06", title:"Craft Your Action Plan", sub:"CQ Essentials · Legacy · commitments",
+      details:"You will assess yourself across the 10 CQ Essentials, revisit your Legacy and Catalyst, and leave with a specific, committed action plan -- not vague intentions, but behaviors you are ready to practice starting today."
+    },
   ];
   return (
     <div style={{margin:"6px 14px",background:"#fff",borderRadius:18,overflow:"hidden",boxShadow:"0 2px 12px rgba(0,0,0,.1)"}}>
       <div style={{background:`linear-gradient(135deg, ${C.navy}, #385988)`,padding:"16px 18px"}}>
         <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".15em",textTransform:"uppercase",marginBottom:4}}>Your Journey Together</div>
         <div style={{fontSize:17,fontWeight:900,color:"#fff"}}>6 Modules. Built Around You.</div>
+        <div style={{fontSize:11.5,color:"rgba(255,255,255,.55)",marginTop:4}}>Tap any module to see what is inside.</div>
       </div>
-      {modules.map((m,i) => (
-        <div key={i} style={{display:"flex",alignItems:"flex-start",gap:14,padding:"13px 18px",borderBottom:i<modules.length-1?"1px solid rgba(36,65,105,.08)":"none",background:i===0?"rgba(244,188,45,.06)":"#fff"}}>
-          <div style={{width:32,height:32,borderRadius:10,background:i===0?C.gold:C.navy,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-            <span style={{fontSize:11,fontWeight:900,color:i===0?C.navy:C.gold,letterSpacing:".05em"}}>{m.n}</span>
+      {modules.map((m,i) => {
+        const isOpen = expanded === i;
+        const isActive = i === 0;
+        return (
+          <div key={i} style={{borderBottom:i<modules.length-1?"1px solid rgba(36,65,105,.08)":"none"}}>
+            <div
+              onClick={() => setExpanded(isOpen ? null : i)}
+              style={{display:"flex",alignItems:"center",gap:14,padding:"13px 18px",background:isActive?"rgba(244,188,45,.06)":"#fff",cursor:"pointer",userSelect:"none"}}
+            >
+              <div style={{width:32,height:32,borderRadius:10,background:isActive?C.gold:C.navy,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <span style={{fontSize:11,fontWeight:900,color:isActive?C.navy:C.gold,letterSpacing:".05em"}}>{m.n}</span>
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:13,fontWeight:700,color:C.navy,lineHeight:1.3,marginBottom:2}}>{m.title}</div>
+                <div style={{fontSize:11,color:"#888",lineHeight:1.4}}>{m.sub}</div>
+              </div>
+              <div style={{fontSize:16,color:C.navy,opacity:0.35,flexShrink:0,transform:isOpen?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▾</div>
+            </div>
+            {isOpen && (
+              <div style={{padding:"0 18px 14px 64px",background:"rgba(244,188,45,.04)"}}>
+                <div style={{fontSize:12.5,color:"#444",lineHeight:1.65}}>{m.details}</div>
+              </div>
+            )}
           </div>
-          <div>
-            <div style={{fontSize:13,fontWeight:700,color:C.navy,lineHeight:1.3,marginBottom:2}}>{m.title}</div>
-            <div style={{fontSize:11,color:"#666",lineHeight:1.4}}>{m.sub}</div>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
@@ -3012,33 +3047,6 @@ const CQIntroScreen = ({participantName, level, onContinue, onBack}) => {
           </div>
         </div>
 
-        {/* Quote */}
-        <div style={{borderLeft:`3px solid ${C.gold}`,paddingLeft:16,marginBottom:24}}>
-          <div style={{fontSize:15,fontWeight:700,color:C.white,lineHeight:1.55,fontStyle:"italic",marginBottom:6}}>"{quote}"</div>
-          <div style={{fontSize:11,color:"rgba(255,255,255,.4)",fontWeight:600,letterSpacing:".08em"}}>COMMUNICATION INTELLIGENCE PROGRAM</div>
-        </div>
-
-        {/* What is ahead */}
-        <div style={{marginBottom:20}}>
-          <div style={{fontSize:11,fontWeight:800,color:"rgba(255,255,255,.4)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:12}}>Your 6-Module Journey</div>
-          {[
-            {n:"01",title:"Commit to Become Your Best",      sub:"Peak performance · Legacy · Catalyst"},
-            {n:"02",title:"Unlock Your Communication Power", sub:"Forte Profile · 3 graphs · perception gaps"},
-            {n:"03",title:"Master the Art of Adapting",      sub:"ADAPT model · Generations · style reading"},
-            {n:"04",title:"Transform Team & Client Dynamics",sub:"Motivators · style pairings · crisis sim"},
-            {n:"05",title:"Supercharge Listening & Feedback",sub:"Proactive listening · feedback as a gift"},
-            {n:"06",title:"Craft Your Action Plan",          sub:"CQ Essentials · Legacy · commitments"},
-          ].map((m,i)=>(
-            <div key={m.n} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:i<5?"1px solid rgba(255,255,255,.07)":"none"}}>
-              <div style={{width:28,height:28,borderRadius:8,background:"rgba(255,255,255,.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:900,color:C.gold,flexShrink:0}}>{m.n}</div>
-              <div>
-                <div style={{fontSize:12,fontWeight:700,color:C.white,lineHeight:1.2}}>{m.title}</div>
-                <div style={{fontSize:10.5,color:"rgba(255,255,255,.45)",marginTop:1}}>{m.sub}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
         <button onClick={onContinue} style={{width:"100%",padding:16,background:C.gold,color:C.navy,border:"none",borderRadius:14,fontSize:15,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 18px rgba(244,188,45,.3)"}}>
           I am ready -- let us begin
         </button>
@@ -3674,19 +3682,23 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
         setTyping(false);
         addMsg("coach", introText);
 
-        // BEAT 2: Quote card -- drops after brief pause, no API call
+        // BEAT 2: Quote card -- drops after reading delay for Beat 1, no API call
+        // Estimate read time for intro: ~2s per paragraph + 1s buffer
+        const introWordCount = introText.split(" ").length;
+        const introReadMs = Math.max(2800, introWordCount * 55);
         setTimeout(() => {
           addMsg("coach", "", { type: "quote_card" });
-        }, 1800);
 
-        // BEAT 3: Hoop story + the ask -- hardcoded, no API call
-        setTimeout(() => {
-          setTyping(true);
+          // BEAT 3: Typing indicator then Hoop story -- after quote has been seen
           setTimeout(() => {
-            setTyping(false);
-            addMsg("coach", "I want to tell you something before we start.\n\nI have sat with people -- executives, new managers, people early in their careers -- and I have heard the same story in different forms more times than I can count. A conversation that went wrong. Words that could not be taken back. A silence that lasted years. Relationships that quietly collapsed not because people did not care, but because they could not find the words, or the courage, or the right moment.\n\nBut I have also heard the other version. The conversation that came out of nowhere and cracked something open. The mentor who said the one thing you needed to hear. The hard talk that actually brought two people closer instead of pushing them apart.\n\nBoth kinds of conversations are real. Both kinds change trajectories.\n\nHere is what I believe: most people have never really stopped to name those moments. To sit with them and ask -- what made that conversation matter so much?\n\nThat is where I want to start with you. What is a conversation that changed your life?");
-          }, 1400);
-        }, 3400);
+            setTyping(true);
+            // Simulate reading the quote (~3s) then typing the story
+            setTimeout(() => {
+              setTyping(false);
+              addMsg("coach", "I want to tell you something before we start.\n\nI have sat with people -- executives, new managers, people early in their careers -- and I have heard the same story in different forms more times than I can count. A conversation that went wrong. Words that could not be taken back. A silence that lasted years. Relationships that quietly collapsed not because people did not care, but because they could not find the words, or the courage, or the right moment.\n\nBut I have also heard the other version. The conversation that came out of nowhere and cracked something open. The mentor who said the one thing you needed to hear. The hard talk that actually brought two people closer instead of pushing them apart.\n\nBoth kinds of conversations are real. Both kinds change trajectories.\n\nHere is what I believe: most people have never really stopped to name those moments. To sit with them and ask -- what made that conversation matter so much?\n\nThat is where I want to start with you. What is a conversation that changed your life?");
+            }, 3200);
+          }, 2400);
+        }, introReadMs);
 
       }, 700);
       return ()=>clearTimeout(timer);
@@ -3766,19 +3778,30 @@ Do not use asterisks, markdown, or bullet points. Plain sentences only.`;
       setTyping(false);
       addMsg("coach", empathyText);
 
-      // BEAT 6: Journey card drops after bridge
+      // BEAT 6: Journey card drops after empathy bridge has been read
+      // Estimate read time for empathy text before showing card
+      const empathyWordCount = empathyText.split(" ").length;
+      const empathyReadMs = Math.max(3000, empathyWordCount * 50);
       setTimeout(() => {
-        addMsg("coach", "", { type: "journey_card" });
-      }, 1600);
-
-      // Then transition into normal Module 1 flow with peak performance question
-      setTimeout(() => {
+        // Typing indicator before journey card intro line
         setTyping(true);
         setTimeout(() => {
           setTyping(false);
-          addMsg("coach", "We are in Module 1 right now -- Commit to Become Your Best.\n\nBefore we go any further, I want to anchor this in something concrete. Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it.\n\nWhat made that work?");
-        }, 1200);
-      }, 3200);
+          addMsg("coach", "Here is what we are going to build together. Six modules -- each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.");
+          // Drop the interactive journey card
+          setTimeout(() => {
+            addMsg("coach", "", { type: "journey_card" });
+            // After journey card, transition into Module 1 peak performance question
+            setTimeout(() => {
+              setTyping(true);
+              setTimeout(() => {
+                setTyping(false);
+                addMsg("coach", "We are starting with Module 1 -- Commit to Become Your Best.\n\nBefore we go anywhere else, I want to anchor this in something concrete. Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it.\n\nWhat made that work?");
+              }, 1800);
+            }, 5000);
+          }, 800);
+        }, 2200);
+      }, empathyReadMs);
 
       sendingRef.current = false;
       return;
