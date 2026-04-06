@@ -64,7 +64,7 @@ CORE RULES:
 MODULE 1 -- Commit to Become Your Best:
 
 SECTION 1: Peak Performance
-NOTE: The intro sequence asked the participant about a conversation that changed their life. That has been answered and bridged. The program then asked the peak performance question ("What made that work?") as the transition into Module 1. The participant has now answered it.
+NOTE: The intro sequence asked the participant about a conversation that changed their life. That has been answered and bridged. After delivering the bridge, you emitted <SHOW_JOURNEY_CARD/> which showed the 6-module journey card. The program then asked the peak performance question ("What made that work?") as the transition into Module 1. The participant has now answered it.
 Your job: reflect back what you heard specifically -- name the exact pattern or strength you notice in their answer. One sentence of genuine acknowledgment. Then ask the connect question: "What was different about you in that moment versus a conversation that goes sideways?" That is the only question here.
 
 SECTION 2: Catalyst
@@ -551,6 +551,8 @@ function parseAIResponse(text) {
   if (adaptPlanMatch) { artifacts.push({ type:"show_adapt_planner" }); clean = clean.replace(adaptPlanMatch[0],""); }
   const reflectMatch = clean.match(/<SHOW_REFLECTION section="([^"]+)" q1="([^"]+)"(?:\s+q2="([^"]+)")?\s*\/>/);
   if (reflectMatch) { artifacts.push({ type:"show_reflection", section:reflectMatch[1], q1:reflectMatch[2], q2:reflectMatch[3]||"" }); clean = clean.replace(reflectMatch[0],""); }
+  const journeyCardMatch = clean.match(/<SHOW_JOURNEY_CARD\s*\/>/);
+  if (journeyCardMatch) { artifacts.push({ type:"show_journey_card" }); clean = clean.replace(journeyCardMatch[0],""); }
   const essentialsMatch = clean.match(/<SHOW_CQ_ESSENTIALS\s*\/>/);
   if (essentialsMatch) { artifacts.push({ type:"show_cq_essentials" }); clean = clean.replace(essentialsMatch[0],""); }
   const essentialsSummaryMatch = clean.match(/<SHOW_CQ_ESSENTIALS_SUMMARY\s*\/>/);
@@ -3769,27 +3771,30 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
       setTyping(false);
       push("But here is what I know: it is learnable. Every bit of it. The self-awareness. The ability to read a room, read a person, adapt in real time. The courage to have the hard conversation. The skill to give feedback that actually lands. All of it buildable.");
 
-      // Journey card
+      // Journey card — push text AND card into state together, no setTimeout gap
       await wait(1200);
       setTyping(true);
       await wait(2000);
       setTyping(false);
-      push("Here is what we are going to build together. Six modules — each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.");
-      await wait(400);
-      push("", { type: "journey_card" });
+      // Add text bubble
+      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"Here is what we are going to build together. Six modules — each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.", artifact:null }]);
+      // Add journey card immediately after — same state batch where possible
+      setMessages(prev => {
+        console.log("[JOURNEY] Adding journey_card to messages, prev count:", prev.length);
+        return [...prev, { id: Date.now()+Math.random()+0.1, role:"coach", text:"", artifact:{ type:"journey_card" } }];
+      });
 
       // Module 1 transition
       await wait(8000);
       setTyping(true);
       await wait(2000);
       setTyping(false);
-      push("We are starting right now with Module 1 — Commit to Become Your Best.");
-
+      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"We are starting right now with Module 1 — Commit to Become Your Best.", artifact:null }]);
       await wait(800);
       setTyping(true);
       await wait(1800);
       setTyping(false);
-      push("Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it. What made that work?");
+      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it. What made that work?", artifact:null }]);
 
       sendingRef.current = false;
       return;
@@ -3881,6 +3886,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
         if(a.type==="complete_action_plan"){ setInsights(prev=>({...prev,actionPlan:{legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}})); setPanelDot(true); }
         if(a.type==="show_forte_graph"){ setTimeout(()=>addMsg("coach","",{type:"forte_graph_focused", tab:a.tab||"green", forteData:forteData}),400); }
         if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
+        if(a.type==="show_journey_card"){ setTimeout(()=>addMsg("coach","",{type:"journey_card"}),400); }
         if(a.type==="show_generations"){ setTimeout(()=>addMsg("coach","",{type:"gencard"}),400); }
         if(a.type==="show_listening_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}),400); }
         if(a.type==="show_questioning_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"questioning_tendencies"}),400); }
