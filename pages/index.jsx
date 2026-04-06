@@ -3578,39 +3578,57 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const introPhaseRef = useRef("story"); // "story" | "done" -- tracks whether we are still in the opening intro beats
   const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
 
-  const addMsg = useCallback((role,text,artifact=null)=>{
-    if(role==="coach" && text && text.length > 0) {
-      // Split on double newlines into separate bubbles
-      const paragraphs = text.split(/\n\n+/).map(p=>p.trim()).filter(p=>p.length>0);
-      paragraphs.forEach((para, pIdx) => {
-        const id = Date.now()+Math.random()+pIdx*0.001;
-        // Stagger bubble arrival like real messages — longer messages get more gap
-        const wordCount = para.split(" ").length;
-        const readDelay = pIdx === 0 ? 0 : 400 + Math.min(wordCount * 40, 1200);
-        const cumulativeDelay = paragraphs
-          .slice(0, pIdx)
-          .reduce((acc, p, i) => acc + (i===0 ? 0 : 400 + Math.min(p.split(" ").length * 40, 1200)), 0);
+  // addMsg: handles both text bubbles and artifact-only messages.
+  // For coach text with multiple paragraphs, each paragraph gets its own bubble
+  // with a typing indicator shown between them (real texting feel).
+  // For artifact-only messages (empty text), we use a uid-stamped queue item
+  // so it is never dropped by stale closure overwrites.
+  const addMsg = useCallback((role, text, artifact=null) => {
+    const isCoachText = role === "coach" && text && text.trim().length > 0;
 
+    if (isCoachText) {
+      const paragraphs = text.split(/\n\n+/).map(p => p.trim()).filter(p => p.length > 0);
+      // Calculate per-paragraph reading time so typing dots show realistically
+      const readTime = (para) => Math.min(Math.max(para.split(" ").length * 55, 800), 2800);
+
+      let cursor = 0; // ms from now
+
+      paragraphs.forEach((para, pIdx) => {
+        const isLast = pIdx === paragraphs.length - 1;
+
+        // Show typing indicator before this paragraph (skip before first — caller controls that)
+        if (pIdx > 0) {
+          const dotDelay = cursor;
+          setTimeout(() => setTyping(true), dotDelay);
+          cursor += readTime(para);
+        }
+
+        // Drop the bubble (hide typing first)
+        const bubbleDelay = cursor;
         setTimeout(() => {
-          setMessages(prev=>[...prev,{
+          setTyping(false);
+          const id = Date.now() + Math.random() + pIdx * 0.001;
+          setMessages(prev => [...prev, {
             id,
             role,
-            text: para,  // Full text immediately — CSS animation handles the reveal
-            artifact: pIdx===paragraphs.length-1 ? artifact : null,
+            text: para,
+            artifact: isLast ? artifact : null,
           }]);
-        }, cumulativeDelay);
+        }, bubbleDelay);
+
+        // After dropping the bubble, add reading time before next typing indicator
+        if (!isLast) {
+          cursor += readTime(paragraphs[pIdx + 1]) * 0.4; // brief gap between bubbles
+        }
       });
+
     } else {
-      const newMsg = {
-        id: Date.now()+Math.random(),
-        role,
-        text: text||"",
-        artifact,
-      };
-      if(artifact) console.log("[CQ ADDMSG] Adding artifact message:", artifact.type);
-      setMessages(prev=>[...prev, newMsg]);
+      // Artifact-only or user message — add directly, no timing games
+      const id = Date.now() + Math.random();
+      if (artifact) console.log("[CQ ADDMSG] artifact-only:", artifact.type);
+      setMessages(prev => [...prev, { id, role, text: text || "", artifact }]);
     }
-  },[]);
+  }, []);
 
   useEffect(()=>{
     setTimeout(()=>scrollRef.current?.scrollIntoView({behavior:"smooth"}),60);
@@ -3680,25 +3698,31 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
           if(aiText) { const { text: cleanText } = parseAIResponse(aiText); introText = cleanText; }
         } catch(err) { /* use fallback */ }
         setTyping(false);
+        // addMsg handles typing dots between paragraphs internally
         addMsg("coach", introText);
 
-        // BEAT 2: Quote card -- drops after reading delay for Beat 1, no API call
-        // Estimate read time for intro: ~2s per paragraph + 1s buffer
-        const introWordCount = introText.split(" ").length;
-        const introReadMs = Math.max(2800, introWordCount * 55);
+        // Calculate how long the intro bubbles will take to fully render
+        // so we know when to start Beat 2.
+        // Each paragraph: typing dots + bubble render. Rough estimate: 55ms/word, min 1500ms, max 3500ms per para.
+        const introParagraphs = introText.split(/\n\n+/).filter(p => p.trim());
+        const introRenderMs = introParagraphs.reduce((acc, para, i) => {
+          const rt = Math.min(Math.max(para.split(" ").length * 55, 1500), 3500);
+          return acc + (i === 0 ? rt * 0.4 : rt + rt * 0.4);
+        }, 0) + 1200; // +1.2s reading buffer after last bubble
+
+        // BEAT 2: Quote card -- no API, drops after intro is fully read
         setTimeout(() => {
           addMsg("coach", "", { type: "quote_card" });
 
-          // BEAT 3: Typing indicator then Hoop story -- after quote has been seen
+          // BEAT 3: After quote has been seen (~3s to read it), show typing then story
           setTimeout(() => {
             setTyping(true);
-            // Simulate reading the quote (~3s) then typing the story
             setTimeout(() => {
               setTyping(false);
               addMsg("coach", "I want to tell you something before we start.\n\nI have sat with people -- executives, new managers, people early in their careers -- and I have heard the same story in different forms more times than I can count. A conversation that went wrong. Words that could not be taken back. A silence that lasted years. Relationships that quietly collapsed not because people did not care, but because they could not find the words, or the courage, or the right moment.\n\nBut I have also heard the other version. The conversation that came out of nowhere and cracked something open. The mentor who said the one thing you needed to hear. The hard talk that actually brought two people closer instead of pushing them apart.\n\nBoth kinds of conversations are real. Both kinds change trajectories.\n\nHere is what I believe: most people have never really stopped to name those moments. To sit with them and ask -- what made that conversation matter so much?\n\nThat is where I want to start with you. What is a conversation that changed your life?");
-            }, 3200);
-          }, 2400);
-        }, introReadMs);
+            }, 2800); // simulated typing time for a long story
+          }, 3000); // time to read the quote card
+        }, introRenderMs);
 
       }, 700);
       return ()=>clearTimeout(timer);
@@ -3778,30 +3802,36 @@ Do not use asterisks, markdown, or bullet points. Plain sentences only.`;
       setTyping(false);
       addMsg("coach", empathyText);
 
-      // BEAT 6: Journey card drops after empathy bridge has been read
-      // Estimate read time for empathy text before showing card
-      const empathyWordCount = empathyText.split(" ").length;
-      const empathyReadMs = Math.max(3000, empathyWordCount * 50);
+      // BEAT 6: Calculate how long empathy bubbles take to render, then sequence what follows
+      const empathyParas = empathyText.split(/\n\n+/).filter(p => p.trim());
+      const empathyRenderMs = empathyParas.reduce((acc, para, i) => {
+        const rt = Math.min(Math.max(para.split(" ").length * 55, 1500), 3500);
+        return acc + (i === 0 ? rt * 0.4 : rt + rt * 0.4);
+      }, 0) + 1500; // +1.5s read buffer
+
       setTimeout(() => {
-        // Typing indicator before journey card intro line
+        // Typing dots before the journey intro line
         setTyping(true);
         setTimeout(() => {
           setTyping(false);
+          // This single-line message renders instantly, then we drop the card after it
           addMsg("coach", "Here is what we are going to build together. Six modules -- each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.");
-          // Drop the interactive journey card
+
+          // Drop journey card after the line above has rendered and been read (~2s)
           setTimeout(() => {
             addMsg("coach", "", { type: "journey_card" });
-            // After journey card, transition into Module 1 peak performance question
+
+            // After participant has had time to explore the card (~6s), move to Module 1
             setTimeout(() => {
               setTyping(true);
               setTimeout(() => {
                 setTyping(false);
                 addMsg("coach", "We are starting with Module 1 -- Commit to Become Your Best.\n\nBefore we go anywhere else, I want to anchor this in something concrete. Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it.\n\nWhat made that work?");
-              }, 1800);
-            }, 5000);
-          }, 800);
-        }, 2200);
-      }, empathyReadMs);
+              }, 2200);
+            }, 6000);
+          }, 2000); // time to read the intro line before card drops
+        }, 2000); // simulated typing time for the intro line
+      }, empathyRenderMs);
 
       sendingRef.current = false;
       return;
