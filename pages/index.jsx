@@ -64,7 +64,7 @@ CORE RULES:
 MODULE 1 -- Commit to Become Your Best:
 
 SECTION 1: Peak Performance
-NOTE: The opening message already asked the peak performance question ("What made that work?"). Do NOT ask it again. The participant has now answered it.
+NOTE: The intro sequence asked the participant about a conversation that changed their life. That has been answered and bridged. The program then asked the peak performance question ("What made that work?") as the transition into Module 1. The participant has now answered it.
 Your job: reflect back what you heard specifically -- name the exact pattern or strength you notice in their answer. One sentence of genuine acknowledgment. Then ask the connect question: "What was different about you in that moment versus a conversation that goes sideways?" That is the only question here.
 
 SECTION 2: Catalyst
@@ -849,6 +849,49 @@ const LegacyCard = ({text}) => (
 );
 
 
+
+// ── QUOTE CARD ────────────────────────────────────────────────────────────────
+const QuoteCard = () => (
+  <div style={{margin:"6px 14px",padding:"24px 20px",background:`linear-gradient(135deg, ${C.navy} 0%, #1a3255 100%)`,borderRadius:18,border:`1.5px solid rgba(244,188,45,0.35)`,textAlign:"center"}}>
+    <div style={{fontSize:11,fontWeight:700,letterSpacing:".18em",textTransform:"uppercase",color:C.gold,marginBottom:16,opacity:0.85}}>The Foundation</div>
+    <div style={{width:32,height:2,background:C.gold,margin:"0 auto 18px",opacity:0.6,borderRadius:2}} />
+    <div style={{fontSize:18,fontWeight:800,color:C.white,lineHeight:1.55,fontStyle:"italic",letterSpacing:"-.01em"}}>
+      &ldquo;Every conversation has the power to change the trajectory of our lives.&rdquo;
+    </div>
+    <div style={{width:32,height:2,background:C.gold,margin:"18px auto 0",opacity:0.6,borderRadius:2}} />
+  </div>
+);
+
+// ── MODULE JOURNEY CARD ───────────────────────────────────────────────────────
+const ModuleJourneyCard = () => {
+  const modules = [
+    { n:"01", title:"Commit to Become Your Best",              sub:"Peak performance · Legacy · Catalyst" },
+    { n:"02", title:"Unlock Your Communication Power",         sub:"Forte Profile · 3 graphs · perception gaps" },
+    { n:"03", title:"Master the Art of Adapting",              sub:"ADAPT model · Generations · style reading" },
+    { n:"04", title:"Transform Team & Client Dynamics",        sub:"Motivators · style pairings · crisis sim" },
+    { n:"05", title:"Supercharge Listening & Feedback",        sub:"Proactive listening · feedback as a gift" },
+    { n:"06", title:"Craft Your Action Plan",                  sub:"CQ Essentials · Legacy · commitments" },
+  ];
+  return (
+    <div style={{margin:"6px 14px",background:"#fff",borderRadius:18,overflow:"hidden",boxShadow:"0 2px 12px rgba(0,0,0,.1)"}}>
+      <div style={{background:`linear-gradient(135deg, ${C.navy}, #385988)`,padding:"16px 18px"}}>
+        <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".15em",textTransform:"uppercase",marginBottom:4}}>Your Journey Together</div>
+        <div style={{fontSize:17,fontWeight:900,color:"#fff"}}>6 Modules. Built Around You.</div>
+      </div>
+      {modules.map((m,i) => (
+        <div key={i} style={{display:"flex",alignItems:"flex-start",gap:14,padding:"13px 18px",borderBottom:i<modules.length-1?"1px solid rgba(36,65,105,.08)":"none",background:i===0?"rgba(244,188,45,.06)":"#fff"}}>
+          <div style={{width:32,height:32,borderRadius:10,background:i===0?C.gold:C.navy,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <span style={{fontSize:11,fontWeight:900,color:i===0?C.navy:C.gold,letterSpacing:".05em"}}>{m.n}</span>
+          </div>
+          <div>
+            <div style={{fontSize:13,fontWeight:700,color:C.navy,lineHeight:1.3,marginBottom:2}}>{m.title}</div>
+            <div style={{fontSize:11,color:"#666",lineHeight:1.4}}>{m.sub}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 // ── CQ ESSENTIALS SUMMARY ARTIFACT ───────────────────────────────────────────
 const CQEssentialsSummary = ({ratings, onContinue}) => {
@@ -3524,6 +3567,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const legacyRef = useRef("");
   const catalystRef = useRef("");
   const sendingRef = useRef(false);
+  const introPhaseRef = useRef("story"); // "story" | "done" -- tracks whether we are still in the opening intro beats
   const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
 
   const addMsg = useCallback((role,text,artifact=null)=>{
@@ -3574,14 +3618,19 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
       if(savedState.forteData) setForteData(savedState.forteData);
       setActiveTab("coach"); // Always land on Coach tab when restoring session
     } else {
-      // Generate personalized opening via API using name and level
+      // NEW 6-BEAT INTRO SEQUENCE
+      // Beat 1: Personalized Hoop intro (API) -- 2 paras, no question
+      // Beat 2: Quote card (hardcoded artifact, no API)
+      // Beat 3: Hoop story + the ask (hardcoded, no API)
+      // Beat 4: Participant types their answer
+      // Beat 5: Live empathy bridge (API) + Beat 6: Journey card -- handled in handleSend via introPhaseRef
       const timer = setTimeout(async ()=>{
         setTyping(true);
         const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
         const name = participantName || "there";
         const openingPrompt = `This is the very first message of the entire session. Generate Hoop's opening to ${name}, a ${levelInfo.name}.
 
-Write exactly 3 short paragraphs, separated by double line breaks. Each paragraph becomes its own chat bubble. Keep each one to 2-3 sentences maximum.
+Write exactly 2 short paragraphs, separated by a double line break. Each paragraph becomes its own chat bubble. Keep each to 2-3 sentences maximum.
 
 PARAGRAPH 1 -- THE WELCOME:
 Greet ${name} warmly and personally by name. Reference their level (${levelInfo.name}) in a way that acknowledges what they are actually navigating -- not generically, but specifically. Make them feel like Hoop already knows something about their world. Tone: warm, direct, slightly unexpected. NOT corporate. NOT cheerful. Real.
@@ -3589,24 +3638,23 @@ Greet ${name} warmly and personally by name. Reference their level (${levelInfo.
 PARAGRAPH 2 -- WHO HOOP IS AND WHAT THIS IS:
 In 2 sentences, give ${name} a sense of who Hoop is and what makes this experience different from any training they have done before. Hoop is not a chatbot running a course. Hoop notices things. Hoop asks the question other coaches are too polished to ask. This program is not about slides and frameworks -- it is about becoming the communicator they actually want to be. Make it feel like the beginning of something worth showing up for.
 
-PARAGRAPH 3 -- THE FIRST QUESTION:
-Open with curiosity, not content. Ask ${name} to think of a specific recent moment when they were completely on their game in a conversation -- they walked away knowing they nailed it. Ask what made that work. Keep it tight. End with the question. No preamble, no throat-clearing.
-
 Level-specific tone calibration:
 - Individual Contributor: Warm, encouraging, peer-energy. They are finding their voice. Acknowledge that.
-- Manager / Team Lead: Acknowledge the weight of the in-between -- responsible for results, responsible for people. 
+- Manager / Team Lead: Acknowledge the weight of the in-between -- responsible for results, responsible for people.
 - Senior Leader / Director: Peer-level, no hand-holding. They have seen a lot of leadership development. This is different.
 - Executive / C-Suite: Strategic and direct. No fluff. They are here because legacy matters to them.
 
-Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.`;
+Do not use asterisks, markdown, headers, or bullet points. Plain sentences only. Do NOT ask any question -- just the welcome and the "what this is" paragraph. Stop there.`;
 
+        // BEAT 1: Personalized intro (API)
+        let introText = "Hey " + name + " -- welcome. I am Hoop, your CQ Coach.\n\nThis is not a training program you sit through. It is a coaching experience built around who you actually are as a communicator -- your real strengths, your actual relationships, the conversations that matter most to you. Nobody else is getting this exact session.";
         try {
           const res = await fetch("/api/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               model: "claude-sonnet-4-20250514",
-              max_tokens: 450,
+              max_tokens: 280,
               system: buildSystemPrompt({
                 participantName: name,
                 levelName: levelInfo.name,
@@ -3621,17 +3669,25 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
           });
           const json = await res.json();
           const aiText = json.content?.[0]?.text;
-          setTyping(false);
-          if(aiText) {
-            const { text:cleanText } = parseAIResponse(aiText);
-            addMsg("coach", cleanText);
-          } else {
-            addMsg("coach", "Hey " + name + " -- welcome. I am Hoop, your CQ Coach.\n\nThis is not a training program you sit through. It is a coaching experience built around who you actually are as a communicator -- your real strengths, your actual relationships, the conversations that matter most to you. Nobody else is getting this exact session.\n\nBefore we get into anything -- think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it. What made that work?");
-          }
-        } catch(err) {
-          setTyping(false);
-          addMsg("coach", "Hey " + name + " -- welcome. I am Hoop, your CQ Coach.\n\nThis is not a training program you sit through. It is a coaching experience built around who you actually are as a communicator -- your real strengths, your actual relationships, the conversations that matter most to you. Nobody else is getting this exact session.\n\nBefore we get into anything -- think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it. What made that work?");
-        }
+          if(aiText) { const { text: cleanText } = parseAIResponse(aiText); introText = cleanText; }
+        } catch(err) { /* use fallback */ }
+        setTyping(false);
+        addMsg("coach", introText);
+
+        // BEAT 2: Quote card -- drops after brief pause, no API call
+        setTimeout(() => {
+          addMsg("coach", "", { type: "quote_card" });
+        }, 1800);
+
+        // BEAT 3: Hoop story + the ask -- hardcoded, no API call
+        setTimeout(() => {
+          setTyping(true);
+          setTimeout(() => {
+            setTyping(false);
+            addMsg("coach", "I want to tell you something before we start.\n\nI have sat with people -- executives, new managers, people early in their careers -- and I have heard the same story in different forms more times than I can count. A conversation that went wrong. Words that could not be taken back. A silence that lasted years. Relationships that quietly collapsed not because people did not care, but because they could not find the words, or the courage, or the right moment.\n\nBut I have also heard the other version. The conversation that came out of nowhere and cracked something open. The mentor who said the one thing you needed to hear. The hard talk that actually brought two people closer instead of pushing them apart.\n\nBoth kinds of conversations are real. Both kinds change trajectories.\n\nHere is what I believe: most people have never really stopped to name those moments. To sit with them and ask -- what made that conversation matter so much?\n\nThat is where I want to start with you. What is a conversation that changed your life?");
+          }, 1400);
+        }, 3400);
+
       }, 700);
       return ()=>clearTimeout(timer);
     }
@@ -3649,6 +3705,86 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
     setError(null);
     addMsg("user",text);
     setInput("");
+
+    // ── BEAT 5: Intro phase empathy response ──────────────────────────────────
+    // If still in intro phase (participant just shared their life-changing conversation),
+    // generate a live empathy bridge, then drop the journey card, then transition to normal flow.
+    if(introPhaseRef.current === "story") {
+      introPhaseRef.current = "done";
+      await new Promise(r=>setTimeout(r, 500 + Math.random()*500));
+      setTyping(true);
+      const levelInfo2 = LEVEL_DATA[level] || LEVEL_DATA[1];
+      const empathyPrompt = `The participant just shared a conversation that changed their life. Their response was:
+
+"${text}"
+
+Your job: deliver the bridge that connects their story to the program. Write exactly 2 paragraphs separated by a double line break.
+
+PARAGRAPH 1 -- ACKNOWLEDGE their specific story in 1-2 sentences. Do NOT be generic. Pick up on something specific they said. Make them feel genuinely heard. No "thank you for sharing." Just real acknowledgment.
+
+PARAGRAPH 2 -- THE BRIDGE (use this exact language, adapted slightly for their story):
+"Right. That is exactly why we are here.
+
+Because when you trace back the moments that shaped you -- the turns your career took, the relationships that held or broke, the version of yourself you are still becoming -- almost all of them live inside a conversation. Not a strategy deck. Not a performance review form. A conversation.
+
+And here is the thing most people never stop to reckon with: you are having those conversations every single day. With your team. Your clients. The people you are trying to reach and influence and bring along with you.
+
+Communication is everywhere. And it is powerful. And it is anything but easy.
+
+But here is what I also know: it is learnable. Every bit of it. The self-awareness. The ability to read a room, read a person, adapt in real time. The courage to have the hard conversation. The skill to give feedback that actually lands.
+
+All of it buildable. That is what this program is.
+
+Let me show you what we are going to do together."
+
+Do not use asterisks, markdown, or bullet points. Plain sentences only.`;
+
+      let empathyText = "Right. That is exactly why we are here.\n\nBecause when you trace back the moments that shaped you -- the turns your career took, the relationships that held or broke, the version of yourself you are still becoming -- almost all of them live inside a conversation. Not a strategy deck. Not a performance review form. A conversation.\n\nCommunication is everywhere. And it is powerful. And it is anything but easy.\n\nBut here is what I also know: it is learnable. Every bit of it. The self-awareness. The ability to read a room, read a person, adapt in real time. The courage to have the hard conversation. The skill to give feedback that actually lands.\n\nAll of it buildable. That is what this program is.\n\nLet me show you what we are going to do together.";
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 400,
+            system: buildSystemPrompt({
+              participantName: participantName || "there",
+              levelName: levelInfo2.name,
+              levelCoaching: levelInfo2.coaching,
+              legacy: "",
+              catalyst: "",
+              forteData: "Not yet uploaded",
+              currentModule: 1,
+            }),
+            messages: [{ role: "user", content: empathyPrompt }]
+          })
+        });
+        const json = await res.json();
+        const aiText = json.content?.[0]?.text;
+        if(aiText) { const { text: cleanText } = parseAIResponse(aiText); empathyText = cleanText; }
+      } catch(err) { /* use fallback */ }
+      setTyping(false);
+      addMsg("coach", empathyText);
+
+      // BEAT 6: Journey card drops after bridge
+      setTimeout(() => {
+        addMsg("coach", "", { type: "journey_card" });
+      }, 1600);
+
+      // Then transition into normal Module 1 flow with peak performance question
+      setTimeout(() => {
+        setTyping(true);
+        setTimeout(() => {
+          setTyping(false);
+          addMsg("coach", "We are in Module 1 right now -- Commit to Become Your Best.\n\nBefore we go any further, I want to anchor this in something concrete. Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it.\n\nWhat made that work?");
+        }, 1200);
+      }, 3200);
+
+      sendingRef.current = false;
+      return;
+    }
+    // ── END INTRO PHASE ───────────────────────────────────────────────────────
+
     // Brief "reading" pause before typing indicator -- feels more human
     await new Promise(r=>setTimeout(r, 400 + Math.random()*600));
     setTyping(true);
@@ -3807,6 +3943,8 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
 
   const renderArtifact = (a) => {
     if(!a) return null;
+    if(a.type==="quote_card") return <QuoteCard />;
+    if(a.type==="journey_card") return <ModuleJourneyCard />;
     if(a.type==="milestone") return <MilestoneCard n={a.n} title={a.title||""} sub={a.sub||""} />;
     if(a.type==="program_complete") return <ProgramCompleteCard />;
     if(a.type==="legacy")    return <LegacyCard text={a.text||legacy} />;
