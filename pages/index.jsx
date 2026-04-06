@@ -3650,75 +3650,45 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
       // Beat 3: Hoop story + the ask (hardcoded, no API)
       // Beat 4: Participant types their answer
       // Beat 5: Live empathy bridge (API) + Beat 6: Journey card -- handled in handleSend via introPhaseRef
-      const timer = setTimeout(async ()=>{
-        setTyping(true);
-        const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
-        const name = participantName || "there";
-        const openingPrompt = `This is the very first message of the entire session. Generate Hoop's opening to ${name}, a ${levelInfo.name}.
+      // All opening beats are sequential async/await inside a self-invoking async function.
+      // No setTimeout chains. No race conditions. The function runs to completion before anything else fires.
+      const timer = setTimeout(()=>{
+        (async () => {
+          const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
+          const name = participantName || "there";
 
-Write exactly 2 short paragraphs, separated by a double line break. Each paragraph becomes its own chat bubble. Keep each to 2-3 sentences maximum.
-
-PARAGRAPH 1 -- THE WELCOME:
-Greet ${name} warmly and personally by name. Reference their level (${levelInfo.name}) in a way that acknowledges what they are actually navigating -- not generically, but specifically. Make them feel like Hoop already knows something about their world. Tone: warm, direct, slightly unexpected. NOT corporate. NOT cheerful. Real.
-
-PARAGRAPH 2 -- WHO HOOP IS AND WHAT THIS IS:
-In 2 sentences, give ${name} a sense of who Hoop is and what makes this experience different from any training they have done before. Hoop is not a chatbot running a course. Hoop notices things. Hoop asks the question other coaches are too polished to ask. This program is not about slides and frameworks -- it is about becoming the communicator they actually want to be. Make it feel like the beginning of something worth showing up for.
-
-Level-specific tone calibration:
-- Individual Contributor: Warm, encouraging, peer-energy. They are finding their voice. Acknowledge that.
-- Manager / Team Lead: Acknowledge the weight of the in-between -- responsible for results, responsible for people.
-- Senior Leader / Director: Peer-level, no hand-holding. They have seen a lot of leadership development. This is different.
-- Executive / C-Suite: Strategic and direct. No fluff. They are here because legacy matters to them.
-
-Do not use asterisks, markdown, headers, or bullet points. Plain sentences only. Do NOT ask any question -- just the welcome and the "what this is" paragraph. Stop there.`;
-
-        // BEAT 1: Personalized intro (API)
-        let introText = "Hey " + name + " -- welcome. I am Hoop, your CQ Coach.\n\nThis is not a training program you sit through. It is a coaching experience built around who you actually are as a communicator -- your real strengths, your actual relationships, the conversations that matter most to you. Nobody else is getting this exact session.";
-        try {
-          const res = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: "claude-sonnet-4-20250514",
-              max_tokens: 280,
-              system: buildSystemPrompt({
-                participantName: name,
-                levelName: levelInfo.name,
-                levelCoaching: levelInfo.coaching,
-                legacy: "",
-                catalyst: "",
-                forteData: "Not yet uploaded",
-                currentModule: 1,
-              }),
-              messages: [{ role: "user", content: openingPrompt }]
-            })
-          });
-          const json = await res.json();
-          const aiText = json.content?.[0]?.text;
-          if(aiText) { const { text: cleanText } = parseAIResponse(aiText); introText = cleanText; }
-        } catch(err) { /* use fallback */ }
-        setTyping(false);
-        // BEAT 1+2: Attach quote_card directly to the last paragraph of introText.
-        // This is the ONLY reliable pattern — artifact is stored on the same message object,
-        // rendered together, never races with pending setTimeout chains.
-        addMsg("coach", introText, { type: "quote_card" });
-
-        // BEAT 3: After intro+quote have rendered, show typing then Hoop story.
-        // Estimate render time: ~55ms/word per paragraph, min 1500, max 3500, plus quote read time.
-        const introParagraphs = introText.split(/\n\n+/).filter(p => p.trim());
-        const introRenderMs = introParagraphs.reduce((acc, para, i) => {
-          const rt = Math.min(Math.max(para.split(" ").length * 55, 1500), 3500);
-          return acc + (i === 0 ? rt * 0.4 : rt + rt * 0.4);
-        }, 0) + 3500; // +3.5s for participant to read the quote card
-
-        setTimeout(() => {
+          // BEAT 1: Personalized intro — hardcoded fallback, API attempt overwrites if successful
+          const FALLBACK_INTRO = "Hey " + name + " -- welcome. I am Hoop, your CQ Coach.\n\nThis is not a training program you sit through. It is a coaching experience built around who you actually are as a communicator -- your real strengths, your actual relationships, the conversations that matter most to you. Nobody else is getting this exact session.";
+          let introText = FALLBACK_INTRO;
+          const openingPrompt = `Generate Hoop's opening to ${name}, a ${levelInfo.name}. Write exactly 2 short paragraphs separated by a double line break. PARAGRAPH 1: Greet ${name} warmly by name. Reference their level (${levelInfo.name}) specifically -- what they are actually navigating, not generically. Warm, direct, slightly unexpected. NOT corporate. PARAGRAPH 2: 2 sentences on who Hoop is and why this is different from any training they have done. No question at the end. Plain sentences only, no markdown.`;
           setTyping(true);
-          setTimeout(() => {
-            setTyping(false);
-            addMsg("coach", "I want to tell you something before we start.\n\nI have sat with people -- executives, new managers, people early in their careers -- and I have heard the same story in different forms more times than I can count. A conversation that went wrong. Words that could not be taken back. A silence that lasted years. Relationships that quietly collapsed not because people did not care, but because they could not find the words, or the courage, or the right moment.\n\nBut I have also heard the other version. The conversation that came out of nowhere and cracked something open. The mentor who said the one thing you needed to hear. The hard talk that actually brought two people closer instead of pushing them apart.\n\nBoth kinds of conversations are real. Both kinds change trajectories.\n\nHere is what I believe: most people have never really stopped to name those moments. To sit with them and ask -- what made that conversation matter so much?\n\nThat is where I want to start with you. What is a conversation that changed your life?");
-          }, 2800);
-        }, introRenderMs);
+          try {
+            const res = await fetch("/api/chat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                model: "claude-sonnet-4-20250514",
+                max_tokens: 200,
+                system: buildSystemPrompt({ participantName: name, levelName: levelInfo.name, levelCoaching: levelInfo.coaching, legacy: "", catalyst: "", forteData: "Not yet uploaded", currentModule: 1 }),
+                messages: [{ role: "user", content: openingPrompt }]
+              })
+            });
+            const json = await res.json();
+            const aiText = json.content?.[0]?.text;
+            if(aiText) { const { text: cleanText } = parseAIResponse(aiText); introText = cleanText; }
+          } catch(err) { /* use fallback */ }
+          setTyping(false);
 
+          // BEAT 1+2: intro text with quote_card attached to last paragraph — guaranteed to render together
+          addMsg("coach", introText, { type: "quote_card" });
+
+          // BEAT 3: Wait for intro bubbles + quote to be read, then show Hoop story
+          await new Promise(r => setTimeout(r, 9000));
+          setTyping(true);
+          await new Promise(r => setTimeout(r, 2800));
+          setTyping(false);
+          addMsg("coach", "I want to tell you something before we start.\n\nI have sat with people -- executives, new managers, people early in their careers -- and I have heard the same story in different forms more times than I can count. A conversation that went wrong. Words that could not be taken back. A silence that lasted years. Relationships that quietly collapsed not because people did not care, but because they could not find the words, or the courage, or the right moment.\n\nBut I have also heard the other version. The conversation that came out of nowhere and cracked something open. The mentor who said the one thing you needed to hear. The hard talk that actually brought two people closer instead of pushing them apart.\n\nBoth kinds of conversations are real. Both kinds change trajectories.\n\nHere is what I believe: most people have never really stopped to name those moments. To sit with them and ask -- what made that conversation matter so much?\n\nThat is where I want to start with you. What is a conversation that changed your life?");
+        })();
       }, 700);
       return ()=>clearTimeout(timer);
     }
@@ -3737,93 +3707,38 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
     addMsg("user",text);
     setInput("");
 
-    // ── BEAT 5: Intro phase empathy response ──────────────────────────────────
-    // If still in intro phase (participant just shared their life-changing conversation),
-    // generate a live empathy bridge, then drop the journey card, then transition to normal flow.
+    // ── INTRO PHASE: participant just shared their life-changing conversation ──
+    // sendingRef stays TRUE throughout this entire sequence — blocks any re-entry.
+    // All steps are sequential async/await — no setTimeout chains, no race conditions.
     if(introPhaseRef.current === "story") {
       introPhaseRef.current = "done";
-      await new Promise(r=>setTimeout(r, 500 + Math.random()*500));
+
+      // BEAT 5: hardcoded bridge — locked text, no API call
+      const EMPATHY_BRIDGE = "Right. That is exactly why we are here.\n\nBecause when you trace back the moments that shaped you -- the turns your career took, the relationships that held or broke, the version of yourself you are still becoming -- almost all of them live inside a conversation. Not a strategy deck. Not a performance review form. A conversation.\n\nAnd here is the thing most people never stop to reckon with: you are having those conversations every single day. With your team. Your clients. The people you are trying to reach and influence and bring along with you.\n\nCommunication is everywhere. And it is powerful. And it is anything but easy.\n\nBut here is what I also know: it is learnable. Every bit of it. The self-awareness. The ability to read a room, read a person, adapt in real time. The courage to have the hard conversation. The skill to give feedback that actually lands.\n\nAll of it buildable. That is what this program is.";
+
+      // Wait for typing indicator, then deliver bridge
+      await new Promise(r => setTimeout(r, 800));
       setTyping(true);
-      const levelInfo2 = LEVEL_DATA[level] || LEVEL_DATA[1];
-      const empathyPrompt = `The participant just shared a conversation that changed their life. Their response was:
-
-"${text}"
-
-Your job: deliver the bridge that connects their story to the program. Write exactly 2 paragraphs separated by a double line break.
-
-PARAGRAPH 1 -- ACKNOWLEDGE their specific story in 1-2 sentences. Do NOT be generic. Pick up on something specific they said. Make them feel genuinely heard. No "thank you for sharing." Just real acknowledgment.
-
-PARAGRAPH 2 -- THE BRIDGE (use this exact language, adapted slightly for their story):
-"Right. That is exactly why we are here.
-
-Because when you trace back the moments that shaped you -- the turns your career took, the relationships that held or broke, the version of yourself you are still becoming -- almost all of them live inside a conversation. Not a strategy deck. Not a performance review form. A conversation.
-
-And here is the thing most people never stop to reckon with: you are having those conversations every single day. With your team. Your clients. The people you are trying to reach and influence and bring along with you.
-
-Communication is everywhere. And it is powerful. And it is anything but easy.
-
-But here is what I also know: it is learnable. Every bit of it. The self-awareness. The ability to read a room, read a person, adapt in real time. The courage to have the hard conversation. The skill to give feedback that actually lands.
-
-All of it buildable. That is what this program is.
-
-Let me show you what we are going to do together."
-
-Do not use asterisks, markdown, or bullet points. Plain sentences only.`;
-
-      let empathyText = "Right. That is exactly why we are here.\n\nBecause when you trace back the moments that shaped you -- the turns your career took, the relationships that held or broke, the version of yourself you are still becoming -- almost all of them live inside a conversation. Not a strategy deck. Not a performance review form. A conversation.\n\nCommunication is everywhere. And it is powerful. And it is anything but easy.\n\nBut here is what I also know: it is learnable. Every bit of it. The self-awareness. The ability to read a room, read a person, adapt in real time. The courage to have the hard conversation. The skill to give feedback that actually lands.\n\nAll of it buildable. That is what this program is.\n\nLet me show you what we are going to do together.";
-      try {
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 400,
-            system: buildSystemPrompt({
-              participantName: participantName || "there",
-              levelName: levelInfo2.name,
-              levelCoaching: levelInfo2.coaching,
-              legacy: "",
-              catalyst: "",
-              forteData: "Not yet uploaded",
-              currentModule: 1,
-            }),
-            messages: [{ role: "user", content: empathyPrompt }]
-          })
-        });
-        const json = await res.json();
-        const aiText = json.content?.[0]?.text;
-        if(aiText) { const { text: cleanText } = parseAIResponse(aiText); empathyText = cleanText; }
-      } catch(err) { /* use fallback */ }
+      await new Promise(r => setTimeout(r, 2000));
       setTyping(false);
-      addMsg("coach", empathyText);
+      addMsg("coach", EMPATHY_BRIDGE);
 
-      // BEAT 6: Calculate how long empathy bubbles take to render, then show typing + journey line.
-      // The journey_card is attached DIRECTLY to the intro line message — same reliable pattern
-      // used everywhere else in the app. No separate addMsg call for the artifact.
-      const empathyParas = empathyText.split(/\n\n+/).filter(p => p.trim());
-      const empathyRenderMs = empathyParas.reduce((acc, para, i) => {
-        const rt = Math.min(Math.max(para.split(" ").length * 55, 1500), 3500);
-        return acc + (i === 0 ? rt * 0.4 : rt + rt * 0.4);
-      }, 0) + 1500; // +1.5s read buffer
+      // Wait for all bridge paragraphs to finish rendering + reading time
+      // 5 paragraphs × ~2s avg render + 3s reading buffer = ~13s. Use fixed safe value.
+      await new Promise(r => setTimeout(r, 14000));
 
-      setTimeout(() => {
-        setTyping(true);
-        setTimeout(() => {
-          setTyping(false);
-          // journey_card attached directly to this message — rendered on the same message object,
-          // guaranteed to appear, no race condition possible.
-          addMsg("coach", "Here is what we are going to build together. Six modules -- each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.", { type: "journey_card" });
+      // BEAT 6: journey card — attached directly to its intro line, guaranteed to render
+      setTyping(true);
+      await new Promise(r => setTimeout(r, 2000));
+      setTyping(false);
+      addMsg("coach", "Here is what we are going to build together. Six modules -- each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.", { type: "journey_card" });
 
-          // After participant has had time to explore the card (~7s), move to Module 1
-          setTimeout(() => {
-            setTyping(true);
-            setTimeout(() => {
-              setTyping(false);
-              addMsg("coach", "We are starting with Module 1 -- Commit to Become Your Best.\n\nBefore we go anywhere else, I want to anchor this in something concrete. Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it.\n\nWhat made that work?");
-            }, 2200);
-          }, 7000);
-        }, 2000);
-      }, empathyRenderMs);
+      // Give participant time to explore the card, then move to Module 1
+      await new Promise(r => setTimeout(r, 8000));
+      setTyping(true);
+      await new Promise(r => setTimeout(r, 2000));
+      setTyping(false);
+      addMsg("coach", "We are starting with Module 1 -- Commit to Become Your Best.\n\nBefore we go anywhere else, I want to anchor this in something concrete. Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it.\n\nWhat made that work?");
 
       sendingRef.current = false;
       return;
