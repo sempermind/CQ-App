@@ -3698,30 +3698,25 @@ Do not use asterisks, markdown, headers, or bullet points. Plain sentences only.
           if(aiText) { const { text: cleanText } = parseAIResponse(aiText); introText = cleanText; }
         } catch(err) { /* use fallback */ }
         setTyping(false);
-        // addMsg handles typing dots between paragraphs internally
-        addMsg("coach", introText);
+        // BEAT 1+2: Attach quote_card directly to the last paragraph of introText.
+        // This is the ONLY reliable pattern — artifact is stored on the same message object,
+        // rendered together, never races with pending setTimeout chains.
+        addMsg("coach", introText, { type: "quote_card" });
 
-        // Calculate how long the intro bubbles will take to fully render
-        // so we know when to start Beat 2.
-        // Each paragraph: typing dots + bubble render. Rough estimate: 55ms/word, min 1500ms, max 3500ms per para.
+        // BEAT 3: After intro+quote have rendered, show typing then Hoop story.
+        // Estimate render time: ~55ms/word per paragraph, min 1500, max 3500, plus quote read time.
         const introParagraphs = introText.split(/\n\n+/).filter(p => p.trim());
         const introRenderMs = introParagraphs.reduce((acc, para, i) => {
           const rt = Math.min(Math.max(para.split(" ").length * 55, 1500), 3500);
           return acc + (i === 0 ? rt * 0.4 : rt + rt * 0.4);
-        }, 0) + 1200; // +1.2s reading buffer after last bubble
+        }, 0) + 3500; // +3.5s for participant to read the quote card
 
-        // BEAT 2: Quote card -- no API, drops after intro is fully read
         setTimeout(() => {
-          addMsg("coach", "", { type: "quote_card" });
-
-          // BEAT 3: After quote has been seen (~3s to read it), show typing then story
+          setTyping(true);
           setTimeout(() => {
-            setTyping(true);
-            setTimeout(() => {
-              setTyping(false);
-              addMsg("coach", "I want to tell you something before we start.\n\nI have sat with people -- executives, new managers, people early in their careers -- and I have heard the same story in different forms more times than I can count. A conversation that went wrong. Words that could not be taken back. A silence that lasted years. Relationships that quietly collapsed not because people did not care, but because they could not find the words, or the courage, or the right moment.\n\nBut I have also heard the other version. The conversation that came out of nowhere and cracked something open. The mentor who said the one thing you needed to hear. The hard talk that actually brought two people closer instead of pushing them apart.\n\nBoth kinds of conversations are real. Both kinds change trajectories.\n\nHere is what I believe: most people have never really stopped to name those moments. To sit with them and ask -- what made that conversation matter so much?\n\nThat is where I want to start with you. What is a conversation that changed your life?");
-            }, 2800); // simulated typing time for a long story
-          }, 3000); // time to read the quote card
+            setTyping(false);
+            addMsg("coach", "I want to tell you something before we start.\n\nI have sat with people -- executives, new managers, people early in their careers -- and I have heard the same story in different forms more times than I can count. A conversation that went wrong. Words that could not be taken back. A silence that lasted years. Relationships that quietly collapsed not because people did not care, but because they could not find the words, or the courage, or the right moment.\n\nBut I have also heard the other version. The conversation that came out of nowhere and cracked something open. The mentor who said the one thing you needed to hear. The hard talk that actually brought two people closer instead of pushing them apart.\n\nBoth kinds of conversations are real. Both kinds change trajectories.\n\nHere is what I believe: most people have never really stopped to name those moments. To sit with them and ask -- what made that conversation matter so much?\n\nThat is where I want to start with you. What is a conversation that changed your life?");
+          }, 2800);
         }, introRenderMs);
 
       }, 700);
@@ -3802,7 +3797,9 @@ Do not use asterisks, markdown, or bullet points. Plain sentences only.`;
       setTyping(false);
       addMsg("coach", empathyText);
 
-      // BEAT 6: Calculate how long empathy bubbles take to render, then sequence what follows
+      // BEAT 6: Calculate how long empathy bubbles take to render, then show typing + journey line.
+      // The journey_card is attached DIRECTLY to the intro line message — same reliable pattern
+      // used everywhere else in the app. No separate addMsg call for the artifact.
       const empathyParas = empathyText.split(/\n\n+/).filter(p => p.trim());
       const empathyRenderMs = empathyParas.reduce((acc, para, i) => {
         const rt = Math.min(Math.max(para.split(" ").length * 55, 1500), 3500);
@@ -3810,27 +3807,22 @@ Do not use asterisks, markdown, or bullet points. Plain sentences only.`;
       }, 0) + 1500; // +1.5s read buffer
 
       setTimeout(() => {
-        // Typing dots before the journey intro line
         setTyping(true);
         setTimeout(() => {
           setTyping(false);
-          // This single-line message renders instantly, then we drop the card after it
-          addMsg("coach", "Here is what we are going to build together. Six modules -- each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.");
+          // journey_card attached directly to this message — rendered on the same message object,
+          // guaranteed to appear, no race condition possible.
+          addMsg("coach", "Here is what we are going to build together. Six modules -- each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.", { type: "journey_card" });
 
-          // Drop journey card after the line above has rendered and been read (~2s)
+          // After participant has had time to explore the card (~7s), move to Module 1
           setTimeout(() => {
-            addMsg("coach", "", { type: "journey_card" });
-
-            // After participant has had time to explore the card (~6s), move to Module 1
+            setTyping(true);
             setTimeout(() => {
-              setTyping(true);
-              setTimeout(() => {
-                setTyping(false);
-                addMsg("coach", "We are starting with Module 1 -- Commit to Become Your Best.\n\nBefore we go anywhere else, I want to anchor this in something concrete. Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it.\n\nWhat made that work?");
-              }, 2200);
-            }, 6000);
-          }, 2000); // time to read the intro line before card drops
-        }, 2000); // simulated typing time for the intro line
+              setTyping(false);
+              addMsg("coach", "We are starting with Module 1 -- Commit to Become Your Best.\n\nBefore we go anywhere else, I want to anchor this in something concrete. Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it.\n\nWhat made that work?");
+            }, 2200);
+          }, 7000);
+        }, 2000);
       }, empathyRenderMs);
 
       sendingRef.current = false;
