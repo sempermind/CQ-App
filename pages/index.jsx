@@ -3573,7 +3573,6 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const [quickReplies,  setQuickReplies]  = useState([]);
   const [forteData,     setForteData]     = useState(null);
   const [showForteUpload, setShowForteUpload] = useState(false);
-  const [showJourneyCard, setShowJourneyCard] = useState(false);
   const scrollRef = useRef(null);
   const legacyRef = useRef("");
   const catalystRef = useRef("");
@@ -3777,22 +3776,15 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
       setTyping(true);
       await wait(2000);
       setTyping(false);
-      // Add text bubble
-      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"Here is what we are going to build together. Six modules — each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.", artifact:null }]);
-      // Add journey card immediately after — same state batch where possible
-      setShowJourneyCard(true);
+      // Add text bubble with journey card attached as inline artifact
+      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"Here is what we are going to build together. Six modules — each one designed around who you actually are. Take a moment to tap on each module and explore what is inside.", artifact:{type:"journey_card"} }]);
 
-      // Module 1 transition
-      await wait(8000);
-      setTyping(true);
-      await wait(2000);
-      setTyping(false);
-      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"We are starting right now with Module 1 — Commit to Become Your Best.", artifact:null }]);
-      await wait(800);
+      // Let participant explore at their own pace
+      await wait(1200);
       setTyping(true);
       await wait(1800);
       setTyping(false);
-      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"Think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it. What made that work?", artifact:null }]);
+      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"When you are done clicking through them, let me know what stood out to you.", artifact:null }]);
 
       sendingRef.current = false;
       return;
@@ -4070,7 +4062,6 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
             </React.Fragment>
           );
         })}
-        {showJourneyCard && <ModuleJourneyCard />}
         {typing&&<TypingIndicator />}
         {error&&<ErrorBanner msg={error} onDismiss={()=>setError(null)} />}
         {quickReplies.length>0&&<QuickReplies opts={quickReplies} onSelect={opt=>{setQuickReplies([]);handleSend(opt);}} />}
