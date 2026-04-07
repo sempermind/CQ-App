@@ -3181,8 +3181,9 @@ const JourneyTab = ({currentModule, insights, onGoToCoach, onRateEssential}) => 
                           return (
                             <div key={e.id} style={{background:"rgba(36,65,105,.03)",borderRadius:10,padding:"10px 12px",border:"1px solid rgba(36,65,105,.08)"}}>
                               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:rating?6:8}}>
-                                <div style={{width:28,height:28,borderRadius:8,background:C.navy,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                                  <span style={{fontSize:9,fontWeight:900,color:C.gold,letterSpacing:".02em"}}>{e.cqNum}</span>
+                                <div style={{width:36,height:36,borderRadius:8,background:C.navy,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden"}}>
+                                  <img src={"/"+e.cqNum+".png"} alt={e.label} style={{width:30,height:30,objectFit:"contain"}}
+                                    onError={ev=>{ev.target.style.display="none";ev.target.parentNode.innerHTML='<span style="font-size:9px;font-weight:900;color:#f4bc2d">'+e.cqNum+'</span>';}} />
                                 </div>
                                 <div style={{flex:1}}>
                                   <div style={{fontSize:12.5,fontWeight:700,color:C.navy,lineHeight:1.25}}>{e.label}</div>
@@ -3226,8 +3227,9 @@ const JourneyTab = ({currentModule, insights, onGoToCoach, onRateEssential}) => 
                           const lvl = RATING_LEVELS.find(l => l.value === rating);
                           return (
                             <div key={e.id} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 10px",background:"rgba(36,65,105,.03)",borderRadius:8,border:"1px solid rgba(36,65,105,.08)"}}>
-                              <div style={{width:26,height:26,borderRadius:7,background:C.navy,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                                <span style={{fontSize:8,fontWeight:900,color:C.gold}}>{e.cqNum}</span>
+                              <div style={{width:26,height:26,borderRadius:7,background:C.navy,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden"}}>
+                                <img src={"/"+e.cqNum+".png"} alt={e.label} style={{width:22,height:22,objectFit:"contain"}}
+                                  onError={ev=>{ev.target.style.display="none";ev.target.parentNode.innerHTML='<span style="font-size:8px;font-weight:900;color:#f4bc2d">'+e.cqNum+'</span>';}} />
                               </div>
                               <span style={{flex:1,fontSize:12,color:C.navy,fontWeight:600}}>{e.label}</span>
                               {rating
@@ -3912,49 +3914,104 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
     // setMessages called directly (never via addMsg — stale closure).
     if(introPhaseRef.current === "story") {
       introPhaseRef.current = "done";
-
-      const push = (text, artifact=null) => {
-        setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text, artifact }]);
-      };
       const wait = ms => new Promise(r => setTimeout(r, ms));
 
-      // Empathy — acknowledge first, then bridge
-      await wait(600);
+      // ── Real AI empathy response — reads what the participant actually said ──
+      await wait(500);
       setTyping(true);
-      await wait(2000);
-      setTyping(false);
-      push("That kind of conversation stays with you.");
 
-      await wait(800);
-      setTyping(true);
-      await wait(1800);
-      setTyping(false);
-      push("And that is exactly why we are here.");
+      const introProfile = {
+        levelName: levelInfo.name,
+        levelCoaching: levelInfo.coaching,
+        participantName: participantName || "the participant",
+        legacy: "",
+        catalyst: "",
+        forteData: "Not yet uploaded",
+        currentModule: 1,
+      };
 
-      await wait(800);
-      setTyping(true);
-      await wait(2000);
-      setTyping(false);
-      push("Because when you trace back the moments that shaped you — the turns your career took, the relationships that held or broke, the version of yourself you are still becoming — almost all of them live inside a conversation. Not a strategy deck. Not a performance review form. A conversation.");
+      const introSystemPrompt = buildSystemPrompt(introProfile);
 
-      await wait(800);
-      setTyping(true);
-      await wait(1800);
-      setTyping(false);
-      push("Communication is everywhere. And it is powerful. And it is anything but easy.");
+      // Build the conversation so far: the opening beats + participant's story
+      const introMessages = [
+        ...messages.filter(m => m.text && m.text.trim()).map(m => ({
+          role: m.role === "coach" ? "assistant" : "user",
+          content: m.text.trim()
+        })),
+        { role: "user", content: text }
+      ];
 
-      await wait(800);
-      setTyping(true);
-      await wait(2000);
-      setTyping(false);
-      push("But here is what I know: it is learnable. Every bit of it. The self-awareness. The ability to read a room, read a person, adapt in real time. The courage to have the hard conversation. The skill to give feedback that actually lands. All of it buildable.");
+      // Fix alternation
+      while(introMessages.length > 0 && introMessages[0].role === "assistant") introMessages.shift();
 
-      // Direct participant to Journey tab instead of firing a card into chat
+      // Collapse consecutive same-role messages
+      const collapsed = [];
+      for(const msg of introMessages){
+        if(collapsed.length > 0 && collapsed[collapsed.length-1].role === msg.role){
+          collapsed[collapsed.length-1].content += "\n" + msg.content;
+        } else { collapsed.push({...msg}); }
+      }
+
+      // Special instruction for this moment — respond to what they actually shared
+      const empathyInstruction = introSystemPrompt + `
+
+CRITICAL INSTRUCTION FOR THIS SPECIFIC RESPONSE:
+The participant just answered the opening question: "What is a conversation that changed your life?"
+Their answer may be joyful, painful, heavy, mundane, or anything in between.
+
+Your job RIGHT NOW is to respond as a genuine human being would — not as a facilitator running a program.
+
+If they shared something painful (illness, loss, grief, fear, crisis): Stop everything. Acknowledge it fully and specifically. Name what they shared. Do NOT pivot to communication or the program. Ask one human question: "Do you want to sit with that for a moment, or would you rather keep going?" Then wait.
+
+If they shared something powerful or positive: Reflect back specifically what you heard. Name the pattern or strength you notice. Then ask: "What made that work?"
+
+If they shared something ambiguous or brief: Ask one gentle follow-up to understand it better before doing anything else.
+
+Keep your response to 2-3 sentences maximum. One thought. No pivoting to the program yet.`;
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 300,
+            system: empathyInstruction,
+            messages: collapsed
+          })
+        });
+        const json = await res.json();
+        const aiText = json.content?.[0]?.text;
+        setTyping(false);
+
+        if(aiText && aiText.trim()) {
+          const {text:cleanText} = parseAIResponse(aiText);
+          // Each paragraph = its own bubble
+          const paras = cleanText.split(/\n\n+/).map(p=>p.trim()).filter(Boolean);
+          for(let i=0; i<paras.length; i++){
+            if(i > 0){
+              await wait(800);
+              setTyping(true);
+              await wait(1400);
+              setTyping(false);
+            }
+            setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:paras[i],artifact:null}]);
+          }
+        } else {
+          // Fallback if API fails
+          setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:"That kind of moment stays with you.",artifact:null}]);
+        }
+      } catch(e) {
+        setTyping(false);
+        setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:"That kind of moment stays with you.",artifact:null}]);
+      }
+
+      // After the empathy response — direct to Journey tab
       await wait(1200);
       setTyping(true);
-      await wait(2000);
+      await wait(2200);
       setTyping(false);
-      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"Here is what we are going to build together. Take a look at your Journey tab at the bottom — tap through all six modules and explore what is inside each one. Come back and tell me what stood out to you.", artifact:null }]);
+      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"Before we go any further — take a look at your Journey tab at the bottom. Tap through all six modules and explore what is inside each one. Come back and tell me what stood out to you.", artifact:null }]);
 
       sendingRef.current = false;
       return;
