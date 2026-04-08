@@ -3596,156 +3596,506 @@ const ProfileTab = ({forteData}) => {
   );
 };
 
-const InsightsTab = ({legacy, catalyst, insights, forteData}) => {
-  const commitments = (insights?.observations||[]).filter(o=>o.toUpperCase().includes("COMMITMENT"));
-  const patterns    = (insights?.observations||[]).filter(o=>!o.toUpperCase().includes("COMMITMENT"));
-  const dimNames = ["Dominance","Extroversion","Patience","Conformity"];
-  const dimTop   = ["Dom","Ext","Pat","Con"];
-  const dimBot   = ["NDom","Int","IPat","NCon"];
-  const dimColor = {"green":"#2e7d32","red":"#c0392b","blue":"#1565c0"};
-  const dimLabel = {"green":"Natural","red":"Adapting","blue":"Perceived"};
+// ── INSIGHTS TAB SUB-COMPONENTS (module-level — never inside InsightsTab) ──────
 
-  const MiniBar = ({score, color}) => {
-    const pct = ((parseInt(score)+36)/72)*100;
-    const side = parseInt(score) >= 0 ? "right" : "left";
-    return (
-      <div style={{display:"flex",alignItems:"center",gap:6,flex:1}}>
-        <div style={{width:6,fontSize:9,color:"rgba(36,65,105,.4)",textAlign:"right",flexShrink:0}}>{score>0?"+":""}{score}</div>
-        <div style={{flex:1,height:6,background:"rgba(36,65,105,.08)",borderRadius:3,position:"relative",overflow:"hidden"}}>
-          <div style={{position:"absolute",top:0,bottom:0,left:"50%",width:1,background:"rgba(36,65,105,.15)"}}/>
-          <div style={{position:"absolute",top:0,bottom:0,width:(Math.abs(parseInt(score))/36*50)+"%", [side==="right"?"left":"right"]:"50%",background:color,borderRadius:3,opacity:.8}}/>
-        </div>
-      </div>
-    );
-  };
-
-  const hasAny = legacy || catalyst || forteData || (insights && (insights.observations?.length || insights.reflections?.length || Object.keys(insights.essentialRatings||{}).length || insights.actionPlan?.legacy));
+const IJ_RatingCard = ({id, label, ratings, onRateEssential}) => {
+  const rating = ratings?.[id] || ratings?.[label] || null;
+  const lvl = RATING_LEVELS.find(l => l.value === rating);
+  const desc = CQ_DESCRIPTORS[id]?.[rating] || (id === 'bringingBest' ? CQ_DESCRIPTORS.bringingBest?.[rating] : null);
   return (
-    <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:12,background:"#f5f0e8"}}>
-      {!hasAny && (
-        <div style={{textAlign:"center",padding:"60px 20px",color:"rgba(36,65,105,.4)"}}>
-          <div style={{fontSize:40,marginBottom:16}}>💡</div>
-          <div style={{fontSize:15,fontWeight:700,color:"rgba(36,65,105,.6)",marginBottom:8}}>Your insights will appear here</div>
-          <div style={{fontSize:13,lineHeight:1.6}}>As you work through the program, Hoop will capture your key moments, reflections, and commitments.</div>
-        </div>
-      )}
-
-      {/* CQ Legacy */}
-      {legacy && (
-        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.orange,letterSpacing:".1em",textTransform:"uppercase",marginBottom:6}}>⭐ Your CQ Legacy</div>
-          <div style={{fontSize:14,color:C.navy,lineHeight:1.6,fontStyle:"italic"}}>"{legacy}"</div>
-        </div>
-      )}
-
-      {/* CQ Catalyst */}
-      {catalyst && (
-        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.blue,letterSpacing:".1em",textTransform:"uppercase",marginBottom:6}}>Your CQ Catalyst</div>
-          <div style={{fontSize:14,color:C.navy,lineHeight:1.6}}>{catalyst}</div>
-        </div>
-      )}
-
-      {/* Forte Profile Summary */}
-      {forteData && (
-        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:"#2e7d32",letterSpacing:".1em",textTransform:"uppercase",marginBottom:12}}>📊 Your Forte Profile</div>
-          {["green","red","blue"].map(tab=>{
-            const d = forteData[tab];
-            if(!d) return null;
-            return (
-              <div key={tab} style={{marginBottom:tab==="blue"?0:14}}>
-                <div style={{fontSize:11,fontWeight:700,color:dimColor[tab],marginBottom:6}}>{dimLabel[tab]} Profile</div>
-                {dimNames.map((dim,i)=>{
-                  const score = parseInt(d.scores[i]);
-                  const label = score >= 0 ? dimTop[i] : dimBot[i];
-                  return (
-                    <div key={dim} style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
-                      <div style={{fontSize:11,color:"rgba(36,65,105,.6)",width:74,flexShrink:0}}>{dim}</div>
-                      <MiniBar score={score} color={dimColor[tab]}/>
-                      <div style={{fontSize:10,fontWeight:700,color:dimColor[tab],width:36,flexShrink:0,textAlign:"right"}}>{label}</div>
-                    </div>
-                  );
-                })}
-                {tab!=="blue" && <div style={{height:1,background:"rgba(36,65,105,.06)",margin:"10px 0"}}/>}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Module Commitments */}
-      {commitments.length > 0 && (
-        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.orange,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>🤝 Module Commitments</div>
-          {commitments.map((o,i)=>{
-            const parts = o.replace(/^MODULE\s*\d+\s*COMMITMENT:\s*/i,"").split(":");
-            const label = o.match(/MODULE\s*(\d+)/i)?.[0] || `Commitment ${i+1}`;
-            const text  = parts.slice(-1)[0]?.trim() || o;
-            return (
-              <div key={i} style={{padding:"8px 0",borderBottom:i<commitments.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
-                <div style={{fontSize:10,fontWeight:700,color:C.orange,marginBottom:3,textTransform:"uppercase",letterSpacing:".06em"}}>{label}</div>
-                <div style={{fontSize:13,color:C.navy,lineHeight:1.6}}>{text}</div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* AI-Detected Patterns */}
-      {patterns.length > 0 && (
-        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>🔍 AI-Detected Patterns</div>
-          {patterns.map((o,i)=>(
-            <div key={i} style={{fontSize:13,color:C.navy,lineHeight:1.6,padding:"6px 0",borderBottom:i<patterns.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>{o}</div>
-          ))}
-        </div>
-      )}
-
-      {/* Reflections */}
-      {insights?.reflections?.length > 0 && (
-        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>✍️ Reflections</div>
-          {insights.reflections.map((r,i)=>(
-            <div key={i} style={{marginBottom:12,paddingBottom:12,borderBottom:i<insights.reflections.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
-              <div style={{fontSize:11,fontWeight:700,color:C.orange,marginBottom:6}}>{r.section}</div>
-              {r.answers?.map((a,j)=>(<div key={j} style={{fontSize:13,color:C.navy,lineHeight:1.6,marginBottom:4,paddingLeft:10,borderLeft:"2px solid rgba(36,65,105,.1)"}}>{a}</div>))}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Essential Ratings */}
-      {Object.keys(insights?.essentialRatings||{}).length > 0 && (
-        <div style={{background:C.white,borderRadius:14,padding:"16px",boxShadow:"0 2px 12px rgba(36,65,105,.08)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.navy,letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>📈 CQ Essential Ratings</div>
-          {Object.entries(insights.essentialRatings).map(([k,v])=>(
-            <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:"1px solid rgba(36,65,105,.07)"}}>
-              <span style={{fontSize:12,color:C.navy,flex:1}}>{k}</span>
-              <span style={{fontSize:14,fontWeight:900,color:C.navy,width:28,textAlign:"right"}}>{v}</span>
-              <div style={{width:80,height:6,background:"rgba(36,65,105,.1)",borderRadius:3,marginLeft:10,overflow:"hidden"}}>
-                <div style={{height:"100%",width:(v/10*100)+"%",background:v>=8?C.orange:v>=5?C.blue:C.navy,borderRadius:3}} />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Action Plan */}
-      {insights?.actionPlan?.legacy && (
-        <div style={{background:C.navy,borderRadius:14,padding:"18px",boxShadow:"0 2px 12px rgba(36,65,105,.15)"}}>
-          <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".1em",textTransform:"uppercase",marginBottom:14}}>🏆 Your Communication Action Plan</div>
-          {[{label:"CQ Legacy",val:insights.actionPlan.legacy},{label:"Catalyst Commitment",val:insights.actionPlan.catalystCommitment},{label:"Daily Practice",val:insights.actionPlan.dailyPractice}].filter(x=>x.val).map((item,i)=>(
-            <div key={i} style={{marginBottom:14,paddingBottom:14,borderBottom:i<2?"1px solid rgba(255,255,255,.1)":"none"}}>
-              <div style={{fontSize:10,fontWeight:700,color:C.gold,marginBottom:6,letterSpacing:".06em",textTransform:"uppercase"}}>{item.label}</div>
-              <div style={{fontSize:13,color:"rgba(255,255,255,.9)",lineHeight:1.6}}>{item.val}</div>
-            </div>
-          ))}
+    <div style={{marginBottom:14}}>
+      <div style={{fontSize:10,fontWeight:800,color:"rgba(36,65,105,.5)",letterSpacing:".08em",textTransform:"uppercase",marginBottom:6}}>My proficiency:</div>
+      <div style={{display:"flex",gap:5,marginBottom:6}}>
+        {RATING_LEVELS.map(l => {
+          const sel = rating === l.value;
+          return (
+            <button key={l.value} onClick={() => onRateEssential && onRateEssential(id === 'bringingBest' ? 'bringingBest' : label, l.value)}
+              style={{flex:1,border:"none",borderRadius:8,padding:"5px 4px",cursor:"pointer",fontSize:10,fontWeight:800,
+                background:sel ? l.color : "rgba(36,65,105,.08)",
+                color:sel ? "#fff" : "rgba(36,65,105,.45)",transition:"all .15s"}}>
+              {l.value}
+            </button>
+          );
+        })}
+      </div>
+      {rating && desc && (
+        <div style={{padding:"7px 10px",borderRadius:8,background:`${lvl?.color}0f`,borderLeft:`3px solid ${lvl?.color}`}}>
+          <p style={{fontSize:11,color:"#444",lineHeight:1.55,margin:0}}>{desc}</p>
         </div>
       )}
     </div>
   );
 };
+
+const IJ_AutoField = ({label, value}) => (
+  value ? (
+    <div style={{marginBottom:14}}>
+      <div style={{fontSize:10,fontWeight:800,color:"rgba(36,65,105,.5)",letterSpacing:".06em",textTransform:"uppercase",marginBottom:5}}>{label}</div>
+      <div style={{padding:"10px 12px",background:"rgba(36,65,105,.04)",borderRadius:8,borderLeft:"3px solid rgba(36,65,105,.2)"}}>
+        <p style={{fontSize:12.5,color:"#333",lineHeight:1.6,margin:0,fontStyle:"italic"}}>{value}</p>
+      </div>
+    </div>
+  ) : (
+    <div style={{marginBottom:14}}>
+      <div style={{fontSize:10,fontWeight:800,color:"rgba(36,65,105,.35)",letterSpacing:".06em",textTransform:"uppercase",marginBottom:5}}>{label}</div>
+      <div style={{padding:"8px 12px",background:"rgba(36,65,105,.02)",borderRadius:8,border:"1px dashed rgba(36,65,105,.15)"}}>
+        <p style={{fontSize:11.5,color:"rgba(36,65,105,.35)",lineHeight:1.5,margin:0}}>Hoop will capture this during your session.</p>
+      </div>
+    </div>
+  )
+);
+
+const IJ_TextField = ({label, hint, fieldKey, value, onChange}) => {
+  return (
+    <div style={{marginBottom:14}}>
+      <div style={{fontSize:10,fontWeight:800,color:"rgba(36,65,105,.5)",letterSpacing:".06em",textTransform:"uppercase",marginBottom:4}}>{label}</div>
+      {hint && <div style={{fontSize:10.5,color:"rgba(36,65,105,.45)",marginBottom:6,lineHeight:1.4,fontStyle:"italic"}}>{hint}</div>}
+      <textarea
+        value={value || ""}
+        onChange={e => onChange && onChange(fieldKey, e.target.value)}
+        placeholder="Tap to add your notes..."
+        rows={3}
+        style={{width:"100%",boxSizing:"border-box",padding:"9px 11px",border:"1.5px solid rgba(36,65,105,.15)",borderRadius:8,
+          fontSize:12.5,color:"#333",lineHeight:1.55,background:"#fff",resize:"vertical",fontFamily:"inherit",outline:"none"}}
+      />
+    </div>
+  );
+};
+
+const IJ_RefBlock = ({title, children}) => {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div style={{marginBottom:14,border:"1px solid rgba(36,65,105,.12)",borderRadius:10,overflow:"hidden"}}>
+      <div onClick={() => setOpen(o => !o)}
+        style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 12px",
+          background:"rgba(36,65,105,.04)",cursor:"pointer",userSelect:"none"}}>
+        <span style={{fontSize:11,fontWeight:800,color:"rgba(36,65,105,.7)",letterSpacing:".05em",textTransform:"uppercase"}}>{title}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(36,65,105,.4)" strokeWidth="2.5" strokeLinecap="round"
+          style={{flexShrink:0,transform:open?"rotate(180deg)":"none",transition:"transform .2s"}}>
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+      {open && <div style={{padding:"10px 12px",background:"#fff"}}>{children}</div>}
+    </div>
+  );
+};
+
+const IJ_ModSection = ({title, color, children, defaultOpen=false}) => {
+  const [open, setOpen] = React.useState(defaultOpen);
+  return (
+    <div style={{marginBottom:12,borderRadius:14,overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,.08)"}}>
+      <div onClick={() => setOpen(o => !o)}
+        style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",
+          background:color,cursor:"pointer",userSelect:"none"}}>
+        <span style={{fontSize:13,fontWeight:900,color:"#fff",letterSpacing:"-.01em"}}>{title}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" strokeWidth="2.5" strokeLinecap="round"
+          style={{flexShrink:0,transform:open?"rotate(180deg)":"none",transition:"transform .2s"}}>
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+      {open && <div style={{padding:"16px",background:"#fff"}}>{children}</div>}
+    </div>
+  );
+};
+
+// ── REFERENCE SHEET DATA ─────────────────────────────────────────────────────
+
+const EMPATHY_TENDENCIES = [
+  {style:"Dominance",tendency:"View every interaction with a person as a problem to be solved.",empathy:"Shift your focus from the issue itself to understanding the underlying human experiences, emotions and needs."},
+  {style:"Non-Dominance",tendency:"Overshare or take on other people's problems as your own.",empathy:"Be mindful of the environment, understanding the dynamics at play, and establishing limits that protect your time, energy, and well-being."},
+  {style:"Extroversion",tendency:"Enjoy lively conversation and being the center of attention.",empathy:"Practice pausing and allowing for others' input and response. (Not make it about me.)"},
+  {style:"Introversion",tendency:"Not showing much facial expression or engaging body language.",empathy:"Practice offering 'encouraging cues' to let the other party know you are present and engaged."},
+  {style:"Ambiversion",tendency:"Can be regarded as moody because you easily move between extroversion and introversion.",empathy:"Practice signaling when you don't have the bandwidth for an interaction and scheduling a time when you can give your full attention."},
+  {style:"Patience",tendency:"When pressured to respond, will say what you think the other person wants to hear just to get that person 'out of your face.'",empathy:"Practice asking for time to think about the problem and offer to get back to the person."},
+  {style:"Impatience",tendency:"Make assumptions and jump to conclusions.",empathy:"Practice resisting the urge to interrupt, and instead listen to the end; use the power of pause before responding to what's being said."},
+  {style:"Conformity",tendency:"Ask many questions as a means of understanding and buy-in.",empathy:"Practice repeating back what your understanding is first before jumping in with '20 questions.'"},
+  {style:"Non-Conformity",tendency:"Explore all the ways to improve/expand on someone's idea.",empathy:"Practice affirming the other person first, and ask if he or she is seeking feedback or just looking for a sounding board."},
+];
+
+const NONVERBAL_TENDENCIES = [
+  {style:"Dominance",header:"Express confidence but remain approachable.",tendency:"Standing tall, making direct eye contact, and using large forceful hand gestures.",alt:"Relax your stance slightly, soften your expression, and use smaller gestures to convey openness."},
+  {style:"Non-Dominance",header:"Show interest while maintaining a confident presence.",tendency:"Minimal eye contact, folded arms, or maintaining distance.",alt:"Lean slightly forward, maintain a friendly expression, and use open hand gestures to invite dialogue."},
+  {style:"Extroversion",header:"Balance expressiveness with attentiveness.",tendency:"Animated gestures, close proximity, and frequent head nodding.",alt:"Pause between gestures, mirror the other person's body language."},
+  {style:"Introversion",header:"Demonstrate attentiveness in subtle ways.",tendency:"Reserved posture, limited facial expressions, or sitting back.",alt:"Make intentional eye contact, nod subtly, and lean slightly forward to indicate engagement."},
+  {style:"Ambiversion",header:"Adjust body language based on the context.",tendency:"Shifting between extroverted and introverted behaviors depending on comfort and energy levels.",alt:"Maintain an open posture with moderate gestures to show openness without being overwhelming."},
+  {style:"Patience",header:"Show calm, steady presence while showing active engagement.",tendency:"Relaxed posture, slow gestures, and calm expressions.",alt:"Add subtle cues like nodding, smiling, or leaning forward slightly to show interest and attentiveness."},
+  {style:"Impatience",header:"Be mindful of body language that might signal frustration or urgency.",tendency:"Quick gestures, tapping fingers, or shifting body weight frequently.",alt:"Slow down movements, maintain a relaxed posture, and use controlled gestures to project patience and presence."},
+  {style:"Conformity",header:"Express non-verbals aligned to environment and show individual engagement.",tendency:"Mirroring others or adopting a neutral pose to fit in.",alt:"Practice supportive encouraging gestures instead of mirroring, like small nods and smiles. Keep the gestures subtle and authentic."},
+  {style:"Non-Conformity",header:"Balance unique expression with openness while respecting the other person.",tendency:"Unpredictable or less conventional body language.",alt:"Use situational awareness to gage what is appropriate and when."},
+];
+
+const MOTIVATORS_DEMOTIVATORS = [
+  {strength:"Dominance",motivators:"Have daily challenges. Produce tangible results. Have a position with power and prestige. Have answers and candor in all communications.",demotivators:"Too much close supervision. Nebulous answers to questions. Vacillating leadership. A lack of significant goals."},
+  {strength:"Extroversion",motivators:"A lot of interaction with people. The opportunity to meet new people and make friends. The opportunity to make more money and improve status. To be a team player within the organization.",demotivators:"Perceives that he or she is not liked. Is not invited to meetings with peers. Has his or her territory (opportunity) reduced in size. Does not feel a part of the team."},
+  {strength:"Patience",motivators:"A stable, harmonious working environment. A minimum of communicating style conflicts. Adequate time to think things over and adjust. A limited number of last-minute time pressures.",demotivators:"Constant pressure at the last minute. Too many communication style conflicts. Too many unexpected changes occurring. Expectations that are too high and/or not clear."},
+  {strength:"Conformity",motivators:"A structured environment that has few sudden or abrupt changes. The security of basic benefits. A worked-out system and quality products. Praise for specific accomplishments.",demotivators:"Constant criticism. Rules that are changed without plenty of notice. A lack of systems, quality and fairness. No worked-out system."},
+];
+
+const QUESTIONING_TENDENCIES = [
+  {style:"Dominance",tendency:"Is curious and inquisitive. Asks direct questions. Is uncomfortable with indecisive answers. Can come across as aggressive or critical.",alt:'Ask assertively but with openness. Frame questions that invite collaboration. "How do you see this working?" "Can you clarify this so we can all be on the same page?"'},
+  {style:"Non-Dominance",tendency:"Appreciates input from others before making a decision. May hold back from asking questions, even if they have unclear or inaccurate information.",alt:'Create psychological safety. Encourage active participation without feeling hesitant. "I want to make sure I fully understand before we move on." "I value your perspective. Can I ask for clarification on...?"'},
+  {style:"Extroversion",tendency:"Asks questions to persuade or control. May be the first to ask/jump in with a question. Asks questions to put others at ease.",alt:'Balance engagement with patience. Show interest in others\' input instead of leading with control. "What\'s your take on this?" "How do you feel about this direction?"'},
+  {style:"Introversion",tendency:"Most comfortable asking questions with those they know well. Thinks through a question before asking, is very sincere in their questioning approach.",alt:'Encourage open dialogue. Rather than only asking questions in comfortable situations, broaden your engagement. "I\'ve been reflecting on this and would love your insights." "Can I ask a follow-up question to understand better?"'},
+  {style:"Ambiversion",tendency:"May switch between extroversion and introversion.",alt:'Adopt flexibility with intention. When switching between styles, ensure questions are framed for clarity and mutual understanding. "I\'d like to gather everyone\'s thoughts on this." "What\'s your perspective, based on what\'s been shared so far?"'},
+  {style:"Patience",tendency:"Likes time to think through questions and answers. Is sensitive to those around them when framing a question. Is a good listener. Is comfortable with positive questions and less comfortable with questions that create discord or conflict.",alt:'Ask questions that foster constructive dialogue. Rather than avoiding challenging questions, phrase in a way that invites discussion. "How can we approach this issue collaboratively?" "What\'s the best path forward from your perspective?"'},
+  {style:"Impatience",tendency:"Asks questions to move ahead or speed up action. Expects others to respond quickly to questions. May answer a question before it is finished.",alt:'Practice mindful inquiry. Slow down and frame questions with space for thoughtful responses. "Before we move on, is there anything else we should consider?" "Let\'s take a moment to think this through before we decide."'},
+  {style:"Conformity",tendency:"Asks questions to thoroughly understand an environment or situation or to double-check an answer. May appreciate asking and answering questions in writing.",alt:'Use questions to explore perspectives. Instead of only verifying information, ask questions that broaden understanding. "How does this fit with what we already know?" "What other ways can we approach this?"'},
+  {style:"Non-Conformity",tendency:"Asks candid questions. May skip asking a question (assumes the answers).",alt:'Ask with curiosity, not assumption. Instead of skipping questions, invite input for perspectives you may not have considered. "What\'s your take on this?" "Can you walk me through how you see this unfolding?"'},
+];
+
+const LISTENING_TENDENCIES = [
+  {style:"Dominance",header:"Listen to understand the problem fully before jumping to solutions.",tendency:"Listens primarily to identify and address issues quickly, often interrupting to propose solutions, which may lead to missing deeper context.",alt:"Practice holding back initial solutions until the speaker has finished. After listening, summarize the main points to confirm understanding before suggesting actions or solutions."},
+  {style:"Non-Dominance",header:"Show engaged listening without fear of overstepping.",tendency:"Tends to listen quietly but may avoid speaking up or asking questions for clarity.",alt:'Use gentle prompts like "Can I clarify what I heard?" or "Would you mind expanding on that?" to confirm understanding and show genuine interest without feeling intrusive.'},
+  {style:"Extroversion",header:"Balance enthusiasm while ensuring the speaker feels fully heard.",tendency:"Listens actively but may inadvertently steer the conversation toward their own thoughts or experiences.",alt:'Focus on echoing the speaker\'s points with phrases like "I see, that makes sense," or "Interesting, go on," to demonstrate active listening. Shifting focus to preserve personal responses until the speaker naturally pauses.'},
+  {style:"Introversion",header:"Show engaged listening by signaling reflection.",tendency:"Listens deeply and absorbs information but may appear disengaged due to limited verbal or facial expressions.",alt:'Use verbal signals to show active processing, such as "That\'s a lot to think about; I\'d like a moment to consider it," or "I\'m reflecting on what you said; let me take a moment." This reassures the speaker of your engagement while honoring a need for thoughtful consideration.'},
+  {style:"Ambiversion",header:"Aim for both engagement and understanding in any setting.",tendency:"Alternates between active engagement and passive listening depending on comfort level.",alt:"Make a conscious effort to stay consistently engaged, using brief summaries or follow-up questions to stay present."},
+  {style:"Patience",header:"Listen thoroughly, allowing time to process without feeling pressured.",tendency:"Listens carefully and avoids jumping to conclusions but may withdraw if feeling pressed or if conflict arises.",alt:'Signal your need for time by saying, "I\'d like to take a moment to think this over," or "Let\'s revisit this after I\'ve had time to process." This helps create space for reflection while maintaining open, respectful communication.'},
+  {style:"Impatience",header:"Slow down to fully absorb and understand the speaker's message.",tendency:"Listens for the main points but may rush to respond or push the conversation forward.",alt:'Mentally pause before responding with "I want to make sure we\'ve understood everything before we move on," or "Let\'s take a moment to think this through." This creates a natural break, encouraging a more thoughtful response and capturing crucial details.'},
+  {style:"Conformity",header:"Listen with an open mind, even if it challenges existing views.",tendency:"Listens attentively but may seek validation for pre-existing views, potentially limiting new insights.",alt:'Acknowledge differing views with phrases like "That\'s an interesting perspective" to show openness.'},
+  {style:"Non-Conformity",header:"Listen fully, even if the viewpoint differs.",tendency:"May dismiss information that doesn't align with personal views, focusing instead on unconventional ideas.",alt:"Actively consider and paraphrase differing points of view, allowing room for diverse perspectives."},
+];
+
+const FEEDBACK_TENDENCIES = [
+  {style:"Dominance",
+    giving:"Direct and assertive, often focusing on results over feelings.",
+    givingAlt:"Soften the approach by acknowledging effort and framing feedback as a way to achieve even better results.",
+    receiving:"May view feedback as a challenge to their authority, responding defensively.",
+    receivingAlt:"Mentally frame feedback as an opportunity for growth — pause, listen fully, and ask clarifying questions."},
+  {style:"Non-Dominance",
+    giving:"Tends to sugarcoat feedback, avoiding direct confrontation.",
+    givingAlt:"Use supportive language but be specific about desired behavior changes moving forward.",
+    receiving:"Might be hesitant to accept feedback, feeling anxious or overly apologetic.",
+    receivingAlt:"Practice active listening, and ask for specifics to gain clarity and reduce anxiety."},
+  {style:"Extroversion",
+    giving:"Expressive and engaging but may dominate the conversation, focusing more on their perspective.",
+    givingAlt:"Give space for the other person to respond and engage in a two-way dialogue.",
+    receiving:"May focus on affirming responses to maintain a well-regarded image, sometimes prioritizing how feedback reflects on them over the feedback's content and depth.",
+    receivingAlt:"Balance saving face with deeper engagement by summarizing key points and focusing on the intent of the feedback — to support your growth."},
+  {style:"Introversion",
+    giving:"Reserved and cautious, might avoid giving feedback altogether.",
+    givingAlt:"Prepare in advance and use structured feedback methods, ensuring the message is clear and constructive.",
+    receiving:"View feedback as information, not judgment — ask for time to reflect and come back with questions.",
+    receivingAlt:"View feedback as information, not judgment — ask for time to reflect and come back with questions."},
+  {style:"Ambiversion",
+    giving:"Shifts between being direct and reserved, depending on comfort level.",
+    givingAlt:"Aim for balance (can help to have a set feedback template). Use a mix of supportive and specific language to convey messages clearly.",
+    receiving:"Can adapt but may be inconsistent in how feedback is processed based on the situation.",
+    receivingAlt:"Establish a consistent approach — acknowledge feedback openly and summarize to confirm understanding."},
+  {style:"Patience",
+    giving:"Tends to avoid conflict which could also include feedback.",
+    givingAlt:"Set up a regular schedule for feedback. This would take the pressure off 'in the moment' contexts and keeps a collaborative approach the focus.",
+    receiving:"May downplay feedback or avoid addressing it immediately.",
+    receivingAlt:"Practice acknowledging feedback in the moment and ask for time to process what was shared before setting an action plan."},
+  {style:"Impatience",
+    giving:"May be abrupt or overly critical, focusing on immediate results.",
+    givingAlt:"Slow down delivery, emphasizing the bigger picture and long-term benefits of improvement.",
+    receiving:"Can react quickly or dismiss feedback as irrelevant.",
+    receivingAlt:"Pause before responding — repeat back key points to demonstrate engagement and understanding."},
+  {style:"Conformity",
+    giving:"Can overload the receiver with details and lists or come off in a 'policing' tone.",
+    givingAlt:"Keep feedback actionable and manageable while maintaining alignment with expectations.",
+    receiving:"Can be overly sensitive to criticism or perceived unfairness.",
+    receivingAlt:"Feedback is not criticism; it's a growth opportunity. Ask questions to gain deeper insights and show a willingness to learn and adapt."},
+  {style:"Non-Conformity",
+    giving:"Offers feedback unconventionally, which might confuse or alienate others.",
+    givingAlt:"Frame feedback with a focus on common goals, using a structured approach to clarify the message.",
+    receiving:"Could reject feedback that feels too conventional or critical of their unique approach.",
+    receivingAlt:"Consider feedback as an outside perspective — Look for elements that can be applied without compromising individuality."},
+];
+
+const BEING_INTERESTED_35 = [
+  "That's really interesting! Can you tell me more about that?",
+  "How did that make you feel when it happened?",
+  "What was the most surprising part of that experience for you?",
+  "What led you to that conclusion?",
+  "Can you share any specific examples to illustrate your point?",
+  "What do you think influenced your perspective on this?",
+  "How did you get started with that?",
+  "What challenges did you face along the way?",
+  "How do you see this evolving in the future?",
+  "What other related experiences have you had?",
+  "How does this connect with your other interests or experiences?",
+  "What advice would you give someone who's facing a similar situation?",
+  "What do you think is the most important takeaway from that?",
+  "How has this changed your approach to similar situations?",
+  "Is there anything you wish you had done differently?",
+  "What's the next step for you regarding this?",
+  "How does this tie into what you believe about the topic?",
+  "What other insights do you have on this subject?",
+  "What inspired you to pursue that path?",
+  "What do you enjoy most about this topic or experience?",
+  "How has your perspective changed over time?",
+  "What are some common misconceptions about this?",
+  "Who has been a significant influence in your journey?",
+  "What's something you learned that you didn't expect?",
+  "What are some resources you'd recommend for someone interested in this topic?",
+  "How do you balance this interest with other aspects of your life?",
+  "What's the most rewarding part of what you do?",
+  "How do you stay motivated when faced with challenges?",
+  "What's a lesson you've learned that you think others could benefit from?",
+  "Can you describe a turning point in your experience?",
+  "How do you process or reflect on your experiences?",
+  "What's the best feedback you've received about this?",
+  "Have you connected with others who share this interest? What was that like?",
+  "How do you celebrate your achievements in this area?",
+  "What's your favorite story related to this topic?",
+];
+
+const ADAPT_MODEL_STEPS = [
+  {letter:"A", word:"NALYZE", desc:"The need, situation or challenge"},
+  {letter:"D", word:"ESCRIBE", desc:"It specifically and objectively"},
+  {letter:"A", word:"CKNOWLEDGE", desc:"Constraints and resources"},
+  {letter:"P", word:"IVOT", desc:"Decide how to intentionally adapt, stay alert and be open-minded and responsive"},
+  {letter:"T", word:"RACK", desc:"The outcomes and continuously improve"},
+];
+
+// ── INSIGHTS TAB MAIN COMPONENT ───────────────────────────────────────────────
+
+const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssential, onCqDataChange}) => {
+  const ratings = cqData?.ratings || insights?.essentialRatings || {};
+  const commitments = (insights?.observations||[]).filter(o => o && o.toUpperCase().includes("COMMITMENT"));
+
+  return (
+    <div style={{flex:1,overflowY:"auto",background:C.cream,display:"flex",flexDirection:"column"}}>
+      {/* Header */}
+      <div style={{background:C.navy,padding:"18px 18px 14px",flexShrink:0}}>
+        <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".16em",textTransform:"uppercase",marginBottom:4}}>Communication Intelligence</div>
+        <div style={{fontSize:17,fontWeight:900,color:C.white,marginBottom:4}}>Your Insights Journal</div>
+        <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>Captured by Hoop · Updated as you progress</div>
+      </div>
+
+      <div style={{padding:"14px 14px",display:"flex",flexDirection:"column",gap:0}}>
+
+        {/* MODULE 1 */}
+        <IJ_ModSection title="Module 1 — Commit to Become Your Best" color={C.navy} defaultOpen={true}>
+          <IJ_TextField label="Personal Best" hint="Reflect on a time when you were at your absolute best as a communicator." fieldKey="personalBest" value={cqData?.personalBest} onChange={onCqDataChange} />
+          <IJ_TextField label="CQ Opportunity" hint="What new opportunities or profound transformations could unfold in your life, even with small shifts in your skills?" fieldKey="cqOpportunity" value={cqData?.cqOpportunity} onChange={onCqDataChange} />
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+          <div style={{fontSize:11,fontWeight:800,color:C.navy,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Your CQ Legacy</div>
+          <IJ_AutoField label="How do you want to be known?" value={legacy || cqData?.legacyKnown} />
+          <IJ_AutoField label="How can improving your communication help you leave that legacy?" value={cqData?.legacyCommunication} />
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+          <div style={{fontSize:11,fontWeight:800,color:C.navy,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Your CQ Catalyst</div>
+          <IJ_AutoField label="Who is the one person you most want to improve communication with?" value={catalyst || cqData?.catalystName} />
+          <IJ_AutoField label="How could improving your communication with this person impact your life?" value={cqData?.catalystImpact} />
+          {commitments.filter(o => o.toLowerCase().includes("module 1")).map((c,i) => (
+            <IJ_AutoField key={i} label="Module 1 Commitment" value={c.replace(/^module 1 commitment:\s*/i,"")} />
+          ))}
+        </IJ_ModSection>
+
+        {/* MODULE 2 */}
+        <IJ_ModSection title="Module 2 — Unlock Your Communication Strengths" color={C.gold}>
+          <IJ_TextField label="Primary Strength (Forte p.3)" hint="Find this at the bottom left corner where it says 'Primary Strength.'" fieldKey="primaryStrength" value={cqData?.primaryStrength} onChange={onCqDataChange} />
+          <IJ_TextField label="Secondary Strength (Forte p.3)" hint="Find this at the bottom left corner where it says 'Secondary Strength.'" fieldKey="secondaryStrength" value={cqData?.secondaryStrength} onChange={onCqDataChange} />
+          <IJ_TextField label="Your Two Sub-Strengths (Forte p.3)" hint="The remaining two strengths listed on page 3." fieldKey="subStrengths" value={cqData?.subStrengths} onChange={onCqDataChange} />
+          <IJ_TextField label="Personal Communication Hack (Forte p.9)" hint="Which personal hack will you try this month to reach your goals faster?" fieldKey="personalHack" value={cqData?.personalHack} onChange={onCqDataChange} />
+          {commitments.filter(o => o.toLowerCase().includes("module 2")).map((c,i) => (
+            <IJ_AutoField key={i} label="Module 2 Commitment" value={c.replace(/^module 2 commitment:\s*/i,"")} />
+          ))}
+        </IJ_ModSection>
+
+        {/* MODULE 3 */}
+        <IJ_ModSection title="Module 3 — Master the Art of Adapting" color={C.nm}>
+          <div style={{fontSize:11,fontWeight:800,color:C.nm,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>CQ2 — Balancing Empathy</div>
+          <IJ_RatingCard id="empathy" label="Balancing Empathy" ratings={ratings} onRateEssential={onRateEssential} />
+          <div style={{fontSize:11,fontWeight:800,color:C.nm,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10,marginTop:4}}>CQ10 — Earning Trust</div>
+          <IJ_RatingCard id="trust" label="Earning Trust" ratings={ratings} onRateEssential={onRateEssential} />
+
+          <IJ_RefBlock title="Empathy Tendencies — Reference Sheet">
+            {EMPATHY_TENDENCIES.map((t,i) => (
+              <div key={i} style={{marginBottom:10,paddingBottom:10,borderBottom:i<EMPATHY_TENDENCIES.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
+                <div style={{fontSize:10,fontWeight:800,color:C.nm,textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>{t.style}</div>
+                <div style={{fontSize:11.5,color:"#444",lineHeight:1.55,marginBottom:4}}><strong>Tendency:</strong> {t.tendency}</div>
+                <div style={{fontSize:11.5,color:"#444",lineHeight:1.55}}><strong>Empathy:</strong> {t.empathy}</div>
+              </div>
+            ))}
+          </IJ_RefBlock>
+
+          <IJ_TextField label="My Empathy Tendency & What I'll Do Instead" hint="Write down your style's tendency and the recommendation for how to show empathy more effectively." fieldKey="empathyTendency" value={cqData?.empathyTendency} onChange={onCqDataChange} />
+          <IJ_TextField label="How can you show more empathy for your CQ Catalyst?" fieldKey="empathyCatalyst" value={cqData?.empathyCatalyst} onChange={onCqDataChange} />
+          <IJ_TextField label="How will you work to earn their trust?" fieldKey="earnTrustCatalyst" value={cqData?.earnTrustCatalyst} onChange={onCqDataChange} />
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+          <div style={{fontSize:11,fontWeight:800,color:C.nm,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>CQ8 — Crystallizing Non-Verbal Communication</div>
+          <IJ_RatingCard id="nonverbal" label="Crystallizing Non-Verbal Communication" ratings={ratings} onRateEssential={onRateEssential} />
+
+          <IJ_RefBlock title="Non-Verbal Tendencies — Reference Sheet">
+            {NONVERBAL_TENDENCIES.map((t,i) => (
+              <div key={i} style={{marginBottom:10,paddingBottom:10,borderBottom:i<NONVERBAL_TENDENCIES.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
+                <div style={{fontSize:10,fontWeight:800,color:C.nm,textTransform:"uppercase",letterSpacing:".06em",marginBottom:2}}>{t.style}</div>
+                <div style={{fontSize:10.5,color:C.nm,fontStyle:"italic",marginBottom:4}}>{t.header}</div>
+                <div style={{fontSize:11.5,color:"#444",lineHeight:1.55,marginBottom:4}}><strong>Tendency:</strong> {t.tendency}</div>
+                <div style={{fontSize:11.5,color:"#444",lineHeight:1.55}}><strong>Alternative:</strong> {t.alt}</div>
+              </div>
+            ))}
+          </IJ_RefBlock>
+
+          <IJ_TextField label="Non-Verbal Signals" hint="What unspoken messages do you convey through your actions and body language that shape the perception others have of you and your CQ legacy?" fieldKey="nonVerbalSignals" value={cqData?.nonVerbalSignals} onChange={onCqDataChange} />
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+          <div style={{fontSize:11,fontWeight:800,color:C.nm,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>CQ9 — Connecting Through Virtual Communication</div>
+          <IJ_RatingCard id="virtual" label="Leveraging Virtual Communication" ratings={ratings} onRateEssential={onRateEssential} />
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+          <div style={{fontSize:11,fontWeight:800,color:C.nm,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>CQ4 — Expanding Safe Spaces</div>
+          <IJ_RatingCard id="safespace" label="Expanding Safe Spaces" ratings={ratings} onRateEssential={onRateEssential} />
+          <div style={{fontSize:11,fontWeight:800,color:C.nm,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10,marginTop:4}}>CQ5 — Communicating with Challenging People</div>
+          <IJ_RatingCard id="challenging" label="Communicating with Challenging People" ratings={ratings} onRateEssential={onRateEssential} />
+
+          <IJ_TextField label="Catalyst's Communication Strength (guess)" hint="What would you guess is your CQ Catalyst's communication strength?" fieldKey="catalystStrength" value={cqData?.catalystStrength} onChange={onCqDataChange} />
+          <IJ_TextField label="What do you appreciate about their strength?" hint="What do you appreciate or respect about your CQ Catalyst's communication strength?" fieldKey="catalystStrengthAppreciation" value={cqData?.catalystStrengthAppreciation} onChange={onCqDataChange} />
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+          <IJ_RefBlock title="ADAPT Model — Reference Card">
+            {ADAPT_MODEL_STEPS.map((s,i) => (
+              <div key={i} style={{display:"flex",gap:10,marginBottom:10,paddingBottom:10,borderBottom:i<ADAPT_MODEL_STEPS.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
+                <div style={{fontSize:16,fontWeight:900,color:C.orange,width:20,flexShrink:0}}>{s.letter}</div>
+                <div>
+                  <div style={{fontSize:11,fontWeight:800,color:C.nm}}>{s.letter}{s.word}</div>
+                  <div style={{fontSize:11.5,color:"#555",lineHeight:1.5}}>{s.desc}</div>
+                </div>
+              </div>
+            ))}
+          </IJ_RefBlock>
+
+          <div style={{fontSize:11,fontWeight:800,color:C.nm,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>My ADAPT Plan</div>
+          <IJ_TextField label="Analyze — What is the need, situation or challenge?" fieldKey="adaptAnalyze" value={cqData?.adaptAnalyze} onChange={onCqDataChange} />
+          <IJ_TextField label="Describe — Describe it specifically and objectively" fieldKey="adaptDescribe" value={cqData?.adaptDescribe} onChange={onCqDataChange} />
+          <IJ_TextField label="Acknowledge — Constraints and resources" fieldKey="adaptAcknowledge" value={cqData?.adaptAcknowledge} onChange={onCqDataChange} />
+          <IJ_TextField label="Pivot — How will you intentionally adapt?" fieldKey="adaptPivot" value={cqData?.adaptPivot} onChange={onCqDataChange} />
+          <IJ_TextField label="Track — How will you track outcomes?" fieldKey="adaptTrack" value={cqData?.adaptTrack} onChange={onCqDataChange} />
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+          <div style={{fontSize:11,fontWeight:800,color:C.nm,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Your Personal Switch or Knob</div>
+          <IJ_TextField label="Switch — One broad change needed in your communication" fieldKey="switchNeeded" value={cqData?.switchNeeded} onChange={onCqDataChange} />
+          <IJ_TextField label="Knobs — One or two small adjustments to fine-tune" fieldKey="knobsNeeded" value={cqData?.knobsNeeded} onChange={onCqDataChange} />
+
+          {commitments.filter(o => o.toLowerCase().includes("module 3")).map((c,i) => (
+            <IJ_AutoField key={i} label="Module 3 Commitment" value={c.replace(/^module 3 commitment:\s*/i,"")} />
+          ))}
+        </IJ_ModSection>
+
+        {/* MODULE 4 */}
+        <IJ_ModSection title="Module 4 — Transform Your Team & Client Dynamics" color={C.orange}>
+          <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Bringing Your Best</div>
+          <IJ_RatingCard id="bringingBest" label="bringingBest" ratings={ratings} onRateEssential={onRateEssential} />
+
+          <IJ_RefBlock title="Motivators & Demotivators — Reference Sheet">
+            {MOTIVATORS_DEMOTIVATORS.map((m,i) => (
+              <div key={i} style={{marginBottom:12,paddingBottom:12,borderBottom:i<MOTIVATORS_DEMOTIVATORS.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
+                <div style={{fontSize:10,fontWeight:800,color:C.orange,textTransform:"uppercase",letterSpacing:".06em",marginBottom:6}}>Primary Strength: {m.strength}</div>
+                <div style={{display:"flex",gap:8}}>
+                  <div style={{flex:1,padding:"8px",background:"rgba(36,65,105,.03)",borderRadius:8}}>
+                    <div style={{fontSize:9.5,fontWeight:800,color:C.navy,textTransform:"uppercase",letterSpacing:".05em",marginBottom:4}}>Motivators</div>
+                    <div style={{fontSize:11,color:"#444",lineHeight:1.55}}>{m.motivators}</div>
+                  </div>
+                  <div style={{flex:1,padding:"8px",background:"rgba(231,90,43,.04)",borderRadius:8}}>
+                    <div style={{fontSize:9.5,fontWeight:800,color:C.red,textTransform:"uppercase",letterSpacing:".05em",marginBottom:4}}>Demotivators</div>
+                    <div style={{fontSize:11,color:"#444",lineHeight:1.55}}>{m.demotivators}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </IJ_RefBlock>
+
+          <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Communication Strengths</div>
+          <div style={{fontSize:10.5,fontWeight:700,color:"rgba(36,65,105,.6)",marginBottom:8}}>YOUR TEAM</div>
+          <IJ_TextField label="What are their Communication Strengths?" fieldKey="teamStrengths" value={cqData?.teamStrengths} onChange={onCqDataChange} />
+          <IJ_TextField label="What motivates or demotivates them?" fieldKey="teamMotivators" value={cqData?.teamMotivators} onChange={onCqDataChange} />
+          <div style={{fontSize:10.5,fontWeight:700,color:"rgba(36,65,105,.6)",marginBottom:8,marginTop:4}}>YOUR CQ CATALYST</div>
+          <IJ_TextField label="What is their Communication Strength?" fieldKey="catalystCommStrength" value={cqData?.catalystCommStrength} onChange={onCqDataChange} />
+          <IJ_TextField label="What can you do differently to support their needs based on their motivators/demotivators?" fieldKey="catalystSupportPlan" value={cqData?.catalystSupportPlan} onChange={onCqDataChange} />
+
+          {commitments.filter(o => o.toLowerCase().includes("module 4")).map((c,i) => (
+            <IJ_AutoField key={i} label="Module 4 Commitment" value={c.replace(/^module 4 commitment:\s*/i,"")} />
+          ))}
+        </IJ_ModSection>
+
+        {/* MODULE 5 */}
+        <IJ_ModSection title="Module 5 — Supercharge Listening & Feedback Skills" color={C.blue}>
+          <div style={{fontSize:11,fontWeight:800,color:C.blue,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>CQ7 — Got Questions?</div>
+          <IJ_RatingCard id="questions" label="Got Questions?" ratings={ratings} onRateEssential={onRateEssential} />
+
+          <IJ_RefBlock title="Questioning Tendencies — Reference Sheet">
+            {QUESTIONING_TENDENCIES.map((t,i) => (
+              <div key={i} style={{marginBottom:10,paddingBottom:10,borderBottom:i<QUESTIONING_TENDENCIES.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
+                <div style={{fontSize:10,fontWeight:800,color:C.blue,textTransform:"uppercase",letterSpacing:".06em",marginBottom:4}}>{t.style}</div>
+                <div style={{fontSize:11.5,color:"#444",lineHeight:1.55,marginBottom:4}}><strong>Tendency:</strong> {t.tendency}</div>
+                <div style={{fontSize:11.5,color:"#444",lineHeight:1.55}}><strong>Alternative:</strong> {t.alt}</div>
+              </div>
+            ))}
+          </IJ_RefBlock>
+
+          <div style={{fontSize:11,fontWeight:800,color:C.blue,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10,marginTop:4}}>CQ3 — Proactive Listening</div>
+          <IJ_RatingCard id="listening" label="Proactive Listening" ratings={ratings} onRateEssential={onRateEssential} />
+
+          <IJ_RefBlock title="Listening Tendencies — Reference Sheet">
+            {LISTENING_TENDENCIES.map((t,i) => (
+              <div key={i} style={{marginBottom:10,paddingBottom:10,borderBottom:i<LISTENING_TENDENCIES.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
+                <div style={{fontSize:10,fontWeight:800,color:C.blue,textTransform:"uppercase",letterSpacing:".06em",marginBottom:2}}>{t.style}</div>
+                <div style={{fontSize:10.5,color:C.blue,fontStyle:"italic",marginBottom:4}}>{t.header}</div>
+                <div style={{fontSize:11.5,color:"#444",lineHeight:1.55,marginBottom:4}}><strong>Tendency:</strong> {t.tendency}</div>
+                <div style={{fontSize:11.5,color:"#444",lineHeight:1.55}}><strong>Alternative:</strong> {t.alt}</div>
+              </div>
+            ))}
+          </IJ_RefBlock>
+
+          <IJ_RefBlock title="Being Interested — 35 Questions">
+            <div style={{display:"flex",flexDirection:"column",gap:4}}>
+              {BEING_INTERESTED_35.map((q,i) => (
+                <div key={i} style={{display:"flex",gap:8,padding:"4px 0",borderBottom:i<BEING_INTERESTED_35.length-1?"1px solid rgba(36,65,105,.05)":"none"}}>
+                  <span style={{fontSize:10,fontWeight:800,color:C.blue,width:20,flexShrink:0,paddingTop:1}}>{i+1}.</span>
+                  <span style={{fontSize:11.5,color:"#444",lineHeight:1.55}}>{q}</span>
+                </div>
+              ))}
+            </div>
+          </IJ_RefBlock>
+
+          <div style={{fontSize:11,fontWeight:800,color:C.blue,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10,marginTop:4}}>CQ6 — Receiving & Giving Ongoing Feedback</div>
+          <IJ_RatingCard id="feedback" label="Receiving and Giving Ongoing Feedback" ratings={ratings} onRateEssential={onRateEssential} />
+
+          <IJ_RefBlock title="Feedback Tendencies — Reference Sheet">
+            {FEEDBACK_TENDENCIES.map((t,i) => (
+              <div key={i} style={{marginBottom:12,paddingBottom:12,borderBottom:i<FEEDBACK_TENDENCIES.length-1?"1px solid rgba(36,65,105,.07)":"none"}}>
+                <div style={{fontSize:10,fontWeight:800,color:C.blue,textTransform:"uppercase",letterSpacing:".06em",marginBottom:6}}>{t.style}</div>
+                <div style={{marginBottom:4}}>
+                  <div style={{fontSize:9.5,fontWeight:800,color:"rgba(36,65,105,.5)",textTransform:"uppercase",marginBottom:3}}>When Giving</div>
+                  <div style={{fontSize:11,color:"#444",lineHeight:1.5,marginBottom:2}}>{t.giving}</div>
+                  <div style={{fontSize:11,color:C.blue,lineHeight:1.5,fontStyle:"italic"}}>{t.givingAlt}</div>
+                </div>
+                <div>
+                  <div style={{fontSize:9.5,fontWeight:800,color:"rgba(36,65,105,.5)",textTransform:"uppercase",marginBottom:3}}>When Receiving</div>
+                  <div style={{fontSize:11,color:"#444",lineHeight:1.5,marginBottom:2}}>{t.receiving}</div>
+                  <div style={{fontSize:11,color:C.blue,lineHeight:1.5,fontStyle:"italic"}}>{t.receivingAlt}</div>
+                </div>
+              </div>
+            ))}
+          </IJ_RefBlock>
+
+          <div style={{fontSize:11,fontWeight:800,color:C.blue,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10,marginTop:4}}>CQ1 — Clear, Consistent Communication</div>
+          <IJ_RatingCard id="clear" label="Clear, Consistent Communication" ratings={ratings} onRateEssential={onRateEssential} />
+
+          <IJ_AutoField label="Message to My CQ Catalyst" value={cqData?.catalystMessage} />
+          <IJ_TextField label="Listening & Feedback Switch or Knob" hint="What changes — switch or knob — will you make to improve your listening and feedback?" fieldKey="listeningFeedbackSwitch" value={cqData?.listeningFeedbackSwitch} onChange={onCqDataChange} />
+
+          {commitments.filter(o => o.toLowerCase().includes("module 5")).map((c,i) => (
+            <IJ_AutoField key={i} label="Module 5 Commitment" value={c.replace(/^module 5 commitment:\s*/i,"")} />
+          ))}
+        </IJ_ModSection>
+
+        {/* FINAL SESSION — placeholder */}
+        <IJ_ModSection title="Final Session — Execute Your Communication Action Plan" color={C.navy}>
+          <div style={{padding:"16px",textAlign:"center",background:"rgba(36,65,105,.04)",borderRadius:10,border:"1px dashed rgba(36,65,105,.15)"}}>
+            <div style={{fontSize:13,fontWeight:700,color:"rgba(36,65,105,.5)",marginBottom:6}}>Coming in Your Final Session</div>
+            <div style={{fontSize:11.5,color:"rgba(36,65,105,.4)",lineHeight:1.6}}>Your Communication Action Plan, CQ Essentials summary, Legacy revisited, and final commitment will appear here after your final session with Hoop.</div>
+          </div>
+        </IJ_ModSection>
+
+      </div>
+    </div>
+  );
+};
+
 
 const MicButton = ({onTranscript}) => {
   const [listening, setListening] = React.useState(false);
@@ -4414,7 +4764,7 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
         {activeTab==="journey" && <JourneyTab currentModule={currentModule} insights={insights} onGoToCoach={()=>setActiveTab("coach")} onRateEssential={(topic,level)=>{ setInsights(prev=>({...prev,essentialRatings:{...(prev.essentialRatings||{}),[topic]:level}})); setCqData(prev=>({...prev,ratings:{...prev.ratings,[topic]:level}})); setPanelDot(true); }} />}
         {activeTab==="practice" && <PracticeTab currentModule={currentModule} forteData={forteData} catalyst={catalyst} onCoachTalk={(msg)=>{setActiveTab("coach");setTimeout(()=>handleSend(msg),300);}} />}
         {activeTab==="profile" && <ProfileTab forteData={forteData} />}
-        {activeTab==="insights" && <InsightsTab legacy={legacy} catalyst={catalyst} insights={insights} forteData={forteData} />}
+        {activeTab==="insights" && <InsightsTab legacy={legacy} catalyst={catalyst} insights={insights} forteData={forteData} cqData={cqData} onRateEssential={(topic,level)=>{ setInsights(prev=>({...prev,essentialRatings:{...(prev.essentialRatings||{}),[topic]:level}})); setCqData(prev=>({...prev,ratings:{...prev.ratings,[topic]:level}})); setPanelDot(true); }} onCqDataChange={(key,val)=>setCqData(prev=>({...prev,[key]:val}))} />}
         {activeTab==="coach" && (
         <div style={{flex:1,overflowY:"auto",padding:"0 0 16px",display:"flex",flexDirection:"column",background:C.cream}}>
         <div style={{textAlign:"center",padding:"22px 0 14px",fontSize:10,fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",color:"rgba(36,65,105,.3)"}}>FIRST SESSION — TODAY</div>
