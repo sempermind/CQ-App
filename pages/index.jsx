@@ -3053,6 +3053,7 @@ const JOURNEY_MODULES = [
     description:"You will apply what you know about communication styles to your real team and client relationships -- understanding what motivates different styles, how to pair styles effectively, and navigating high-stakes situations under pressure.",
     essentials:["safespace","challenging"],
     activities:["Crisis Navigation Challenge"],
+    bringingBest:true,
   },
   {
     n:5, title:"Supercharge Listening & Feedback Skills",
@@ -3074,10 +3075,69 @@ const JOURNEY_MODULES = [
 ];
 
 const RATING_LEVELS = [
-  { value:"Developing",   color:"#e75a2b", short:"D" },
+  { value:"Novice",       color:"#e75a2b", short:"N" },
   { value:"Intermediate", color:"#f08b35", short:"I" },
   { value:"Mastery",      color:"#2e7d32", short:"M" },
 ];
+
+// Behavioral descriptors per essential per level — sourced from physical Insights Journal
+const CQ_DESCRIPTORS = {
+  empathy: {
+    Novice:       "I can confuse empathy with sympathy and I'm not sure how it translates into productivity.",
+    Intermediate: "I understand empathy is important for constructive relationships with colleagues and clients. I try to see things from others' perspectives.",
+    Mastery:      "I actively seek to understand the thoughts and emotions of others and to adapt my behavior from their perspective. I can describe the positive impact empathy has on relationships and business outcomes.",
+  },
+  trust: {
+    Novice:       "Either you have trust or you don't. Is there more than that?",
+    Intermediate: "I'm aware of how having trust (or not) impacts relationships and teams at work. I want people to trust me and to be confident in granting trust.",
+    Mastery:      "I work to earn the trust of others and grant trust when it is earned. When trust is broken (it happens), I focus on regaining trust and then maintaining it.",
+  },
+  nonverbal: {
+    Novice:       "I haven't thought about non-verbal communication. I can sense that something is not quite right in how others communicate, but I'm not sure how to explain why.",
+    Intermediate: "I'm aware that there's an impact of non-verbal communication and that words and body language can contradict each other. I've started to be aware of my non-verbal cues.",
+    Mastery:      "I am able to interpret the non-verbal signals of others. I adapt my non-verbal behavior to align with my words. I receive the feedback I want as I align my words, intentions, and non-verbal communication.",
+  },
+  virtual: {
+    Novice:       "I've never been a remote worker, or I can use help in connecting and communicating remotely.",
+    Intermediate: "I understand the differences between remote and in-person communication. I attempt to communicate more effectively online.",
+    Mastery:      "I exercise patience when it comes to working with others remotely. I take responsibility for how I can adapt to maximize my productivity, and that of the team, in a virtual or hybrid environment.",
+  },
+  safespace: {
+    Novice:       "I am not familiar with the concept of safe spaces and I want to learn more about my role in the practice.",
+    Intermediate: "I understand why safe spaces can make a difference and I try to communicate to make others feel they belong.",
+    Mastery:      "I make it a priority to communicate to ensure all feel that they belong and are welcome and that their emotions and opinions are heard. I know about resources to help others (and myself) if they don't feel safe.",
+  },
+  challenging: {
+    Novice:       "I avoid confrontation and challenging people as much as I can.",
+    Intermediate: "I try to find common ground with challenging people and communicate with an intent to understand.",
+    Mastery:      "I recognize that it is usually a person's behaviors that I find challenging. I have tools — including an understanding of different communication strengths — to interact with challenging people in almost all circumstances.",
+  },
+  bringingBest: {
+    Novice:       "I have the basics covered — communication and adaptability. Is there more?",
+    Intermediate: "I apply proven strategies to bring my best. They seem to work in most situations.",
+    Mastery:      "I have personalized strategies that leverage my communication strengths. I continually adapt to improve on bringing my best to work.",
+  },
+  questions: {
+    Novice:       "I ask questions in the course of communicating and don't give it much thought.",
+    Intermediate: "I regularly ask questions in conversations and in writing that result in the answers I am looking for.",
+    Mastery:      "I ask questions that make others think in new ways and that promote good relationships, teamwork and innovation.",
+  },
+  listening: {
+    Novice:       "I haven't really thought about listening, but I can distinguish between hearing someone and listening to someone.",
+    Intermediate: "I am aware of the impact of listening and not listening. I have tried to listen, and it's not always easy and I have learned more about listening through reading, a class or a conversation with others.",
+    Mastery:      "I understand why listening is an essential CQ skill that you can evolve. I can describe the impact of listening (and not listening) at work and I have specific actions that I take based on my CQ strengths, and those of others, to improve listening.",
+  },
+  feedback: {
+    Novice:       "I'm not comfortable receiving or giving feedback.",
+    Intermediate: "I follow the rules and policies when it comes to feedback.",
+    Mastery:      "I look forward to, and act on, feedback I receive. I ask for feedback when appropriate and I offer constructive feedback to others when I believe it would be useful.",
+  },
+  clear: {
+    Novice:       "I primarily practice one-way communication. I rarely adapt my message based on the receiver.",
+    Intermediate: "I tend to listen as much as I speak. I like to check that the receiver understands my message.",
+    Mastery:      "I recognize I am primarily responsible for the intent of my message being understood. I proactively work to ensure my intended message is aligned with the receiver's understanding.",
+  },
+};
 
 const JourneyTab = ({currentModule, insights, onGoToCoach, onRateEssential}) => {
   const [expanded, setExpanded] = React.useState(currentModule);
@@ -3202,29 +3262,79 @@ const JourneyTab = ({currentModule, insights, onGoToCoach, onRateEssential}) => 
                               </div>
                               <p style={{fontSize:11.5,color:"#555",lineHeight:1.6,margin:"0 0 8px 0"}}>{e.principle}</p>
 
-                              {/* Rating buttons */}
-                              <div style={{display:"flex",gap:6,alignItems:"center"}}>
-                                <span style={{fontSize:10,color:"rgba(36,65,105,.5)",fontWeight:600,marginRight:2}}>My rating:</span>
-                                {RATING_LEVELS.map(lvl => {
-                                  const selected = rating === lvl.value;
-                                  return (
-                                    <button key={lvl.value} onClick={() => onRateEssential && onRateEssential(e.label, lvl.value)}
-                                      style={{
-                                        padding:"4px 10px",borderRadius:20,border:"none",cursor:"pointer",fontSize:10.5,fontWeight:700,
-                                        background: selected ? lvl.color : "rgba(36,65,105,.08)",
-                                        color: selected ? C.white : "rgba(36,65,105,.5)",
-                                        transition:"all .15s",
-                                      }}>
-                                      {lvl.value}
-                                    </button>
-                                  );
-                                })}
-                                {rating && <span style={{fontSize:10,color:RATING_LEVELS.find(l=>l.value===rating)?.color||C.navy,fontWeight:800,marginLeft:4}}>✓ Saved</span>}
+                              {/* Rating cards — compact, descriptor expands on selection */}
+                              <div style={{marginTop:6}}>
+                                <div style={{fontSize:9,fontWeight:800,color:"rgba(36,65,105,.45)",letterSpacing:".08em",textTransform:"uppercase",marginBottom:5}}>My proficiency:</div>
+                                <div style={{display:"flex",gap:5}}>
+                                  {RATING_LEVELS.map(lvl => {
+                                    const selected = rating === lvl.value;
+                                    const desc = CQ_DESCRIPTORS[e.id]?.[lvl.value] || "";
+                                    return (
+                                      <button key={lvl.value}
+                                        onClick={() => onRateEssential && onRateEssential(e.label, lvl.value)}
+                                        style={{
+                                          flex:1, border:"none", borderRadius:8, padding:"5px 4px",
+                                          cursor:"pointer", fontSize:10, fontWeight:800,
+                                          background: selected ? lvl.color : "rgba(36,65,105,.08)",
+                                          color: selected ? "#fff" : "rgba(36,65,105,.45)",
+                                          letterSpacing:".03em", transition:"all .15s",
+                                        }}>
+                                        {lvl.value}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                                {rating && (() => {
+                                  const lvl = RATING_LEVELS.find(l => l.value === rating);
+                                  const desc = CQ_DESCRIPTORS[e.id]?.[rating] || "";
+                                  return desc ? (
+                                    <div style={{marginTop:6,padding:"7px 10px",borderRadius:8,background:`${lvl.color}0f`,borderLeft:`3px solid ${lvl.color}`}}>
+                                      <p style={{fontSize:11,color:"#444",lineHeight:1.55,margin:0}}>{desc}</p>
+                                    </div>
+                                  ) : null;
+                                })()}
                               </div>
                             </div>
                           );
                         })}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Bringing Your Best — Module 4 standalone rating */}
+                  {mod.bringingBest && (
+                    <div style={{padding:"0 14px 12px"}}>
+                      <div style={{fontSize:9.5,fontWeight:800,color:C.orange,letterSpacing:".1em",textTransform:"uppercase",marginBottom:8}}>Bringing Your Best</div>
+                      <p style={{fontSize:11.5,color:"#555",lineHeight:1.6,margin:"0 0 10px 0"}}>When you adopt the approach that challenging situations are opportunities to grow your CQ, work and life are more rewarding.</p>
+                      <div style={{display:"flex",gap:5,marginBottom:0}}>
+                        {RATING_LEVELS.map(lvl => {
+                          const bbRating = ratings["bringingBest"] || ratings["Bringing Your Best"] || null;
+                          const selected = bbRating === lvl.value;
+                          return (
+                            <button key={lvl.value}
+                              onClick={() => onRateEssential && onRateEssential("bringingBest", lvl.value)}
+                              style={{
+                                flex:1, border:"none", borderRadius:8, padding:"5px 4px",
+                                cursor:"pointer", fontSize:10, fontWeight:800,
+                                background: selected ? lvl.color : "rgba(36,65,105,.08)",
+                                color: selected ? "#fff" : "rgba(36,65,105,.45)",
+                                letterSpacing:".03em", transition:"all .15s",
+                              }}>
+                              {lvl.value}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {(() => {
+                        const bbRating = ratings["bringingBest"] || ratings["Bringing Your Best"] || null;
+                        const lvl = RATING_LEVELS.find(l => l.value === bbRating);
+                        const desc = bbRating ? CQ_DESCRIPTORS.bringingBest?.[bbRating] : null;
+                        return desc ? (
+                          <div style={{marginTop:6,padding:"7px 10px",borderRadius:8,background:`${lvl.color}0f`,borderLeft:`3px solid ${lvl.color}`}}>
+                            <p style={{fontSize:11,color:"#444",lineHeight:1.55,margin:0}}>{desc}</p>
+                          </div>
+                        ) : null;
+                      })()}
                     </div>
                   )}
 
@@ -3758,6 +3868,27 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const [panelDot,      setPanelDot]      = useState(false);
   const [insights,      setInsights]      = useState({observations:[],commitments:[],reflections:[],actionPlan:null});
 
+  // ── cqData: single source of truth for all journal fields and ratings ──
+  const [cqData, setCqData] = useState({
+    // Ratings — 10 CQ Essentials + Bringing Your Best
+    ratings: { empathy:null, trust:null, nonverbal:null, virtual:null, safespace:null, challenging:null, questions:null, listening:null, feedback:null, clear:null, bringingBest:null },
+    // Module 1
+    personalBest:"", cqOpportunity:"", legacyKnown:"", legacyCommunication:"", catalystName:"", catalystImpact:"",
+    // Module 2
+    primaryStrength:"", secondaryStrength:"", subStrengths:"", personalHack:"",
+    // Module 3
+    empathyTendency:"", empathyCatalyst:"", earnTrustCatalyst:"",
+    nonVerbalSignals:"", catalystStrength:"", catalystStrengthAppreciation:"",
+    adaptAnalyze:"", adaptDescribe:"", adaptAcknowledge:"", adaptPivot:"", adaptTrack:"",
+    switchNeeded:"", knobsNeeded:"",
+    // Module 4
+    teamStrengths:"", teamMotivators:"", catalystCommStrength:"", catalystSupportPlan:"",
+    // Module 5
+    catalystMessage:"", listeningFeedbackSwitch:"",
+    // Final
+    actionPlan:null, catalystLearning:"", selfLearning:"", legacyRevisited:"", finalCommitmentEssential:"", finalCommitmentBehavior:"",
+  });
+
   const [error,         setError]         = useState(null);
   const [quickReplies,  setQuickReplies]  = useState([]);
   const [forteData,     setForteData]     = useState(null);
@@ -3832,6 +3963,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
       if(savedState.catalyst){setCatalyst(savedState.catalyst);catalystRef.current=savedState.catalyst;}
       if(savedState.currentModule) setCurrentModule(savedState.currentModule);
       if(savedState.insights) setInsights(savedState.insights);
+      if(savedState.cqData)   setCqData(prev => ({...prev, ...savedState.cqData}));
       if(savedState.forteData) setForteData(savedState.forteData);
       setActiveTab("coach"); // Always land on Coach tab when restoring session
     } else {
@@ -3907,7 +4039,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
 
   useEffect(()=>{
     if(!messages.length) return;
-    onSave?.({messages,legacy,catalyst,currentModule,insights,forteData});
+    onSave?.({messages,legacy,catalyst,currentModule,insights,forteData,cqData});
   },[messages,legacy,catalyst,currentModule,insights,forteData]);
 
   const handleSend = useCallback(async(text)=>{
@@ -4279,7 +4411,7 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
 
       {/* Tab content */}
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
-        {activeTab==="journey" && <JourneyTab currentModule={currentModule} insights={insights} onGoToCoach={()=>setActiveTab("coach")} onRateEssential={(topic,level)=>{ setInsights(prev=>({...prev,essentialRatings:{...(prev.essentialRatings||{}),[topic]:level}})); setPanelDot(true); }} />}
+        {activeTab==="journey" && <JourneyTab currentModule={currentModule} insights={insights} onGoToCoach={()=>setActiveTab("coach")} onRateEssential={(topic,level)=>{ setInsights(prev=>({...prev,essentialRatings:{...(prev.essentialRatings||{}),[topic]:level}})); setCqData(prev=>({...prev,ratings:{...prev.ratings,[topic]:level}})); setPanelDot(true); }} />}
         {activeTab==="practice" && <PracticeTab currentModule={currentModule} forteData={forteData} catalyst={catalyst} onCoachTalk={(msg)=>{setActiveTab("coach");setTimeout(()=>handleSend(msg),300);}} />}
         {activeTab==="profile" && <ProfileTab forteData={forteData} />}
         {activeTab==="insights" && <InsightsTab legacy={legacy} catalyst={catalyst} insights={insights} forteData={forteData} />}
@@ -4628,20 +4760,14 @@ export default function App() {
   const handleReset = async()=>{await clearSession();setScreen("home");setLevel(null);setParticipantName("");setSavedState(null);};
   const handleDevJump = (lvl, name, jumpState) => { setLevel(lvl); setParticipantName(name); setSavedState(jumpState); setScreen("coach"); };
 
-  if(!restored) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:"#1c1c2e"}}><style>{STYLES}</style><div style={{width:36,height:36,border:"3px solid rgba(244,188,45,.2)",borderTopColor:C.gold,borderRadius:"50%",animation:"spin .8s linear infinite"}} /></div>;
+  if(!restored) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:"#F5F0E8"}}><style>{STYLES}</style><div style={{width:36,height:36,border:"3px solid rgba(244,188,45,.2)",borderTopColor:C.gold,borderRadius:"50%",animation:"spin .8s linear infinite"}} /></div>;
 
   return (
     <>
       <style>{STYLES}</style>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:"#1c1c2e",padding:16,fontFamily:"-apple-system,'Segoe UI','Helvetica Neue',Arial,sans-serif"}}>
-        <div style={{width:390,height:844,borderRadius:52,overflow:"hidden",display:"flex",flexDirection:"column",position:"relative",boxShadow:"0 0 0 10px #2a2a3e, 0 0 0 11.5px rgba(255,255,255,.07), 0 50px 100px rgba(0,0,0,.7)"}}>
-          <div style={{padding:"14px 26px 0",display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0,background:screen==="home"||screen==="level"?C.gold:C.navy,color:screen==="home"||screen==="level"?C.navy:"rgba(255,255,255,.9)"}}>
-            <span style={{fontSize:15,fontWeight:700}}>{new Date().toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"})}</span>
-            <div style={{display:"flex",alignItems:"center",gap:5,opacity:.7}}>
-              <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 9.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" fill="currentColor"/><path d="M5.2 7.3a4 4 0 0 1 5.6 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><path d="M2.5 4.7A7.5 7.5 0 0 1 13.5 4.7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
-              <div style={{width:22,height:11,border:"1.5px solid currentColor",borderRadius:3,position:"relative"}}><div style={{position:"absolute",left:2,top:2,width:13,height:5,background:"currentColor",borderRadius:1}} /></div>
-            </div>
-          </div>
+      <div style={{display:"flex",flexDirection:"column",alignItems:"center",minHeight:"100vh",background:"#F5F0E8",fontFamily:"-apple-system,'Segoe UI','Helvetica Neue',Arial,sans-serif"}}>
+        <div style={{width:"100%",maxWidth:600,minHeight:"100vh",display:"flex",flexDirection:"column",position:"relative"}}>
+
           {screen==="home"  && <HomeScreen  onStart={s=>{const next=s==="level"?"level":"coach";setScreen(next);}} />}
           {screen==="level" && <LevelScreen onSelect={(l,n)=>{setLevel(l);setParticipantName(n);setScreen("intro");}} onBack={()=>setScreen("home")} />}
           {screen==="intro" && <CQIntroScreen participantName={participantName} level={level} onContinue={()=>setScreen("coach")} onBack={()=>setScreen("level")} />}
