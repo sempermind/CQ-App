@@ -3156,19 +3156,32 @@ const JourneyTab = ({currentModule, insights, onGoToCoach, onRateEssential}) => 
   return (
     <div style={{flex:1,overflowY:"auto",background:C.cream,display:"flex",flexDirection:"column"}}>
 
-      {/* Header */}
-      <div style={{background:C.navy,padding:"18px 18px 14px"}}>
-        <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".16em",textTransform:"uppercase",marginBottom:6}}>Your CQ Journey</div>
-        <div style={{fontSize:17,fontWeight:900,color:C.white,marginBottom:14}}>6 Modules Built Around You</div>
-        {/* Progress bar */}
-        <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <div style={{flex:1,height:6,background:"rgba(255,255,255,.15)",borderRadius:3,overflow:"hidden"}}>
-            <div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${C.gold},${C.orange})`,borderRadius:3,transition:"width .8s ease"}} />
+      {/* Header — active module + progress + return to coach CTA */}
+      {(() => {
+        const activeMod = JOURNEY_MODULES.find(m => m.n === currentModule) || JOURNEY_MODULES[0];
+        return (
+          <div style={{background:C.navy,padding:"16px 18px 14px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+              <div style={{width:36,height:36,borderRadius:10,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",background:activeMod.color||C.orange}}>
+                <span style={{fontSize:11,fontWeight:900,color:C.white,letterSpacing:".04em"}}>{"0"+currentModule}</span>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:10,fontWeight:800,color:"rgba(255,255,255,.5)",letterSpacing:".08em",textTransform:"uppercase",marginBottom:2}}>Active Module</div>
+                <div style={{fontSize:14,fontWeight:900,color:C.white,lineHeight:1.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{activeMod.title}</div>
+              </div>
+              <button onClick={onGoToCoach} style={{flexShrink:0,background:C.orange,border:"none",borderRadius:8,padding:"6px 12px",fontSize:11,fontWeight:800,color:C.white,cursor:"pointer",letterSpacing:".02em"}}>
+                Coach →
+              </button>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <div style={{flex:1,height:5,background:"rgba(255,255,255,.15)",borderRadius:3,overflow:"hidden"}}>
+                <div style={{height:"100%",width:pct+"%",background:`linear-gradient(90deg,${C.gold},${C.orange})`,borderRadius:3,transition:"width .8s ease"}} />
+              </div>
+              <span style={{fontSize:11,fontWeight:900,color:C.gold,flexShrink:0}}>{pct}%</span>
+            </div>
           </div>
-          <span style={{fontSize:12,fontWeight:900,color:C.gold,flexShrink:0}}>{pct}%</span>
-        </div>
-        <div style={{fontSize:10,color:"rgba(255,255,255,.4)",marginTop:6}}>Module {currentModule} of 6 active</div>
-      </div>
+        );
+      })()}
 
       {/* Module cards */}
       <div style={{display:"flex",flexDirection:"column",gap:0,padding:"14px 14px",flex:1}}>
@@ -3393,7 +3406,7 @@ const JourneyTab = ({currentModule, insights, onGoToCoach, onRateEssential}) => 
   );
 };
 
-const PracticeTab = ({currentModule, forteData, catalyst, onCoachTalk}) => {
+const PracticeTab = ({currentModule, forteData, catalyst, onCoachTalk, onCqDataChange}) => {
   const [active, setActive] = React.useState(null);
 
   const PracticeIcon = ({id, color}) => {
@@ -3435,7 +3448,7 @@ const PracticeTab = ({currentModule, forteData, catalyst, onCoachTalk}) => {
         <div style={{padding:"8px 0"}}>
           <ADAPTPlanner
             catalyst={catalyst}
-            onComplete={(vals)=>{ setActive(null); onCoachTalk("Here is my ADAPT plan: Analyze: " + vals.analyze + " | Describe: " + vals.describe + " | Acknowledge: " + vals.acknowledge + " | Pivot: " + vals.pivot + " | Track: " + vals.track); }}
+            onComplete={(vals)=>{ setActive(null); onCqDataChange && ["adaptAnalyze","adaptDescribe","adaptAcknowledge","adaptPivot","adaptTrack"].forEach((k,i)=>onCqDataChange(k,[vals.analyze,vals.describe,vals.acknowledge,vals.pivot,vals.track][i]||"")); onCoachTalk("Here is my ADAPT plan: Analyze: " + vals.analyze + " | Describe: " + vals.describe + " | Acknowledge: " + vals.acknowledge + " | Pivot: " + vals.pivot + " | Track: " + vals.track); }}
           />
         </div>
       </div>
@@ -3476,7 +3489,7 @@ const PracticeTab = ({currentModule, forteData, catalyst, onCoachTalk}) => {
   if (active === "switches") {
     return <SwitchesKnobsArtifact
       catalyst={catalyst}
-      onCoachTalk={(item,t)=>{ setActive(null); onCoachTalk("I just completed Switches and Knobs. I identified: " + (item?.label||"a key adjustment") + " as a " + t + "."); }}
+      onCoachTalk={(item,t)=>{ setActive(null); if(t==="switch") onCqDataChange&&onCqDataChange("switchNeeded",item.label+(item.description?" — "+item.description:"")); if(t==="knob") onCqDataChange&&onCqDataChange("knobsNeeded",item.label); onCoachTalk("I just completed Switches and Knobs. I identified: " + (item?.label||"a key adjustment") + " as a " + t + "."); }}
       onBack={()=>setActive(null)}
     />;
   }
@@ -3680,18 +3693,93 @@ const IJ_RefBlock = ({title, children}) => {
   );
 };
 
-const IJ_ModSection = ({title, color, children, defaultOpen=false}) => {
+// ── PDF DOWNLOAD — generates branded print window from cqData ────────────────
+
+const downloadModulePDF = (title, color, fields, participantName) => {
+  // fields: array of {label, value} — only non-empty values passed in
+  const filled = fields.filter(f => f.value && String(f.value).trim());
+  if (!filled.length) {
+    alert("No content to save yet in this section. Complete this module first.");
+    return;
+  }
+
+  const hexToRgb = h => { const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16); return `${r},${g},${b}`; };
+  const colorClean = color.replace("#","");
+
+  const rows = filled.map(f => `
+    <div class="field">
+      <div class="label">${f.label}</div>
+      <div class="value">${String(f.value).replace(/\n/g,"<br/>")}</div>
+    </div>
+  `).join("");
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>${title}</title>
+<style>
+  @page { margin: 0.75in; size: letter; }
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', Arial, sans-serif; background: #fff; color: #222; font-size: 12px; }
+  .header { background: #${colorClean}; padding: 24px 28px 20px; margin-bottom: 24px; }
+  .header-sup { font-size: 9px; font-weight: 800; color: rgba(255,255,255,.6); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
+  .header-title { font-size: 20px; font-weight: 900; color: #fff; letter-spacing: -.01em; line-height: 1.15; margin-bottom: 4px; }
+  .header-name { font-size: 11px; color: rgba(255,255,255,.6); }
+  .body { padding: 0 4px; }
+  .field { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #eee; }
+  .field:last-child { border-bottom: none; }
+  .label { font-size: 9px; font-weight: 800; color: #${colorClean}; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 5px; }
+  .value { font-size: 12.5px; color: #222; line-height: 1.65; }
+  .footer { margin-top: 32px; padding-top: 14px; border-top: 2px solid #${colorClean}; display: flex; justify-content: space-between; align-items: center; }
+  .footer-brand { font-size: 9px; font-weight: 800; color: #244169; letter-spacing: .1em; text-transform: uppercase; }
+  .footer-quote { font-size: 9px; color: #888; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-sup">CQ Program · Insights Journal</div>
+  <div class="header-title">${title}</div>
+  ${participantName ? `<div class="header-name">${participantName}</div>` : ""}
+</div>
+<div class="body">${rows}</div>
+<div class="footer">
+  <div class="footer-brand">Communication Intelligence · CQ Coach</div>
+  <div class="footer-quote">"Every conversation has the power to change the trajectory of a life."</div>
+</div>
+<script>window.onload = function(){ window.print(); window.onafterprint = function(){ window.close(); }; }</script>
+</body>
+</html>`;
+
+  const w = window.open("", "_blank", "width=800,height=600");
+  if (w) { w.document.write(html); w.document.close(); }
+};
+
+const IJ_ModSection = ({title, color, children, defaultOpen=false, onSave}) => {
   const [open, setOpen] = React.useState(defaultOpen);
   return (
     <div style={{marginBottom:12,borderRadius:14,overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,.08)"}}>
-      <div onClick={() => setOpen(o => !o)}
-        style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",
-          background:color,cursor:"pointer",userSelect:"none"}}>
-        <span style={{fontSize:13,fontWeight:900,color:"#fff",letterSpacing:"-.01em"}}>{title}</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" strokeWidth="2.5" strokeLinecap="round"
-          style={{flexShrink:0,transform:open?"rotate(180deg)":"none",transition:"transform .2s"}}>
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
+      <div style={{display:"flex",alignItems:"center",background:color}}>
+        <div onClick={() => setOpen(o => !o)}
+          style={{flex:1,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",
+            cursor:"pointer",userSelect:"none"}}>
+          <span style={{fontSize:13,fontWeight:900,color:"#fff",letterSpacing:"-.01em"}}>{title}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" strokeWidth="2.5" strokeLinecap="round"
+            style={{flexShrink:0,transform:open?"rotate(180deg)":"none",transition:"transform .2s"}}>
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+        {onSave && (
+          <button onClick={e=>{e.stopPropagation();onSave();}}
+            style={{flexShrink:0,margin:"0 12px",padding:"5px 10px",background:"rgba(255,255,255,.15)",
+              border:"1px solid rgba(255,255,255,.3)",borderRadius:7,cursor:"pointer",
+              fontSize:10,fontWeight:800,color:"#fff",letterSpacing:".04em",whiteSpace:"nowrap"}}>
+            ↓ Save PDF
+          </button>
+        )}
       </div>
       {open && <div style={{padding:"16px",background:"#fff"}}>{children}</div>}
     </div>
@@ -3851,23 +3939,46 @@ const ADAPT_MODEL_STEPS = [
 
 // ── INSIGHTS TAB MAIN COMPONENT ───────────────────────────────────────────────
 
-const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssential, onCqDataChange}) => {
+const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssential, onCqDataChange, participantName}) => {
   const ratings = cqData?.ratings || insights?.essentialRatings || {};
   const commitments = (insights?.observations||[]).filter(o => o && o.toUpperCase().includes("COMMITMENT"));
 
   return (
     <div style={{flex:1,overflowY:"auto",background:C.cream,display:"flex",flexDirection:"column"}}>
-      {/* Header */}
-      <div style={{background:C.navy,padding:"18px 18px 14px",flexShrink:0}}>
-        <div style={{fontSize:10,fontWeight:800,color:C.gold,letterSpacing:".16em",textTransform:"uppercase",marginBottom:4}}>Communication Intelligence</div>
-        <div style={{fontSize:17,fontWeight:900,color:C.white,marginBottom:4}}>Your Insights Journal</div>
-        <div style={{fontSize:11,color:"rgba(255,255,255,.5)"}}>Captured by Hoop · Updated as you progress</div>
+      {/* Header — Legacy + Catalyst north star strip */}
+      <div style={{background:C.navy,padding:"16px 18px",flexShrink:0}}>
+        {(legacy || cqData?.legacyKnown) ? (
+          <>
+            <div style={{marginBottom:10}}>
+              <div style={{fontSize:9,fontWeight:800,color:"rgba(255,255,255,.4)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:3}}>Your CQ Legacy</div>
+              <div style={{fontSize:13,fontWeight:700,color:C.white,lineHeight:1.4,fontStyle:"italic"}}>"{legacy || cqData?.legacyKnown}"</div>
+            </div>
+            {(catalyst || cqData?.catalystName) && (
+              <div style={{paddingTop:10,borderTop:"1px solid rgba(255,255,255,.1)"}}>
+                <div style={{fontSize:9,fontWeight:800,color:"rgba(255,255,255,.4)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:3}}>Your CQ Catalyst</div>
+                <div style={{fontSize:13,fontWeight:700,color:C.gold,lineHeight:1.4}}>{catalyst || cqData?.catalystName}</div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div style={{fontSize:11,color:"rgba(255,255,255,.4)",lineHeight:1.5}}>
+            Your CQ Legacy and Catalyst will appear here once Hoop captures them in Module 1.
+          </div>
+        )}
       </div>
 
       <div style={{padding:"14px 14px",display:"flex",flexDirection:"column",gap:0}}>
 
         {/* MODULE 1 */}
-        <IJ_ModSection title="Module 1 — Commit to Become Your Best" color={C.navy} defaultOpen={true}>
+        <IJ_ModSection title="Module 1 — Commit to Become Your Best" color={C.navy} defaultOpen={true}
+          onSave={()=>downloadModulePDF("Module 1 — Commit to Become Your Best", C.navy, [
+            {label:"Personal Best", value:cqData?.personalBest},
+            {label:"CQ Opportunity", value:cqData?.cqOpportunity},
+            {label:"How do you want to be known?", value:legacy||cqData?.legacyKnown},
+            {label:"How improving communication helps your legacy", value:cqData?.legacyCommunication},
+            {label:"Your CQ Catalyst", value:catalyst||cqData?.catalystName},
+            {label:"How this relationship could impact your life", value:cqData?.catalystImpact},
+          ], participantName)}>
           <IJ_TextField label="Personal Best" hint="Reflect on a time when you were at your absolute best as a communicator." fieldKey="personalBest" value={cqData?.personalBest} onChange={onCqDataChange} />
           <IJ_TextField label="CQ Opportunity" hint="What new opportunities or profound transformations could unfold in your life, even with small shifts in your skills?" fieldKey="cqOpportunity" value={cqData?.cqOpportunity} onChange={onCqDataChange} />
           <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
@@ -3884,7 +3995,13 @@ const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssen
         </IJ_ModSection>
 
         {/* MODULE 2 */}
-        <IJ_ModSection title="Module 2 — Unlock Your Communication Strengths" color={C.gold}>
+        <IJ_ModSection title="Module 2 — Unlock Your Communication Strengths" color={C.gold}
+          onSave={()=>downloadModulePDF("Module 2 — Unlock Your Communication Strengths", C.gold, [
+            {label:"Primary Strength", value:cqData?.primaryStrength},
+            {label:"Secondary Strength", value:cqData?.secondaryStrength},
+            {label:"Two Sub-Strengths", value:cqData?.subStrengths},
+            {label:"Personal Communication Hack", value:cqData?.personalHack},
+          ], participantName)}>
           <IJ_TextField label="Primary Strength (Forte p.3)" hint="Find this at the bottom left corner where it says 'Primary Strength.'" fieldKey="primaryStrength" value={cqData?.primaryStrength} onChange={onCqDataChange} />
           <IJ_TextField label="Secondary Strength (Forte p.3)" hint="Find this at the bottom left corner where it says 'Secondary Strength.'" fieldKey="secondaryStrength" value={cqData?.secondaryStrength} onChange={onCqDataChange} />
           <IJ_TextField label="Your Two Sub-Strengths (Forte p.3)" hint="The remaining two strengths listed on page 3." fieldKey="subStrengths" value={cqData?.subStrengths} onChange={onCqDataChange} />
@@ -3895,7 +4012,28 @@ const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssen
         </IJ_ModSection>
 
         {/* MODULE 3 */}
-        <IJ_ModSection title="Module 3 — Master the Art of Adapting" color={C.nm}>
+        <IJ_ModSection title="Module 3 — Master the Art of Adapting" color={C.nm}
+          onSave={()=>downloadModulePDF("Module 3 — Master the Art of Adapting", C.nm, [
+            {label:"CQ2 Balancing Empathy — My Rating", value:(cqData?.ratings?.empathy)||null},
+            {label:"CQ10 Earning Trust — My Rating", value:(cqData?.ratings?.trust)||null},
+            {label:"My Empathy Tendency & What I'll Do Instead", value:cqData?.empathyTendency},
+            {label:"How I'll show more empathy for my Catalyst", value:cqData?.empathyCatalyst},
+            {label:"How I'll earn their trust", value:cqData?.earnTrustCatalyst},
+            {label:"CQ8 Non-Verbal Communication — My Rating", value:(cqData?.ratings?.nonverbal)||null},
+            {label:"Non-Verbal Signals I convey", value:cqData?.nonVerbalSignals},
+            {label:"CQ9 Virtual Communication — My Rating", value:(cqData?.ratings?.virtual)||null},
+            {label:"CQ4 Expanding Safe Spaces — My Rating", value:(cqData?.ratings?.safespace)||null},
+            {label:"CQ5 Challenging People — My Rating", value:(cqData?.ratings?.challenging)||null},
+            {label:"Catalyst's Communication Strength (guess)", value:cqData?.catalystStrength},
+            {label:"What I appreciate about their strength", value:cqData?.catalystStrengthAppreciation},
+            {label:"ADAPT — Analyze", value:cqData?.adaptAnalyze},
+            {label:"ADAPT — Describe", value:cqData?.adaptDescribe},
+            {label:"ADAPT — Acknowledge", value:cqData?.adaptAcknowledge},
+            {label:"ADAPT — Pivot", value:cqData?.adaptPivot},
+            {label:"ADAPT — Track", value:cqData?.adaptTrack},
+            {label:"My Switch", value:cqData?.switchNeeded},
+            {label:"My Knobs", value:cqData?.knobsNeeded},
+          ], participantName)}>
           <div style={{fontSize:11,fontWeight:800,color:C.nm,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>CQ2 — Balancing Empathy</div>
           <IJ_RatingCard id="empathy" label="Balancing Empathy" ratings={ratings} onRateEssential={onRateEssential} />
           <div style={{fontSize:11,fontWeight:800,color:C.nm,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10,marginTop:4}}>CQ10 — Earning Trust</div>
@@ -3976,7 +4114,14 @@ const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssen
         </IJ_ModSection>
 
         {/* MODULE 4 */}
-        <IJ_ModSection title="Module 4 — Transform Your Team & Client Dynamics" color={C.orange}>
+        <IJ_ModSection title="Module 4 — Transform Your Team & Client Dynamics" color={C.orange}
+          onSave={()=>downloadModulePDF("Module 4 — Transform Your Team & Client Dynamics", C.orange, [
+            {label:"Bringing Your Best — My Rating", value:(cqData?.ratings?.bringingBest)||null},
+            {label:"Team: Communication Strengths", value:cqData?.teamStrengths},
+            {label:"Team: Motivators & Demotivators", value:cqData?.teamMotivators},
+            {label:"Catalyst: Communication Strength", value:cqData?.catalystCommStrength},
+            {label:"How I'll support my Catalyst's needs", value:cqData?.catalystSupportPlan},
+          ], participantName)}>
           <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Bringing Your Best</div>
           <IJ_RatingCard id="bringingBest" label="bringingBest" ratings={ratings} onRateEssential={onRateEssential} />
 
@@ -4012,7 +4157,15 @@ const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssen
         </IJ_ModSection>
 
         {/* MODULE 5 */}
-        <IJ_ModSection title="Module 5 — Supercharge Listening & Feedback Skills" color={C.blue}>
+        <IJ_ModSection title="Module 5 — Supercharge Listening & Feedback Skills" color={C.blue}
+          onSave={()=>downloadModulePDF("Module 5 — Supercharge Listening & Feedback Skills", C.blue, [
+            {label:"CQ7 Got Questions — My Rating", value:(cqData?.ratings?.questions)||null},
+            {label:"CQ3 Proactive Listening — My Rating", value:(cqData?.ratings?.listening)||null},
+            {label:"CQ6 Receiving & Giving Feedback — My Rating", value:(cqData?.ratings?.feedback)||null},
+            {label:"CQ1 Clear, Consistent Communication — My Rating", value:(cqData?.ratings?.clear)||null},
+            {label:"Message to My CQ Catalyst", value:cqData?.catalystMessage},
+            {label:"Listening & Feedback Switch or Knob", value:cqData?.listeningFeedbackSwitch},
+          ], participantName)}>
           <div style={{fontSize:11,fontWeight:800,color:C.blue,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>CQ7 — Got Questions?</div>
           <IJ_RatingCard id="questions" label="Got Questions?" ratings={ratings} onRateEssential={onRateEssential} />
 
@@ -4084,11 +4237,153 @@ const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssen
         </IJ_ModSection>
 
         {/* FINAL SESSION — placeholder */}
-        <IJ_ModSection title="Final Session — Execute Your Communication Action Plan" color={C.navy}>
-          <div style={{padding:"16px",textAlign:"center",background:"rgba(36,65,105,.04)",borderRadius:10,border:"1px dashed rgba(36,65,105,.15)"}}>
-            <div style={{fontSize:13,fontWeight:700,color:"rgba(36,65,105,.5)",marginBottom:6}}>Coming in Your Final Session</div>
-            <div style={{fontSize:11.5,color:"rgba(36,65,105,.4)",lineHeight:1.6}}>Your Communication Action Plan, CQ Essentials summary, Legacy revisited, and final commitment will appear here after your final session with Hoop.</div>
+        <IJ_ModSection title="Final Session — Execute Your Communication Action Plan" color={C.orange}
+          onSave={()=>downloadModulePDF("Final Session — Execute Your Communication Action Plan", C.orange, [
+            {label:"Your CQ Catalyst", value:catalyst||cqData?.catalystName},
+            {label:"Empathy for your Catalyst", value:cqData?.empathyCatalyst},
+            {label:"How you will earn their trust", value:cqData?.earnTrustCatalyst},
+            {label:"Their communication strength", value:cqData?.catalystStrength},
+            {label:"What you appreciate about their strength", value:cqData?.catalystStrengthAppreciation},
+            {label:"How you will support their needs", value:cqData?.catalystSupportPlan},
+            {label:"Message to convey to Catalyst", value:cqData?.catalystMessage},
+            {label:"ADAPT — Analyze", value:cqData?.adaptAnalyze},
+            {label:"ADAPT — Describe", value:cqData?.adaptDescribe},
+            {label:"ADAPT — Acknowledge", value:cqData?.adaptAcknowledge},
+            {label:"ADAPT — Pivot", value:cqData?.adaptPivot},
+            {label:"ADAPT — Track", value:cqData?.adaptTrack},
+            {label:"Your CQ Legacy", value:legacy||cqData?.legacyKnown},
+            {label:"How insights deepened your legacy", value:cqData?.legacyRevisited},
+            {label:"Switches & knobs to continue building", value:cqData?.legacySwitchKnob},
+            {label:"CQ Essential to focus on first", value:cqData?.finalFocusEssential},
+            {label:"Greatest insight from this program", value:cqData?.greatestInsight},
+            {label:"CQ Legacy (Action Plan)", value:cqData?.actionPlan?.legacy},
+            {label:"Catalyst Commitment", value:cqData?.actionPlan?.catalystCommitment},
+            {label:"Daily Practice", value:cqData?.actionPlan?.dailyPractice},
+          ], participantName)}>
+
+          {/* ── CQ CATALYST REVIEW ── */}
+          <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Your CQ Catalyst</div>
+          <IJ_AutoField label="Your CQ Catalyst" value={catalyst || cqData?.catalystName} />
+          <IJ_AutoField label="Why this relationship matters" value={cqData?.catalystImpact} />
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+
+          {/* ── YOUR COMMUNICATION PLAN ── */}
+          <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Your Communication Plan</div>
+          <IJ_AutoField label="Empathy for your Catalyst" value={cqData?.empathyCatalyst} />
+          <IJ_AutoField label="How you will earn their trust" value={cqData?.earnTrustCatalyst} />
+          <IJ_AutoField label="Their communication strength" value={cqData?.catalystStrength} />
+          <IJ_AutoField label="What you appreciate about their strength" value={cqData?.catalystStrengthAppreciation} />
+          <IJ_AutoField label="How you will support their needs" value={cqData?.catalystSupportPlan} />
+          <IJ_AutoField label="The message you want to convey" value={cqData?.catalystMessage} />
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+
+          {/* ── ADAPT PLAN REVIEW ── */}
+          <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Your ADAPT Plan for Your Catalyst</div>
+          <div style={{borderRadius:10,overflow:"hidden",border:"1px solid rgba(36,65,105,.1)",marginBottom:14}}>
+            {[
+              {letter:"A", word:"NALYZE", field:"adaptAnalyze", hint:"What could be the root cause of the issue? What data or information do you have?"},
+              {letter:"D", word:"ESCRIBE", field:"adaptDescribe", hint:"How would you explain this situation using only facts? What specifics are critical to understanding it?"},
+              {letter:"A", word:"CKNOWLEDGE", field:"adaptAcknowledge", hint:"What limitations are you working within? What resources — people, tools, time — do you have?"},
+              {letter:"P", word:"IVOT", field:"adaptPivot", hint:"What needs to change and what strategies will you employ? How will you remain open and responsive?"},
+              {letter:"T", word:"RACK", field:"adaptTrack", hint:"How will you measure success? What continuous improvements can you implement?"},
+            ].map((step, i) => (
+              <div key={step.field} style={{padding:"10px 12px",borderBottom:i<4?"1px solid rgba(36,65,105,.08)":"none",background:i%2===0?"#fff":"rgba(36,65,105,.02)"}}>
+                <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:4}}>
+                  <span style={{fontSize:13,fontWeight:900,color:C.orange}}>{step.letter}</span>
+                  <span style={{fontSize:10,fontWeight:800,color:C.navy,textTransform:"uppercase",letterSpacing:".04em"}}>{step.word}</span>
+                </div>
+                {cqData?.[step.field] ? (
+                  <div style={{fontSize:12,color:"#333",lineHeight:1.55,padding:"6px 8px",background:"rgba(36,65,105,.04)",borderRadius:6,borderLeft:"3px solid rgba(36,65,105,.2)"}}>{cqData[step.field]}</div>
+                ) : (
+                  <div style={{fontSize:11,color:"rgba(36,65,105,.35)",lineHeight:1.5,fontStyle:"italic"}}>{step.hint}</div>
+                )}
+              </div>
+            ))}
           </div>
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+
+          {/* ── CQ LEGACY REVISITED ── */}
+          <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Your CQ Legacy</div>
+          {(legacy || cqData?.legacyKnown) && (
+            <div style={{padding:"10px 12px",background:"rgba(36,65,105,.04)",borderRadius:8,borderLeft:"3px solid "+C.navy,marginBottom:14}}>
+              <div style={{fontSize:9,fontWeight:800,color:"rgba(36,65,105,.4)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:4}}>Your original legacy statement</div>
+              <div style={{fontSize:13,fontWeight:700,color:C.navy,lineHeight:1.5,fontStyle:"italic"}}>"{legacy || cqData?.legacyKnown}"</div>
+            </div>
+          )}
+          <IJ_TextField label="How have the insights from this program deepened what you want to be known for?" fieldKey="legacyRevisited" value={cqData?.legacyRevisited} onChange={onCqDataChange} />
+          <IJ_TextField label="What switches or knob adjustments will you make to continue building your communication legacy?" fieldKey="legacySwitchKnob" value={cqData?.legacySwitchKnob} onChange={onCqDataChange} />
+
+          {/* Switch/Knob review */}
+          {(cqData?.switchNeeded || cqData?.knobsNeeded) && (
+            <div style={{marginBottom:14,padding:"10px 12px",background:"rgba(36,65,105,.04)",borderRadius:8}}>
+              <div style={{fontSize:9,fontWeight:800,color:"rgba(36,65,105,.4)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:6}}>Your Switch & Knobs from Module 3</div>
+              {cqData?.switchNeeded && <div style={{fontSize:12,color:"#333",marginBottom:4}}><strong>Switch:</strong> {cqData.switchNeeded}</div>}
+              {cqData?.knobsNeeded && <div style={{fontSize:12,color:"#333"}}><strong>Knobs:</strong> {cqData.knobsNeeded}</div>}
+            </div>
+          )}
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+
+          {/* ── CQ ESSENTIALS SUMMARY ── */}
+          <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Your CQ Essentials — Growth Opportunities</div>
+          <div style={{borderRadius:10,overflow:"hidden",border:"1px solid rgba(36,65,105,.1)",marginBottom:14}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr auto auto auto",background:C.navy,padding:"8px 12px",gap:8,alignItems:"center"}}>
+              <div style={{fontSize:10,fontWeight:800,color:"rgba(255,255,255,.7)",textTransform:"uppercase",letterSpacing:".06em"}}>CQ Essential</div>
+              {["Novice","Inter.","Mastery"].map(l => (
+                <div key={l} style={{fontSize:9,fontWeight:800,color:"rgba(255,255,255,.6)",textTransform:"uppercase",letterSpacing:".05em",textAlign:"center",width:44}}>{l}</div>
+              ))}
+            </div>
+            {CQ_ESSENTIALS_LIST.map((e, i) => {
+              const rating = (cqData?.ratings || {})[e.id] || (insights?.essentialRatings || {})[e.label] || null;
+              const lvl = RATING_LEVELS.find(l => l.value === rating);
+              return (
+                <div key={e.id} style={{display:"grid",gridTemplateColumns:"1fr auto auto auto",padding:"8px 12px",gap:8,alignItems:"center",background:i%2===0?"#fff":"rgba(36,65,105,.02)",borderBottom:i<CQ_ESSENTIALS_LIST.length-1?"1px solid rgba(36,65,105,.06)":"none"}}>
+                  <div style={{fontSize:11.5,fontWeight:600,color:C.navy,lineHeight:1.3}}>{e.label}</div>
+                  {RATING_LEVELS.map(l => (
+                    <div key={l.value} style={{width:44,textAlign:"center"}}>
+                      {rating === l.value
+                        ? <div style={{width:18,height:18,borderRadius:"50%",background:l.color,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                          </div>
+                        : <div style={{width:18,height:18,borderRadius:"50%",border:"1.5px solid rgba(36,65,105,.15)",margin:"0 auto"}} />
+                      }
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+          <IJ_TextField label="Which CQ Essential will you focus on first?" hint="Choose the one area where intentional practice will have the biggest impact for you." fieldKey="finalFocusEssential" value={cqData?.finalFocusEssential} onChange={onCqDataChange} />
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+
+          {/* ── GREATEST INSIGHT ── */}
+          <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Your Greatest Insight</div>
+          <IJ_TextField label="What was your greatest insight from this program?" fieldKey="greatestInsight" value={cqData?.greatestInsight} onChange={onCqDataChange} />
+
+          {/* ── COMPLETE ACTION PLAN ── */}
+          {cqData?.actionPlan?.legacy && (
+            <>
+              <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+              <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Your Communication Action Plan</div>
+              <div style={{background:C.navy,borderRadius:12,padding:"16px",marginBottom:14}}>
+                {[
+                  {label:"CQ Legacy", val:cqData.actionPlan.legacy},
+                  {label:"Catalyst Commitment", val:cqData.actionPlan.catalystCommitment},
+                  {label:"Daily Practice", val:cqData.actionPlan.dailyPractice},
+                ].filter(x=>x.val).map((item,i,arr)=>(
+                  <div key={i} style={{marginBottom:i<arr.length-1?14:0,paddingBottom:i<arr.length-1?14:0,borderBottom:i<arr.length-1?"1px solid rgba(255,255,255,.1)":"none"}}>
+                    <div style={{fontSize:9,fontWeight:800,color:C.gold,letterSpacing:".1em",textTransform:"uppercase",marginBottom:4}}>{item.label}</div>
+                    <div style={{fontSize:13,color:"rgba(255,255,255,.9)",lineHeight:1.6}}>{item.val}</div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
         </IJ_ModSection>
 
       </div>
@@ -4236,7 +4531,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
     // Module 5
     catalystMessage:"", listeningFeedbackSwitch:"",
     // Final
-    actionPlan:null, catalystLearning:"", selfLearning:"", legacyRevisited:"", finalCommitmentEssential:"", finalCommitmentBehavior:"",
+    actionPlan:null, catalystLearning:"", selfLearning:"", legacyRevisited:"", legacySwitchKnob:"", greatestInsight:"", finalFocusEssential:"", finalCommitmentEssential:"", finalCommitmentBehavior:"",
   });
 
   const [error,         setError]         = useState(null);
@@ -4563,10 +4858,11 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
       artifacts.forEach(a=>{
         if(a.type==="capture_legacy"){ 
           legacyRef.current=a.value; setLegacy(a.value); setPanelDot(true);
+          setCqData(prev=>({...prev, legacyKnown:a.value, legacyCommunication:a.value}));
           setTimeout(()=>addMsg("coach","",{type:"legacy", text:a.value}),400);
           // Don't auto-trigger Forte upload -- coach will drive that naturally
         }
-        if(a.type==="capture_catalyst"){ catalystRef.current=a.value; setCatalyst(a.value); setPanelDot(true); }
+        if(a.type==="capture_catalyst"){ catalystRef.current=a.value; setCatalyst(a.value); setPanelDot(true); setCqData(prev=>({...prev, catalystName:a.value, catalystImpact:a.value})); }
         if(a.type==="show_forte_upload"){ 
           // Show the Forte entry screen after a brief delay so the coach message renders first
           setTimeout(()=>setShowForteUpload(true),1800); 
@@ -4585,13 +4881,26 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
         if(a.type==="coach_insight"){
           setInsights(prev=>({...prev,observations:[...prev.observations,a.value]}));
           setPanelDot(true);
-          // Capture module commitment for bridge screen
-          if(a.value && (a.value.toUpperCase().includes("COMMITMENT") || a.value.toUpperCase().includes("MODULE") && a.value.toUpperCase().includes("COMMIT"))) {
-            const match = a.value.match(/:\s*(.+)$/);
-            if(match) setLastCommitment(match[1].trim());
+          // Route to cqData fields based on content
+          if(a.value){
+            const val = a.value;
+            const upper = val.toUpperCase();
+            // Module commitment capture for bridge screen
+            if(upper.includes("COMMITMENT") || (upper.includes("MODULE") && upper.includes("COMMIT"))) {
+              const match = val.match(/:\s*(.+)$/);
+              if(match) setLastCommitment(match[1].trim());
+            }
+            // Catalyst message (Module 5)
+            if(upper.includes("CATALYST") && (upper.includes("MESSAGE") || upper.includes("FEEDBACK") || upper.includes("CONVEY") || upper.includes("PIVOTAL"))) {
+              setCqData(prev=>({...prev, catalystMessage:val}));
+            }
+            // Program complete summary
+            if(upper.includes("PROGRAM COMPLETE")) {
+              setCqData(prev=>({...prev, catalystMessage:prev.catalystMessage||val}));
+            }
           }
         }
-        if(a.type==="complete_action_plan"){ setInsights(prev=>({...prev,actionPlan:{legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}})); setPanelDot(true); }
+        if(a.type==="complete_action_plan"){ const plan={legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}; setInsights(prev=>({...prev,actionPlan:plan})); setCqData(prev=>({...prev,actionPlan:plan})); setPanelDot(true); }
         if(a.type==="show_forte_graph"){ setTimeout(()=>addMsg("coach","",{type:"forte_graph_focused", tab:a.tab||"green", forteData:forteData}),400); }
         if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
         if(a.type==="show_journey_card"){ setTimeout(()=>addMsg("coach","",{type:"journey_card"}),400); }
@@ -4681,17 +4990,18 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
     if(a.type==="gap")       return <GapAlert />;
     if(a.type==="gencard")   return <GenCardArtifact onCoachTalk={card=>handleSend("Tell me about the " + card.g + " scenario")} />;
     if(a.type==="crisis_challenge" || a.type==="crisis_challenge_inline") { return <CrisisChallenge onCoachTalk={(responses,strategy)=>handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?")} />; }
-    if(a.type==="switches_knobs") return <SwitchesKnobsArtifact catalyst={catalyst} onCoachTalk={(item,t)=>handleSend("Let us talk about the " + item.label + " " + t + " for my Catalyst")} />;
+    if(a.type==="switches_knobs") return <SwitchesKnobsArtifact catalyst={catalyst} onCoachTalk={(item,t)=>{ if(t==="switch") setCqData(prev=>({...prev,switchNeeded:item.label})); if(t==="knob") setCqData(prev=>({...prev,knobsNeeded:(prev.knobsNeeded?prev.knobsNeeded+", ":"")+item.label})); handleSend("Let us talk about the " + item.label + " " + t + " for my Catalyst"); }} />;
     if(a.type==="questioning_tendencies") return <QuestioningTendencies forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " questioning tendency")} />;
     if(a.type==="listening_tendencies") return <ListeningTendenciesArtifact forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " listening tendency")} />;
     if(a.type==="cq_essentials_summary") return <CQEssentialsSummary ratings={insights.essentialRatings||{}} onContinue={()=>handleSend("I have reviewed my CQ Essentials summary. Let us build my action plan.")} />;
     if(a.type==="cq_essentials") return <CQEssentialsIntro onContinue={()=>handleSend("I just read through all 10 CQ Essentials. I am ready to dive into Balancing Empathy and Earning Trust.")} />;
     if(a.type==="proficiency_rating") return <ProficiencyRating topic={a.topic||"Bringing Your Best"} onComplete={(topic,level)=>{
       setInsights(prev=>({...prev, essentialRatings:{...(prev.essentialRatings||{}), [topic]:level}}));
+      setCqData(prev=>({...prev, ratings:{...prev.ratings, [topic]:level}}));
       setPanelDot(true);
       handleSend("I rated myself as " + level + " on " + topic + ". Let us discuss what that means.");
     }} />;
-    if(a.type==="adapt_planner") return <ADAPTPlanner catalyst={catalyst} onComplete={vals=>handleSend("Here is my ADAPT plan: Analyze: " + vals.analyze + " | Describe: " + vals.describe + " | Acknowledge: " + vals.acknowledge + " | Pivot: " + vals.pivot + " | Track: " + vals.track)} />;
+    if(a.type==="adapt_planner") return <ADAPTPlanner catalyst={catalyst} onComplete={vals=>{ setCqData(prev=>({...prev, adaptAnalyze:vals.analyze||"", adaptDescribe:vals.describe||"", adaptAcknowledge:vals.acknowledge||"", adaptPivot:vals.pivot||"", adaptTrack:vals.track||""})); handleSend("Here is my ADAPT plan: Analyze: " + vals.analyze + " | Describe: " + vals.describe + " | Acknowledge: " + vals.acknowledge + " | Pivot: " + vals.pivot + " | Track: " + vals.track); }} />;
     if(a.type==="reflection") return <SectionReflection sectionTitle={a.section||"Section Reflection"} question1={a.q1||"What was your most important insight from this section?"} question2={a.q2||""} onSave={(section,q1,r1,q2,r2)=>{ setInsights(prev=>({...prev,reflections:[...(prev.reflections||[]),{section,q1,r1,q2,r2,date:new Date().toLocaleDateString()}]})); setPanelDot(true); handleSend("I just saved my reflection on " + section + ". My response was: " + r1 + (r2?" Also: "+r2:"")); }} />;
     if(a.type==="teach_moment") return <PersonalizedTeachMoment
       concept={a.concept}
@@ -4744,13 +5054,33 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
 
       {/* Non-coach tab headers */}
       {activeTab!=="coach" && (
-        <div style={{background:activeTab==="practice"?C.orange:activeTab==="profile"?"#0f1c2e":C.navy,padding:"16px 18px",flexShrink:0}}>
-          <div style={{fontSize:10,fontWeight:800,color:"rgba(255,255,255,.5)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:2}}>
-            {activeTab==="journey"?"Your Journey":activeTab==="practice"?"Practice Lab":activeTab==="profile"?"Forte Profile":"Your Insights"}
-          </div>
+        <div style={{
+          background: activeTab==="practice" ? C.orange : activeTab==="profile" ? "#0f1c2e" : C.navy,
+          padding:"14px 18px 12px", flexShrink:0,
+          borderBottom: "1px solid rgba(255,255,255,.08)",
+        }}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-            <div style={{fontSize:17,fontWeight:900,color:C.white}}>
-              {activeTab==="journey"?"Communication Intelligence":activeTab==="practice"?"Communication Tools":activeTab==="profile"?"Your Communication Profile":"What Your Coach Knows"}
+            <div style={{flex:1,minWidth:0}}>
+              {activeTab==="journey" ? (
+                <>
+                  <div style={{fontSize:9,fontWeight:800,letterSpacing:".14em",textTransform:"uppercase",marginBottom:3,color:"rgba(255,255,255,.4)"}}>
+                    Module {currentModule} of 6
+                  </div>
+                  <div style={{fontSize:18,fontWeight:900,color:C.white,letterSpacing:"-.01em",lineHeight:1.1}}>Your CQ Journey</div>
+                </>
+              ) : activeTab==="insights" ? (
+                <div style={{fontSize:18,fontWeight:900,color:C.white,letterSpacing:"-.01em",lineHeight:1.1}}>Your Insights</div>
+              ) : activeTab==="practice" ? (
+                <>
+                  <div style={{fontSize:9,fontWeight:800,letterSpacing:".14em",textTransform:"uppercase",marginBottom:3,color:"rgba(255,255,255,.6)"}}>Practice Lab</div>
+                  <div style={{fontSize:18,fontWeight:900,color:C.white,letterSpacing:"-.01em",lineHeight:1.1}}>Activities</div>
+                </>
+              ) : (
+                <>
+                  <div style={{fontSize:9,fontWeight:800,letterSpacing:".14em",textTransform:"uppercase",marginBottom:3,color:"rgba(255,255,255,.4)"}}>Forte Institute</div>
+                  <div style={{fontSize:18,fontWeight:900,color:C.white,letterSpacing:"-.01em",lineHeight:1.1}}>Your Communication Profile</div>
+                </>
+              )}
             </div>
             {panelDot && activeTab!=="insights" && (
               <div onClick={()=>{setActiveTab("insights");setPanelDot(false);}} style={{width:8,height:8,borderRadius:"50%",background:C.gold,cursor:"pointer",flexShrink:0}} />
@@ -4762,9 +5092,9 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
       {/* Tab content */}
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
         {activeTab==="journey" && <JourneyTab currentModule={currentModule} insights={insights} onGoToCoach={()=>setActiveTab("coach")} onRateEssential={(topic,level)=>{ setInsights(prev=>({...prev,essentialRatings:{...(prev.essentialRatings||{}),[topic]:level}})); setCqData(prev=>({...prev,ratings:{...prev.ratings,[topic]:level}})); setPanelDot(true); }} />}
-        {activeTab==="practice" && <PracticeTab currentModule={currentModule} forteData={forteData} catalyst={catalyst} onCoachTalk={(msg)=>{setActiveTab("coach");setTimeout(()=>handleSend(msg),300);}} />}
+        {activeTab==="practice" && <PracticeTab currentModule={currentModule} forteData={forteData} catalyst={catalyst} onCoachTalk={(msg)=>{setActiveTab("coach");setTimeout(()=>handleSend(msg),300);}} onCqDataChange={(key,val)=>setCqData(prev=>({...prev,[key]:val}))} participantName={participantName} />}
         {activeTab==="profile" && <ProfileTab forteData={forteData} />}
-        {activeTab==="insights" && <InsightsTab legacy={legacy} catalyst={catalyst} insights={insights} forteData={forteData} cqData={cqData} onRateEssential={(topic,level)=>{ setInsights(prev=>({...prev,essentialRatings:{...(prev.essentialRatings||{}),[topic]:level}})); setCqData(prev=>({...prev,ratings:{...prev.ratings,[topic]:level}})); setPanelDot(true); }} onCqDataChange={(key,val)=>setCqData(prev=>({...prev,[key]:val}))} />}
+        {activeTab==="insights" && <InsightsTab legacy={legacy} catalyst={catalyst} insights={insights} forteData={forteData} cqData={cqData} onRateEssential={(topic,level)=>{ setInsights(prev=>({...prev,essentialRatings:{...(prev.essentialRatings||{}),[topic]:level}})); setCqData(prev=>({...prev,ratings:{...prev.ratings,[topic]:level}})); setPanelDot(true); }} onCqDataChange={(key,val)=>setCqData(prev=>({...prev,[key]:val}))} participantName={participantName} />}
         {activeTab==="coach" && (
         <div style={{flex:1,overflowY:"auto",padding:"0 0 16px",display:"flex",flexDirection:"column",background:C.cream}}>
         <div style={{textAlign:"center",padding:"22px 0 14px",fontSize:10,fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",color:"rgba(36,65,105,.3)"}}>FIRST SESSION — TODAY</div>
