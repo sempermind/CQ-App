@@ -3762,26 +3762,28 @@ const IJ_ModSection = ({title, color, children, defaultOpen=false, onSave}) => {
   const [open, setOpen] = React.useState(defaultOpen);
   return (
     <div style={{marginBottom:12,borderRadius:14,overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,.08)"}}>
-      <div style={{display:"flex",alignItems:"center",background:color}}>
-        <div onClick={() => setOpen(o => !o)}
-          style={{flex:1,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",
-            cursor:"pointer",userSelect:"none"}}>
-          <span style={{fontSize:13,fontWeight:900,color:"#fff",letterSpacing:"-.01em"}}>{title}</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" strokeWidth="2.5" strokeLinecap="round"
-            style={{flexShrink:0,transform:open?"rotate(180deg)":"none",transition:"transform .2s"}}>
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-        </div>
-        {onSave && (
-          <button onClick={e=>{e.stopPropagation();onSave();}}
-            style={{flexShrink:0,margin:"0 12px",padding:"5px 10px",background:"rgba(255,255,255,.15)",
-              border:"1px solid rgba(255,255,255,.3)",borderRadius:7,cursor:"pointer",
-              fontSize:10,fontWeight:800,color:"#fff",letterSpacing:".04em",whiteSpace:"nowrap"}}>
-            ↓ Save PDF
-          </button>
-        )}
+      <div onClick={() => setOpen(o => !o)}
+        style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 16px",
+          background:color,cursor:"pointer",userSelect:"none"}}>
+        <span style={{fontSize:13,fontWeight:900,color:"#fff",letterSpacing:"-.01em"}}>{title}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" strokeWidth="2.5" strokeLinecap="round"
+          style={{flexShrink:0,transform:open?"rotate(180deg)":"none",transition:"transform .2s"}}>
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
       </div>
-      {open && <div style={{padding:"16px",background:"#fff"}}>{children}</div>}
+      {open && (
+        <div style={{padding:"16px",background:"#fff"}}>
+          {children}
+          {onSave && (
+            <button onClick={onSave}
+              style={{width:"100%",marginTop:16,padding:"10px",background:"rgba(36,65,105,.05)",
+                border:"1.5px solid rgba(36,65,105,.15)",borderRadius:10,cursor:"pointer",
+                fontSize:12,fontWeight:700,color:"rgba(36,65,105,.6)",letterSpacing:".03em"}}>
+              Save as PDF
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };
