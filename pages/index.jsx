@@ -4892,8 +4892,8 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
               const match = val.match(/:\s*(.+)$/);
               if(match) setLastCommitment(match[1].trim());
             }
-            // Catalyst message (Module 5)
-            if(upper.includes("CATALYST") && (upper.includes("MESSAGE") || upper.includes("FEEDBACK") || upper.includes("CONVEY") || upper.includes("PIVOTAL"))) {
+            // Catalyst message (Module 5 only — guard prevents overwrite from other modules)
+            if(currentModule === 5 && upper.includes("CATALYST") && (upper.includes("MESSAGE") || upper.includes("FEEDBACK") || upper.includes("CONVEY") || upper.includes("PIVOTAL"))) {
               setCqData(prev=>({...prev, catalystMessage:val}));
             }
             // Program complete summary
