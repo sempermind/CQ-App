@@ -2996,8 +2996,17 @@ const CQIntroScreen = ({participantName, level, onContinue, onBack}) => {
           </div>
         </div>
 
+        {/* Journey exploration callout */}
+        <div style={{background:"rgba(244,188,45,.12)",border:"1.5px solid rgba(244,188,45,.35)",borderRadius:16,padding:"18px 18px",marginBottom:20}}>
+          <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>Before We Begin</div>
+          <div style={{fontSize:14,fontWeight:700,color:C.white,lineHeight:1.45,marginBottom:8}}>Take a few minutes to explore your Journey tab.</div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,.65)",lineHeight:1.7,marginBottom:0}}>
+            Tap <span style={{color:C.gold,fontWeight:700}}>Journey</span> at the bottom of the screen. Tap through all six modules and explore what is inside each one — the CQ Essentials, activities, and what this program holds for you. Come back here when you are ready to begin.
+          </div>
+        </div>
+
         <button onClick={onContinue} style={{width:"100%",padding:16,background:C.gold,color:C.navy,border:"none",borderRadius:14,fontSize:15,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 18px rgba(244,188,45,.3)"}}>
-          I am ready -- let us begin
+          I am ready to begin my journey
         </button>
       </div>
     </div>
@@ -4782,13 +4791,6 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
         setTyping(false);
         setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:"That kind of moment stays with you.",artifact:null}]);
       }
-
-      // After the empathy response — direct to Journey tab
-      await wait(1200);
-      setTyping(true);
-      await wait(2200);
-      setTyping(false);
-      setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text:"Before we go any further — take a look at your Journey tab at the bottom. Tap through all six modules and explore what is inside each one. Come back and tell me what stood out to you.", artifact:null }]);
 
       sendingRef.current = false;
       return;
