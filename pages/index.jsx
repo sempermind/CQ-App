@@ -2929,89 +2929,6 @@ const ProficiencyRating = ({topic, onComplete}) => {
 };
 
 
-const CQIntroScreen = ({participantName, level, onContinue, onBack}) => {
-  const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
-  const name = participantName || "there";
-
-  // Level-specific headline, tagline, and quote
-  const LEVEL_INTRO = {
-    1: {
-      headline: "Your CQ Journey Starts Now",
-      tagline: "You are about to go through the Communication Intelligence program — built to help you develop the communication skills that build real influence, earn trust faster, and make every conversation count.",
-      quote: "Every conversation has the power to change the trajectory of a life.",
-      cqDesc: "Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to make every conversation more effective.",
-      cqSub: "It is not about being a better talker. It is about being someone others feel genuinely heard by — and someone who builds the kind of trust and credibility that opens doors.",
-    },
-    2: {
-      headline: "Lead Every Conversation With Intention",
-      tagline: "You are about to go through the Communication Intelligence program — built for leaders who want to close the gap between how they intend to show up and how their team actually experiences them.",
-      quote: "The most powerful thing a leader can do is make the people around them feel understood.",
-      cqDesc: "Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to make every conversation more effective.",
-      cqSub: "For managers, that means fewer misreads, less friction, and a team that actually hears what you are trying to say. It is the skill that multiplies every other leadership capability you have.",
-    },
-    3: {
-      headline: "Close the Gap Between Intent and Impact",
-      tagline: "You are about to go through the Communication Intelligence program — built for senior leaders who want to align their communication with the scale of their influence.",
-      quote: "The gap between who you are and how others experience you is where the most important leadership work lives.",
-      cqDesc: "Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to drive alignment, clarity, and organizational momentum.",
-      cqSub: "At your level, communication is strategy. The patterns you model get replicated across your organization. This program helps you see those patterns — and shape them deliberately.",
-    },
-    4: {
-      headline: "Communication as a Strategic Capability",
-      tagline: "You are about to go through the Communication Intelligence program — built for executives who understand that how they communicate determines what gets built, what gets aligned, and what gets done.",
-      quote: "Culture is not what leaders say. It is how they communicate — every day, in every room.",
-      cqDesc: "Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt with precision to drive outcomes at scale.",
-      cqSub: "This is not a training program. It is a diagnostic and development experience built around your specific profile, your key relationships, and the communication patterns that either accelerate or limit your impact.",
-    },
-  };
-
-  const intro = LEVEL_INTRO[level] || LEVEL_INTRO[1];
-  const quote = intro.quote;
-
-  return (
-    <div style={{flex:1,background:C.navy,display:"flex",flexDirection:"column",overflowY:"auto",position:"relative"}}>
-      {/* Back button */}
-      <button onClick={()=>window.history.back?.[0] || onBack?.()} style={{display:"flex",alignItems:"center",gap:4,background:"rgba(255,255,255,.08)",border:"none",borderRadius:8,padding:"8px 12px",cursor:"pointer",fontSize:12,fontWeight:700,color:"rgba(255,255,255,.45)",margin:"16px 0 0 16px",alignSelf:"flex-start",flexShrink:0}}>
-        ? Back
-      </button>
-
-      <div style={{padding:"16px 24px 32px",display:"flex",flexDirection:"column",flex:1}}>
-        {/* Welcome */}
-        <div style={{marginBottom:28}}>
-          <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".14em",textTransform:"uppercase",marginBottom:8}}>Welcome, {name}</div>
-          <div style={{fontSize:26,fontWeight:900,color:C.white,lineHeight:1.2,marginBottom:12}}>{intro.headline}</div>
-          <div style={{fontSize:13.5,color:"rgba(255,255,255,.65)",lineHeight:1.7}}>
-            {intro.tagline}
-          </div>
-        </div>
-
-        {/* What is CQ */}
-        <div style={{background:"rgba(255,255,255,.07)",borderRadius:16,padding:"18px 18px",marginBottom:20}}>
-          <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>What is Communication Intelligence?</div>
-          <div style={{fontSize:13.5,color:"rgba(255,255,255,.8)",lineHeight:1.7,marginBottom:12}}>
-            {intro.cqDesc}
-          </div>
-          <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.65}}>
-            {intro.cqSub}
-          </div>
-        </div>
-
-        {/* Journey exploration callout */}
-        <div style={{background:"rgba(244,188,45,.12)",border:"1.5px solid rgba(244,188,45,.35)",borderRadius:16,padding:"18px 18px",marginBottom:20}}>
-          <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>Before We Begin</div>
-          <div style={{fontSize:14,fontWeight:700,color:C.white,lineHeight:1.45,marginBottom:8}}>Take a few minutes to explore your Journey tab.</div>
-          <div style={{fontSize:13,color:"rgba(255,255,255,.65)",lineHeight:1.7,marginBottom:0}}>
-            Tap <span style={{color:C.gold,fontWeight:700}}>Journey</span> at the bottom of the screen. Tap through all six modules and explore what is inside each one — the CQ Essentials, activities, and what this program holds for you. Come back here when you are ready to begin.
-          </div>
-        </div>
-
-        <button onClick={onContinue} style={{width:"100%",padding:16,background:C.gold,color:C.navy,border:"none",borderRadius:14,fontSize:15,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 18px rgba(244,188,45,.3)"}}>
-          I am ready to begin my journey
-        </button>
-      </div>
-    </div>
-  );
-};
 
 // ============================================================
 // TAB COMPONENTS
@@ -4509,6 +4426,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
   const [showQuestioningTendencies, setShowQuestioningTendencies] = useState(false);
   const [showListeningTendencies, setShowListeningTendencies] = useState(false);
   const [activeTab,     setActiveTab]     = useState("coach");
+  const [started,       setStarted]       = useState(false);
 
   const [panelDot,      setPanelDot]      = useState(false);
   const [insights,      setInsights]      = useState({observations:[],commitments:[],reflections:[],actionPlan:null});
@@ -4530,6 +4448,9 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
     teamStrengths:"", teamMotivators:"", catalystCommStrength:"", catalystSupportPlan:"",
     // Module 5
     catalystMessage:"", listeningFeedbackSwitch:"",
+    // Module commitments + insights (auto-captured)
+    mod1Commitment:"", mod2Commitment:"", mod3Commitment:"", mod4Commitment:"", mod5Commitment:"",
+    mod1Insight:"", mod2Insight:"", mod3Insight:"", mod4Insight:"", mod5Insight:"",
     // Final
     actionPlan:null, catalystLearning:"", selfLearning:"", legacyRevisited:"", legacySwitchKnob:"", greatestInsight:"", finalFocusEssential:"", finalCommitmentEssential:"", finalCommitmentBehavior:"",
   });
@@ -4611,7 +4532,8 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
       if(savedState.cqData)   setCqData(prev => ({...prev, ...savedState.cqData}));
       if(savedState.forteData) setForteData(savedState.forteData);
       setActiveTab("coach"); // Always land on Coach tab when restoring session
-    } else {
+      setStarted(true);
+    } else if(started) {
       // INTRO SEQUENCE — self-invoking async, sequential awaits, setMessages called directly
       // (never via addMsg which has stale closure issues due to useCallback(fn,[]))
       const push = (text, artifact=null) => {
@@ -4680,7 +4602,7 @@ const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
       }, 700);
       return ()=>clearTimeout(timer);
     }
-  },[]);
+  },[started]);
 
   useEffect(()=>{
     if(!messages.length) return;
@@ -4874,22 +4796,23 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
         if(a.type==="coach_insight"){
           setInsights(prev=>({...prev,observations:[...prev.observations,a.value]}));
           setPanelDot(true);
-          // Route to cqData fields based on content
           if(a.value){
             const val = a.value;
             const upper = val.toUpperCase();
-            // Module commitment capture for bridge screen
-            if(upper.includes("COMMITMENT") || (upper.includes("MODULE") && upper.includes("COMMIT"))) {
-              const match = val.match(/:\s*(.+)$/);
-              if(match) setLastCommitment(match[1].trim());
+            const afterColon = (val.match(/:\s*(.+)$/s)||[])[1]?.trim() || val;
+            const modCommitMatch = upper.match(/MODULE\s*(\d)\s*COMMITMENT/);
+            if(modCommitMatch){
+              const n = modCommitMatch[1];
+              const fields = {"1":"mod1Commitment","2":"mod2Commitment","3":"mod3Commitment","4":"mod4Commitment","5":"mod5Commitment"};
+              if(fields[n]) setCqData(prev=>({...prev,[fields[n]]:afterColon}));
+              setLastCommitment(afterColon);
             }
-            // Catalyst message (Module 5 only — guard prevents overwrite from other modules)
-            if(currentModule === 5 && upper.includes("CATALYST") && (upper.includes("MESSAGE") || upper.includes("FEEDBACK") || upper.includes("CONVEY") || upper.includes("PIVOTAL"))) {
-              setCqData(prev=>({...prev, catalystMessage:val}));
+            else if(upper.includes("CATALYST") && (upper.includes("MESSAGE")||upper.includes("CONVEY")||upper.includes("FEEDBACK")||upper.includes("PIVOTAL")) && currentModule===5){
+              setCqData(prev=>({...prev, catalystMessage:afterColon}));
             }
-            // Program complete summary
-            if(upper.includes("PROGRAM COMPLETE")) {
-              setCqData(prev=>({...prev, catalystMessage:prev.catalystMessage||val}));
+            else if(upper.match(/MODULE\s*\d\s*INSIGHT/)){
+              const mn = (upper.match(/MODULE\s*(\d)/)||[])[1];
+              if(mn){ const f={"1":"mod1Insight","2":"mod2Insight","3":"mod3Insight","4":"mod4Insight","5":"mod5Insight"}; if(f[mn]) setCqData(prev=>({...prev,[f[mn]]:afterColon})); }
             }
           }
         }
@@ -5100,7 +5023,7 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
           <div style={{display:"flex",alignItems:"center",gap:5}}>
             <div style={{width:6,height:6,borderRadius:"50%",background:"#4cd96b",boxShadow:"0 0 0 0 rgba(76,217,107,.6)",animation:"hoopPulse 2s ease-in-out infinite"}}/>
             <div style={{fontSize:9,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:"#4cd96b"}}>Hoop Active</div>
-            {activeTab==="coach" && <button onClick={()=>{if(window.confirm("Start a new session? Progress will be cleared."))onReset?.();}} style={{marginLeft:6,background:"rgba(255,255,255,.08)",border:"1px solid rgba(255,255,255,.12)",borderRadius:6,padding:"3px 8px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,.35)"}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>}
+            {activeTab==="coach" && started && <button onClick={()=>{if(window.confirm("Start a new session? Progress will be cleared."))onReset?.();}} style={{marginLeft:6,background:"rgba(255,255,255,.08)",border:"1px solid rgba(255,255,255,.12)",borderRadius:6,padding:"3px 8px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,.35)"}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>}
           </div>
         </div>
         {/* Tier 2: main header */}
@@ -5130,7 +5053,35 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
         {activeTab==="practice" && <PracticeTab currentModule={currentModule} forteData={forteData} catalyst={catalyst} onCoachTalk={(msg)=>{setActiveTab("coach");setTimeout(()=>handleSend(msg),300);}} onCqDataChange={(key,val)=>setCqData(prev=>({...prev,[key]:val}))} participantName={participantName} />}
         {activeTab==="profile" && <ProfileTab forteData={forteData} />}
         {activeTab==="insights" && <InsightsTab legacy={legacy} catalyst={catalyst} insights={insights} forteData={forteData} cqData={cqData} onRateEssential={(topic,level)=>{ setInsights(prev=>({...prev,essentialRatings:{...(prev.essentialRatings||{}),[topic]:level}})); setCqData(prev=>({...prev,ratings:{...prev.ratings,[topic]:level}})); setPanelDot(true); }} onCqDataChange={(key,val)=>setCqData(prev=>({...prev,[key]:val}))} participantName={participantName} />}
-        {activeTab==="coach" && (
+        {activeTab==="coach" && !started && (()=>{
+          const LEVEL_INTRO={1:{headline:"Your CQ Journey Starts Now",tagline:"You are about to go through the Communication Intelligence program — built to help you develop the communication skills that build real influence, earn trust faster, and make every conversation count.",cqDesc:"Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to make every conversation more effective.",cqSub:"It is not about being a better talker. It is about being someone others feel genuinely heard by — and someone who builds the kind of trust and credibility that opens doors."},2:{headline:"Lead Every Conversation With Intention",tagline:"You are about to go through the Communication Intelligence program — built for leaders who want to close the gap between how they intend to show up and how their team actually experiences them.",cqDesc:"Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to make every conversation more effective.",cqSub:"For managers, that means fewer misreads, less friction, and a team that actually hears what you are trying to say. It is the skill that multiplies every other leadership capability you have."},3:{headline:"Close the Gap Between Intent and Impact",tagline:"You are about to go through the Communication Intelligence program — built for senior leaders who want to align their communication with the scale of their influence.",cqDesc:"Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to drive alignment, clarity, and organizational momentum.",cqSub:"At your level, communication is strategy. The patterns you model get replicated across your organization. This program helps you see those patterns — and shape them deliberately."},4:{headline:"Communication as a Strategic Capability",tagline:"You are about to go through the Communication Intelligence program — built for executives who understand that how they communicate determines what gets built, what gets aligned, and what gets done.",cqDesc:"Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt with precision to drive outcomes at scale.",cqSub:"This is not a training program. It is a diagnostic and development experience built around your specific profile, your key relationships, and the communication patterns that either accelerate or limit your impact."}};
+          const intro=LEVEL_INTRO[level]||LEVEL_INTRO[1];
+          return (
+            <div style={{flex:1,overflowY:"auto",background:C.navy,display:"flex",flexDirection:"column"}}>
+              <div style={{padding:"24px 24px 32px",display:"flex",flexDirection:"column",flex:1}}>
+                <div style={{marginBottom:28}}>
+                  <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".14em",textTransform:"uppercase",marginBottom:8}}>Welcome, {participantName||"there"}</div>
+                  <div style={{fontSize:26,fontWeight:900,color:C.white,lineHeight:1.2,marginBottom:12}}>{intro.headline}</div>
+                  <div style={{fontSize:13.5,color:"rgba(255,255,255,.65)",lineHeight:1.7}}>{intro.tagline}</div>
+                </div>
+                <div style={{background:"rgba(255,255,255,.07)",borderRadius:16,padding:"18px",marginBottom:20}}>
+                  <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>What is Communication Intelligence?</div>
+                  <div style={{fontSize:13.5,color:"rgba(255,255,255,.8)",lineHeight:1.7,marginBottom:12}}>{intro.cqDesc}</div>
+                  <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.65}}>{intro.cqSub}</div>
+                </div>
+                <div style={{background:"rgba(244,188,45,.12)",border:"1.5px solid rgba(244,188,45,.35)",borderRadius:16,padding:"18px",marginBottom:20}}>
+                  <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>Before We Begin</div>
+                  <div style={{fontSize:14,fontWeight:700,color:C.white,lineHeight:1.45,marginBottom:8}}>Take a few minutes to explore your Journey tab.</div>
+                  <div style={{fontSize:13,color:"rgba(255,255,255,.65)",lineHeight:1.7}}>Tap <span style={{color:C.gold,fontWeight:700}}>Journey</span> at the bottom of the screen. Tap through all six modules and explore what is inside each one — the CQ Essentials, activities, and what this program holds for you. Come back here when you are ready to begin.</div>
+                </div>
+                <button onClick={()=>setStarted(true)} style={{width:"100%",padding:16,background:C.gold,color:C.navy,border:"none",borderRadius:14,fontSize:15,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 18px rgba(244,188,45,.3)"}}>
+                  I am ready to begin my journey
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+        {activeTab==="coach" && started && (
         <div style={{flex:1,overflowY:"auto",padding:"0 0 16px",display:"flex",flexDirection:"column",background:C.cream}}>
         <div style={{textAlign:"center",padding:"22px 0 14px",fontSize:10,fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",color:"rgba(36,65,105,.3)"}}>FIRST SESSION — TODAY</div>
         {messages.map((msg,idx)=>{
@@ -5154,7 +5105,7 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
         )}
       </div>
 
-      {activeTab==="coach" && (
+      {activeTab==="coach" && started && (
         <div style={{padding:"8px 12px 10px",background:C.white,borderTop:"1px solid rgba(36,65,105,.08)",flexShrink:0,display:"flex",gap:8,alignItems:"flex-end"}}>
           <MicButton onTranscript={setInput} />
           <input value={input} onChange={e=>setInput(e.target.value)}
@@ -5484,8 +5435,7 @@ export default function App() {
         <div style={{width:"100%",maxWidth:600,minHeight:"100vh",display:"flex",flexDirection:"column",position:"relative"}}>
 
           {screen==="home"  && <HomeScreen  onStart={s=>{const next=s==="level"?"level":"coach";setScreen(next);}} />}
-          {screen==="level" && <LevelScreen onSelect={(l,n)=>{setLevel(l);setParticipantName(n);setScreen("intro");}} onBack={()=>setScreen("home")} />}
-          {screen==="intro" && <CQIntroScreen participantName={participantName} level={level} onContinue={()=>setScreen("coach")} onBack={()=>setScreen("level")} />}
+          {screen==="level" && <LevelScreen onSelect={(l,n)=>{setLevel(l);setParticipantName(n);setScreen("coach");}} onBack={()=>setScreen("home")} />}
           {screen==="coach" && <CoachScreen key={savedState ? JSON.stringify(savedState.currentModule)+savedState.messages?.length : "fresh"} level={level} participantName={participantName} savedState={savedState} onSave={s=>saveSession({screen:"coach",level,participantName,...s})} onReset={handleReset} />}
         </div>
       </div>
