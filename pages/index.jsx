@@ -1262,7 +1262,7 @@ const ForteDimensionCards = ({forteData, onDone}) => {
         {/* Scores */}
         {forteData && (
           <div style={{marginBottom:12}}>
-            <ScoreRow label="Natural" score={primaryScore} color="#2e7d32"/>
+            <ScoreRow label="Primary" score={primaryScore} color="#2e7d32"/>
             <ScoreRow label="Adapting" score={adaptScore} color="#c0392b"/>
             <ScoreRow label="Perceived" score={percScore} color="#1565c0"/>
             {Math.abs(primaryScore - percScore) >= 5 && (
@@ -3550,7 +3550,7 @@ const PracticeTab = ({currentModule, forteData, catalyst, onCoachTalk, onCqDataC
 
 const ProfileTab = ({forteData}) => {
   const [view, setView] = React.useState("green");
-  const tabs = [{id:"green",label:"Natural"},{id:"red",label:"Adapting"},{id:"blue",label:"Perceived"}];
+  const tabs = [{id:"green",label:"Primary"},{id:"red",label:"Adapting"},{id:"blue",label:"Perceived"}];
   const dims = ["Dominance","Extroversion","Patience","Conformity"];
   const descs = {
     Dominance:   ["Collaborative, consensus-seeking",    "Assertive, direct, results-focused"],
@@ -5100,7 +5100,7 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
           <div style={{display:"flex",alignItems:"center",gap:5}}>
             <div style={{width:6,height:6,borderRadius:"50%",background:"#4cd96b",boxShadow:"0 0 0 0 rgba(76,217,107,.6)",animation:"hoopPulse 2s ease-in-out infinite"}}/>
             <div style={{fontSize:9,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:"#4cd96b"}}>Hoop Active</div>
-            {activeTab==="coach" && <button onClick={()=>{if(window.confirm("Start a new session? Progress will be cleared."))onReset?.();}} style={{marginLeft:6,background:"rgba(255,255,255,.08)",border:"1px solid rgba(255,255,255,.12)",borderRadius:6,padding:"3px 8px",cursor:"pointer",fontSize:10,fontWeight:700,color:"rgba(255,255,255,.35)"}}>?</button>}
+            {activeTab==="coach" && <button onClick={()=>{if(window.confirm("Start a new session? Progress will be cleared."))onReset?.();}} style={{marginLeft:6,background:"rgba(255,255,255,.08)",border:"1px solid rgba(255,255,255,.12)",borderRadius:6,padding:"3px 8px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,.35)"}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>}
           </div>
         </div>
         {/* Tier 2: main header */}
