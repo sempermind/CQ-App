@@ -5377,29 +5377,11 @@ const CQ_STYLES = `
 
 const CQBackground = () => (
   <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
-    {/* Deep navy base */}
-    <div style={{position:"absolute",inset:0,background:CQ_DS.bg0}} />
-    {/* Orb 1 — top left navy glow */}
-    <div style={{
-      position:"absolute",width:520,height:520,borderRadius:"50%",
-      background:"radial-gradient(circle, rgba(36,65,105,0.65) 0%, transparent 70%)",
-      top:-160,left:-100,
-      animation:"cq-orb-pulse 6s ease-in-out infinite",
-    }}/>
-    {/* Orb 2 — bottom right orange accent */}
-    <div style={{
-      position:"absolute",width:340,height:340,borderRadius:"50%",
-      background:"radial-gradient(circle, rgba(240,139,53,0.14) 0%, transparent 70%)",
-      bottom:-80,right:-60,
-      animation:"cq-orb-pulse 8s ease-in-out infinite 2s",
-    }}/>
-    {/* Orb 3 — mid left blue */}
-    <div style={{
-      position:"absolute",width:220,height:220,borderRadius:"50%",
-      background:"radial-gradient(circle, rgba(88,120,189,0.18) 0%, transparent 70%)",
-      bottom:200,left:40,
-      animation:"cq-orb-pulse 10s ease-in-out infinite 1s",
-    }}/>
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 40%, #07111f 0%, #020609 100%)"}} />
+    <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.72) 100%)"}} />
+    <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"radial-gradient(circle, rgba(36,65,105,0.8) 0%, transparent 68%)",top:-200,left:-140,animation:"cq-orb-pulse 6s ease-in-out infinite"}}/>
+    <div style={{position:"absolute",width:360,height:360,borderRadius:"50%",background:"radial-gradient(circle, rgba(240,139,53,0.11) 0%, transparent 70%)",bottom:-80,right:-60,animation:"cq-orb-pulse 8s ease-in-out infinite 2s"}}/>
+    <div style={{position:"absolute",width:260,height:260,borderRadius:"50%",background:"radial-gradient(circle, rgba(88,120,189,0.22) 0%, transparent 70%)",bottom:220,left:20,animation:"cq-orb-pulse 10s ease-in-out infinite 1s"}}/>
   </div>
 );
 
@@ -5432,11 +5414,13 @@ const CQLogoMark = ({size=72}) => (
 
 const CQCard = ({children, style={}}) => (
   <div style={{
-    background:CQ_DS.bg2,
-    border:`1px solid ${CQ_DS.border}`,
+    background:"rgba(255,255,255,0.048)",
     borderRadius:20,
-    backdropFilter:"blur(12px)",
-    WebkitBackdropFilter:"blur(12px)",
+    backdropFilter:"blur(22px)",WebkitBackdropFilter:"blur(22px)",
+    border:"1px solid rgba(255,255,255,0.09)",
+    borderTop:"1px solid rgba(255,255,255,0.18)",
+    borderLeft:"1px solid rgba(255,255,255,0.14)",
+    boxShadow:"0 24px 60px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.06) inset",
     ...style,
   }}>
     {children}
@@ -5495,18 +5479,8 @@ const HomeScreen = ({onStart}) => (
       animation:"cq-fade-up 0.6s cubic-bezier(0.2,0.6,0.3,1) both",
     }}>
       {/* Logo mark */}
-      <div style={{marginBottom:32}}>
-        <CQLogoMark size={72} />
-        <div style={{marginTop:16,textAlign:"center"}}>
-          <div style={{
-            fontSize:12,fontWeight:800,color:"rgba(255,255,255,0.88)",
-            letterSpacing:"0.2em",textTransform:"uppercase",
-          }}>Communication</div>
-          <div style={{
-            fontSize:10,color:"rgba(255,255,255,0.3)",
-            letterSpacing:"0.22em",textTransform:"uppercase",marginTop:3,
-          }}>Intelligence®</div>
-        </div>
+      <div style={{marginBottom:36}}>
+        <CQLogoMark size={76} />
       </div>
 
       {/* Hero headline */}
