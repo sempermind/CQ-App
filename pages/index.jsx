@@ -4339,6 +4339,1004 @@ const MicButton = ({onTranscript}) => {
   );
 };
 
+const CoachScreen = ({level,participantName,savedState,onSave,onReset}) => {
+  const [messages,      setMessages]      = useState([]);
+  const [input,         setInput]         = useState("");
+  const [typing,        setTyping]        = useState(false);
+  const [legacy,        setLegacy]        = useState("");
+  const [catalyst,      setCatalyst]      = useState("");
+  const [currentModule, setCurrentModule] = useState(1);
+  const [programComplete, setProgramComplete] = useState(false);
+  const [bridgeData, setBridgeData] = useState(null); // {module, commitment} — shows bridge screen
+  const [lastCommitment, setLastCommitment] = useState(""); // tracks most recent module commitment
+  const [journeyDot, setJourneyDot] = useState(false); // notif dot on Journey tab when module advances
+  const [showCrisisChallenge, setShowCrisisChallenge] = useState(false);
+  const [showQuestioningTendencies, setShowQuestioningTendencies] = useState(false);
+  const [showListeningTendencies, setShowListeningTendencies] = useState(false);
+  const [activeTab,     setActiveTab]     = useState("coach");
+  const [started,       setStarted]       = useState(false);
+
+  const [panelDot,      setPanelDot]      = useState(false);
+  const [insights,      setInsights]      = useState({observations:[],commitments:[],reflections:[],actionPlan:null});
+
+  // ?? cqData: single source of truth for all journal fields and ratings ??
+  const [cqData, setCqData] = useState({
+    // Ratings — 10 CQ Essentials + Bringing Your Best
+    ratings: { empathy:null, trust:null, nonverbal:null, virtual:null, safespace:null, challenging:null, questions:null, listening:null, feedback:null, clear:null, bringingBest:null },
+    // Module 1
+    personalBest:"", cqOpportunity:"", legacyKnown:"", legacyCommunication:"", catalystName:"", catalystImpact:"",
+    // Module 2
+    primaryStrength:"", secondaryStrength:"", subStrengths:"", personalHack:"",
+    // Module 3
+    empathyTendency:"", empathyCatalyst:"", earnTrustCatalyst:"",
+    nonVerbalSignals:"", catalystStrength:"", catalystStrengthAppreciation:"",
+    adaptAnalyze:"", adaptDescribe:"", adaptAcknowledge:"", adaptPivot:"", adaptTrack:"",
+    switchNeeded:"", knobsNeeded:"",
+    // Module 4
+    teamStrengths:"", teamMotivators:"", catalystCommStrength:"", catalystSupportPlan:"",
+    // Module 5
+    catalystMessage:"", listeningFeedbackSwitch:"",
+    // Module commitments + insights (auto-captured)
+    mod1Commitment:"", mod2Commitment:"", mod3Commitment:"", mod4Commitment:"", mod5Commitment:"",
+    mod1Insight:"", mod2Insight:"", mod3Insight:"", mod4Insight:"", mod5Insight:"",
+    // Final
+    actionPlan:null, catalystLearning:"", selfLearning:"", legacyRevisited:"", legacySwitchKnob:"", greatestInsight:"", finalFocusEssential:"", finalCommitmentEssential:"", finalCommitmentBehavior:"",
+  });
+
+  const [error,         setError]         = useState(null);
+  const [quickReplies,  setQuickReplies]  = useState([]);
+  const [forteData,     setForteData]     = useState(null);
+  const [showForteUpload, setShowForteUpload] = useState(false);
+  const scrollRef = useRef(null);
+  const legacyRef = useRef("");
+  const catalystRef = useRef("");
+  const sendingRef = useRef(false);
+  const introPhaseRef = useRef("story"); // "story" | "done" -- tracks whether we are still in the opening intro beats
+  const levelInfo = LEVEL_DATA[level] || LEVEL_DATA[1];
+
+  // addMsg: handles both text bubbles and artifact-only messages.
+  // For coach text with multiple paragraphs, each paragraph gets its own bubble
+  // with a typing indicator shown between them (real texting feel).
+  // For artifact-only messages (empty text), we use a uid-stamped queue item
+  // so it is never dropped by stale closure overwrites.
+  const addMsg = useCallback((role, text, artifact=null) => {
+    const isCoachText = role === "coach" && text && text.trim().length > 0;
+
+    if (isCoachText) {
+      const paragraphs = text.split(/\n\n+/).map(p => p.trim()).filter(p => p.length > 0);
+      // Calculate per-paragraph reading time so typing dots show realistically
+      const readTime = (para) => Math.min(Math.max(para.split(" ").length * 55, 800), 2800);
+
+      let cursor = 0; // ms from now
+
+      paragraphs.forEach((para, pIdx) => {
+        const isLast = pIdx === paragraphs.length - 1;
+
+        // Show typing indicator before this paragraph (skip before first — caller controls that)
+        if (pIdx > 0) {
+          const dotDelay = cursor;
+          setTimeout(() => setTyping(true), dotDelay);
+          cursor += readTime(para);
+        }
+
+        // Drop the bubble (hide typing first)
+        const bubbleDelay = cursor;
+        setTimeout(() => {
+          setTyping(false);
+          const id = Date.now() + Math.random() + pIdx * 0.001;
+          setMessages(prev => [...prev, {
+            id,
+            role,
+            text: para,
+            artifact: isLast ? artifact : null,
+          }]);
+        }, bubbleDelay);
+
+        // After dropping the bubble, add reading time before next typing indicator
+        if (!isLast) {
+          cursor += readTime(paragraphs[pIdx + 1]) * 0.4; // brief gap between bubbles
+        }
+      });
+
+    } else {
+      // Artifact-only or user message — add directly, no timing games
+      const id = Date.now() + Math.random();
+      if (artifact) console.log("[CQ ADDMSG] artifact-only:", artifact.type);
+      setMessages(prev => [...prev, { id, role, text: text || "", artifact }]);
+    }
+  }, []);
+
+  useEffect(()=>{
+    setTimeout(()=>scrollRef.current?.scrollIntoView({behavior:"smooth"}),60);
+  },[messages,typing]);
+
+  useEffect(()=>{
+    if(savedState?.messages?.length){
+      setMessages(savedState.messages);
+      if(savedState.legacy){setLegacy(savedState.legacy);legacyRef.current=savedState.legacy;}
+      if(savedState.catalyst){setCatalyst(savedState.catalyst);catalystRef.current=savedState.catalyst;}
+      if(savedState.currentModule) setCurrentModule(savedState.currentModule);
+      if(savedState.insights) setInsights(savedState.insights);
+      if(savedState.cqData)   setCqData(prev => ({...prev, ...savedState.cqData}));
+      if(savedState.forteData) setForteData(savedState.forteData);
+      setActiveTab("coach"); // Always land on Coach tab when restoring session
+      setStarted(true);
+    } else if(started) {
+      // INTRO SEQUENCE — self-invoking async, sequential awaits, setMessages called directly
+      // (never via addMsg which has stale closure issues due to useCallback(fn,[]))
+      const push = (text, artifact=null) => {
+        setMessages(prev => [...prev, { id: Date.now()+Math.random(), role:"coach", text, artifact }]);
+      };
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+
+      const timer = setTimeout(()=>{
+        (async () => {
+          const li = LEVEL_DATA[level] || LEVEL_DATA[1];
+          const name = participantName || "there";
+
+          // Beat 1: welcome (hardcoded — fast, reliable)
+          setTyping(true);
+          await wait(1800);
+          setTyping(false);
+          push("Hey " + name + " — welcome. I am Hoop, your CQ Coach.");
+
+          await wait(1200);
+          setTyping(true);
+          await wait(2000);
+          setTyping(false);
+          push("This is not a training program you sit through. It is a coaching experience built around who you actually are as a communicator — your real strengths, your actual relationships, the conversations that matter most to you. Nobody else is getting this exact session.");
+
+          // Beat 2: quote card — pushed as its own message, directly into state
+          await wait(1500);
+          push("", { type: "quote_card" });
+
+          // Beat 3: Hoop story
+          await wait(4000);
+          setTyping(true);
+          await wait(2800);
+          setTyping(false);
+          push("I want to tell you something before we start.");
+
+          await wait(800);
+          setTyping(true);
+          await wait(2200);
+          setTyping(false);
+          push("I have sat with people — executives, new managers, people early in their careers — and I have heard the same story in different forms more times than I can count. A conversation that went wrong. Words that could not be taken back. A silence that lasted years. Relationships that quietly collapsed not because people did not care, but because they could not find the words, or the courage, or the right moment.");
+
+          await wait(800);
+          setTyping(true);
+          await wait(2000);
+          setTyping(false);
+          push("But I have also heard the other version. The conversation that came out of nowhere and cracked something open. The mentor who said the one thing you needed to hear. The hard talk that actually brought two people closer instead of pushing them apart.");
+
+          await wait(800);
+          setTyping(true);
+          await wait(1400);
+          setTyping(false);
+          push("Both kinds of conversations are real. Both kinds change trajectories.");
+
+          await wait(800);
+          setTyping(true);
+          await wait(1600);
+          setTyping(false);
+          push("Here is what I believe: most people have never really stopped to name those moments. To sit with them and ask — what made that conversation matter so much?");
+
+          await wait(800);
+          setTyping(true);
+          await wait(1400);
+          setTyping(false);
+          push("That is where I want to start with you. What is a conversation that changed your life?");
+        })();
+      }, 700);
+      return ()=>clearTimeout(timer);
+    }
+  },[started]);
+
+  useEffect(()=>{
+    if(!messages.length) return;
+    onSave?.({messages,legacy,catalyst,currentModule,insights,forteData,cqData});
+  },[messages,legacy,catalyst,currentModule,insights,forteData]);
+
+  const handleSend = useCallback(async(text)=>{
+    if(!text.trim()||sendingRef.current) return;
+    sendingRef.current = true;
+    setQuickReplies([]);
+    setError(null);
+    addMsg("user",text);
+    setInput("");
+
+    // ?? INTRO PHASE: participant just shared their life-changing conversation ??
+    // sendingRef stays TRUE — blocks re-entry for the full sequence.
+    // setMessages called directly (never via addMsg — stale closure).
+    if(introPhaseRef.current === "story") {
+      introPhaseRef.current = "done";
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+
+      // ?? Real AI empathy response — reads what the participant actually said ??
+      await wait(500);
+      setTyping(true);
+
+      const introProfile = {
+        levelName: levelInfo.name,
+        levelCoaching: levelInfo.coaching,
+        participantName: participantName || "the participant",
+        legacy: "",
+        catalyst: "",
+        forteData: "Not yet uploaded",
+        currentModule: 1,
+      };
+
+      const introSystemPrompt = buildSystemPrompt(introProfile);
+
+      // Build the conversation so far: the opening beats + participant's story
+      const introMessages = [
+        ...messages.filter(m => m.text && m.text.trim()).map(m => ({
+          role: m.role === "coach" ? "assistant" : "user",
+          content: m.text.trim()
+        })),
+        { role: "user", content: text }
+      ];
+
+      // Fix alternation
+      while(introMessages.length > 0 && introMessages[0].role === "assistant") introMessages.shift();
+
+      // Collapse consecutive same-role messages
+      const collapsed = [];
+      for(const msg of introMessages){
+        if(collapsed.length > 0 && collapsed[collapsed.length-1].role === msg.role){
+          collapsed[collapsed.length-1].content += "\n" + msg.content;
+        } else { collapsed.push({...msg}); }
+      }
+
+      // Special instruction for this moment — respond to what they actually shared
+      const empathyInstruction = introSystemPrompt + `
+
+CRITICAL INSTRUCTION FOR THIS SPECIFIC RESPONSE:
+The participant just answered the opening question: "What is a conversation that changed your life?"
+Their answer may be joyful, painful, heavy, mundane, or anything in between.
+
+Your job RIGHT NOW is to respond as a genuine human being would — not as a facilitator running a program.
+
+If they shared something painful (illness, loss, grief, fear, crisis): Stop everything. Acknowledge it fully and specifically. Name what they shared. Do NOT pivot to communication or the program. Ask one human question: "Do you want to sit with that for a moment, or would you rather keep going?" Then wait.
+
+If they shared something powerful or positive: Reflect back specifically what you heard. Name the pattern or strength you notice. Then ask: "What made that work?"
+
+If they shared something ambiguous or brief: Ask one gentle follow-up to understand it better before doing anything else.
+
+Keep your response to 2-3 sentences maximum. One thought. No pivoting to the program yet.`;
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 300,
+            system: empathyInstruction,
+            messages: collapsed
+          })
+        });
+        const json = await res.json();
+        const aiText = json.content?.[0]?.text;
+        setTyping(false);
+
+        if(aiText && aiText.trim()) {
+          const {text:cleanText} = parseAIResponse(aiText);
+          // Each paragraph = its own bubble
+          const paras = cleanText.split(/\n\n+/).map(p=>p.trim()).filter(Boolean);
+          for(let i=0; i<paras.length; i++){
+            if(i > 0){
+              await wait(800);
+              setTyping(true);
+              await wait(1400);
+              setTyping(false);
+            }
+            setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:paras[i],artifact:null}]);
+          }
+        } else {
+          // Fallback if API fails
+          setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:"That kind of moment stays with you.",artifact:null}]);
+        }
+      } catch(e) {
+        setTyping(false);
+        setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:"That kind of moment stays with you.",artifact:null}]);
+      }
+
+      sendingRef.current = false;
+      return;
+    }
+    // ?? END INTRO PHASE ???????????????????????????????????????????????????????
+
+    // Brief "reading" pause before typing indicator -- feels more human
+    await new Promise(r=>setTimeout(r, 400 + Math.random()*600));
+    setTyping(true);
+
+    const history = [...messages,{role:"user",text}].filter(m=>m.text&&m.text.trim());
+    let apiMessages = history.map(m=>({role:m.role==="coach"?"assistant":"user",content:(m.text||"").trim()})).filter(m=>m.content);
+    while(apiMessages.length>0&&apiMessages[0].role==="assistant") apiMessages.shift();
+    const collapsed = [];
+    for(const msg of apiMessages){
+      if(collapsed.length>0&&collapsed[collapsed.length-1].role===msg.role){
+        collapsed[collapsed.length-1].content += "\n" + msg.content;
+      } else { collapsed.push({...msg}); }
+    }
+
+    const profile = {
+      levelName: levelInfo.name,
+      levelCoaching: levelInfo.coaching,
+      participantName: participantName || "the participant",
+      legacy: legacyRef.current,
+      catalyst: catalystRef.current,
+      forteData: forteData ? (
+        "Primary (Natural) -- Dom:" + forteData.green.scores[0] + ", Ext:" + forteData.green.scores[1] + ", Pat:" + forteData.green.scores[2] + ", Con:" + forteData.green.scores[3] +
+        " | Adapting (30-day) -- Dom:" + forteData.red.scores[0] + ", Ext:" + forteData.red.scores[1] + ", Pat:" + forteData.red.scores[2] + ", Con:" + forteData.red.scores[3] +
+        " | Perceived (how others see them) -- Dom:" + forteData.blue.scores[0] + ", Ext:" + forteData.blue.scores[1] + ", Pat:" + forteData.blue.scores[2] + ", Con:" + forteData.blue.scores[3]
+      ) : "Not yet uploaded",
+      currentModule,
+    };
+
+    try {
+      if(collapsed.length===0) throw new Error("No messages to send");
+      const systemPrompt = buildSystemPrompt(profile);
+
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          system: systemPrompt,
+          messages: collapsed
+        })
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "API error " + res.status);
+      const aiText = json.content?.[0]?.text;
+      if (!aiText) throw new Error("No response from coach");
+
+      const {text:cleanText, artifacts} = parseAIResponse(aiText);
+      setTyping(false);
+
+      artifacts.forEach(a=>{
+        if(a.type==="capture_legacy"){ 
+          legacyRef.current=a.value; setLegacy(a.value); setPanelDot(true);
+          setCqData(prev=>({...prev, legacyKnown:a.value, legacyCommunication:a.value}));
+          setTimeout(()=>addMsg("coach","",{type:"legacy", text:a.value}),400);
+          // Don't auto-trigger Forte upload -- coach will drive that naturally
+        }
+        if(a.type==="capture_catalyst"){ catalystRef.current=a.value; setCatalyst(a.value); setPanelDot(true); setCqData(prev=>({...prev, catalystName:a.value, catalystImpact:a.value})); }
+        if(a.type==="show_forte_upload"){ 
+          // Show the Forte entry screen after a brief delay so the coach message renders first
+          setTimeout(()=>setShowForteUpload(true),1800); 
+        }
+        if(a.type==="module_advance"){
+          // Show bridge screen first, then advance when participant taps Continue
+          const completedMod = a.n - 1;
+          if(completedMod >= 1 && completedMod <= 6) {
+            setBridgeData({module: completedMod, nextModule: a.n});
+            setJourneyDot(true);
+          }
+          if(a.n >= 7) setProgramComplete(true);
+          else setCurrentModule(a.n);
+        }
+        if(a.type==="program_complete"){ setProgramComplete(true); }
+        if(a.type==="coach_insight"){
+          setInsights(prev=>({...prev,observations:[...prev.observations,a.value]}));
+          setPanelDot(true);
+          if(a.value){
+            const val = a.value;
+            const upper = val.toUpperCase();
+            const afterColon = (val.match(/:\s*(.+)$/s)||[])[1]?.trim() || val;
+            const modCommitMatch = upper.match(/MODULE\s*(\d)\s*COMMITMENT/);
+            if(modCommitMatch){
+              const n = modCommitMatch[1];
+              const fields = {"1":"mod1Commitment","2":"mod2Commitment","3":"mod3Commitment","4":"mod4Commitment","5":"mod5Commitment"};
+              if(fields[n]) setCqData(prev=>({...prev,[fields[n]]:afterColon}));
+              setLastCommitment(afterColon);
+            }
+            else if(upper.includes("CATALYST") && (upper.includes("MESSAGE")||upper.includes("CONVEY")||upper.includes("FEEDBACK")||upper.includes("PIVOTAL")) && currentModule===5){
+              setCqData(prev=>({...prev, catalystMessage:afterColon}));
+            }
+            else if(upper.match(/MODULE\s*\d\s*INSIGHT/)){
+              const mn = (upper.match(/MODULE\s*(\d)/)||[])[1];
+              if(mn){ const f={"1":"mod1Insight","2":"mod2Insight","3":"mod3Insight","4":"mod4Insight","5":"mod5Insight"}; if(f[mn]) setCqData(prev=>({...prev,[f[mn]]:afterColon})); }
+            }
+          }
+        }
+        if(a.type==="complete_action_plan"){ const plan={legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}; setInsights(prev=>({...prev,actionPlan:plan})); setCqData(prev=>({...prev,actionPlan:plan})); setPanelDot(true); }
+        if(a.type==="show_forte_graph"){ setTimeout(()=>addMsg("coach","",{type:"forte_graph_focused", tab:a.tab||"green", forteData:forteData}),400); }
+        if(a.type==="show_switches_knobs"){ setTimeout(()=>addMsg("coach","",{type:"switches_knobs"}),400); }
+        if(a.type==="show_journey_card"){ setTimeout(()=>addMsg("coach","",{type:"journey_card"}),400); }
+        if(a.type==="show_generations"){ setTimeout(()=>addMsg("coach","",{type:"gencard"}),400); }
+        if(a.type==="show_listening_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}),400); }
+        if(a.type==="show_questioning_tendencies"){ setTimeout(()=>addMsg("coach","",{type:"questioning_tendencies"}),400); }
+        if(a.type==="show_crisis_challenge"){ setTimeout(()=>addMsg("coach","",{type:"crisis_challenge_inline"}),400); }
+        if(a.type==="show_proficiency_rating"){ setTimeout(()=>addMsg("coach","",{type:"proficiency_rating",topic:a.topic}),400); }
+        if(a.type==="show_adapt_planner"){ setTimeout(()=>addMsg("coach","",{type:"adapt_planner"}),400); }
+        if(a.type==="show_reflection"){ setTimeout(()=>addMsg("coach","",{type:"reflection",section:a.section,q1:a.q1,q2:a.q2}),400); }
+        if(a.type==="show_cq_essentials"){ setTimeout(()=>addMsg("coach","",{type:"cq_essentials"}),400); }
+        if(a.type==="show_cq_essentials_summary"){ setTimeout(()=>addMsg("coach","",{type:"cq_essentials_summary"}),400); }
+        if(a.type==="teach_moment"){ setTimeout(()=>addMsg("coach","",{type:"teach_moment", concept:a.concept}),400); }
+      });
+
+      // Only add text message if there's meaningful content after stripping tags
+      const finalText = cleanText.trim();
+      if(finalText.length > 0) addMsg("coach", finalText);
+
+      // CRISIS CHALLENGE GUARANTEED TRIGGER
+      // Fires the crisis challenge artifact if ANY of these are true:
+      // 1. Claude emitted the tag (parsed above in artifacts array)
+      // 2. Claude's response mentions the crisis scenario with trigger phrases
+      // 3. The previous coach message set up the crisis challenge intro
+      const crisisAlreadyDispatched = artifacts.some(a=>a.type==="show_crisis_challenge");
+      const crisisAlreadyInChat = messages.some(m=>m.artifact&&(m.artifact.type==="crisis_challenge"||m.artifact.type==="crisis_challenge_inline"));
+      if(!crisisAlreadyDispatched && !crisisAlreadyInChat && currentModule >= 4) {
+        const ft = finalText.toLowerCase();
+        const textTrigger = ft.includes("crisis scenario") && (
+          ft.includes("adapt strategy") || ft.includes("play the journalist") ||
+          ft.includes("play journalist") || ft.includes("build your") ||
+          ft.includes("show you the crisis")
+        );
+        const prevCoachMsgs = messages.filter(m=>m.role==="coach"&&m.text);
+        const lastCoachText = prevCoachMsgs.length > 0 ? prevCoachMsgs[prevCoachMsgs.length-1].text.toLowerCase() : "";
+        const prevSetupTrigger = lastCoachText.includes("most energizing activity") ||
+                                  lastCoachText.includes("put everything you have learned under pressure");
+        const contextTrigger = (ft.includes("crisis") || ft.includes("hot seat") || ft.includes("under pressure")) &&
+                                (ft.includes("scenario") || ft.includes("defect") || ft.includes("product") || ft.includes("clients") || ft.includes("response")) &&
+                                (ft.includes("adapt") || ft.includes("strategy") || ft.includes("build") || ft.includes("lead"));
+        if(textTrigger || prevSetupTrigger || contextTrigger) {
+          console.log("[CQ CRISIS] Keyword trigger fired - adding inline");
+          setTimeout(()=>addMsg("coach","",{type:"crisis_challenge_inline"}), 800);
+        }
+      }
+
+      // QUESTIONING TENDENCIES SAFETY NET
+      if(currentModule >= 5) {
+        const ft2 = finalText.toLowerCase();
+        const qAlreadyInChat = messages.some(m=>m.artifact&&m.artifact.type==="questioning_tendencies");
+        const qAlreadyDispatched = artifacts.some(a=>a.type==="show_questioning_tendencies");
+        if(!qAlreadyInChat && !qAlreadyDispatched && ft2.includes("question") && (ft2.includes("pattern") || ft2.includes("tendency") || ft2.includes("tendencies") || ft2.includes("your profile") || ft2.includes("show you"))) {
+          setTimeout(()=>addMsg("coach","",{type:"questioning_tendencies"}), 800);
+        }
+      }
+
+      // LISTENING TENDENCIES SAFETY NET
+      if(currentModule >= 5) {
+        const ft3 = finalText.toLowerCase();
+        const lAlreadyInChat = messages.some(m=>m.artifact&&m.artifact.type==="listening_tendencies");
+        const lAlreadyDispatched = artifacts.some(a=>a.type==="show_listening_tendencies");
+        if(!lAlreadyInChat && !lAlreadyDispatched && ft3.includes("listen") && (ft3.includes("tendency") || ft3.includes("tendencies") || ft3.includes("default") || ft3.includes("automatic") || ft3.includes("your style"))) {
+          setTimeout(()=>addMsg("coach","",{type:"listening_tendencies"}), 800);
+        }
+      }
+
+    } catch(err) {
+      setError("Coach error: " + (err.message||"unknown error"));
+    } finally {
+      setTyping(false);
+      sendingRef.current = false;
+    }
+  },[messages,levelInfo,currentModule,forteData,addMsg]);
+
+  const renderArtifact = (a) => {
+    if(!a) return null;
+    if(a.type==="quote_card") return <QuoteCard />;
+    if(a.type==="journey_card") return <ModuleJourneyCard />;
+    if(a.type==="milestone") return <MilestoneCard n={a.n} title={a.title||""} sub={a.sub||""} />;
+    if(a.type==="program_complete") return <ProgramCompleteCard />;
+    if(a.type==="legacy")    return <LegacyCard text={a.text||legacy} />;
+    // For forte artifacts, prefer forteData passed directly in artifact object (avoids async state timing issues)
+    const fd = a.forteData || forteData;
+    if(a.type==="forte" || a.type==="forte_all") return <ForteGraph forteData={fd} />;
+    if(a.type==="forte_dimension_cards") return <ForteDimensionCards forteData={fd} onDone={()=>handleSend("I just reviewed all four dimensions of my Forte profile. Ready to go deeper.")} />;
+    if(a.type==="forte_graph_focused") return <ForteGraphFocused forteData={fd} initialTab={a.tab||"green"} />;
+    if(a.type==="gap")       return <GapAlert />;
+    if(a.type==="gencard")   return <GenCardArtifact onCoachTalk={card=>handleSend("Tell me about the " + card.g + " scenario")} />;
+    if(a.type==="crisis_challenge" || a.type==="crisis_challenge_inline") { return <CrisisChallenge onCoachTalk={(responses,strategy)=>handleSend("I just completed the Crisis Navigation Challenge. Here are my responses: " + responses.map((r,i)=>"Q"+(i+1)+": "+r.a).join(". ") + " What do you think?")} />; }
+    if(a.type==="switches_knobs") return <SwitchesKnobsArtifact catalyst={catalyst} onCoachTalk={(item,t)=>{ if(t==="switch") setCqData(prev=>({...prev,switchNeeded:item.label})); if(t==="knob") setCqData(prev=>({...prev,knobsNeeded:(prev.knobsNeeded?prev.knobsNeeded+", ":"")+item.label})); handleSend("Let us talk about the " + item.label + " " + t + " for my Catalyst"); }} />;
+    if(a.type==="questioning_tendencies") return <QuestioningTendencies forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " questioning tendency")} />;
+    if(a.type==="listening_tendencies") return <ListeningTendenciesArtifact forteData={forteData} onCoachTalk={(style,item)=>handleSend("Let us talk about my " + style + " listening tendency")} />;
+    if(a.type==="cq_essentials_summary") return <CQEssentialsSummary ratings={insights.essentialRatings||{}} onContinue={()=>handleSend("I have reviewed my CQ Essentials summary. Let us build my action plan.")} />;
+    if(a.type==="cq_essentials") return <CQEssentialsIntro onContinue={()=>handleSend("I just read through all 10 CQ Essentials. I am ready to dive into Balancing Empathy and Earning Trust.")} />;
+    if(a.type==="proficiency_rating") return <ProficiencyRating topic={a.topic||"Bringing Your Best"} onComplete={(topic,level)=>{
+      setInsights(prev=>({...prev, essentialRatings:{...(prev.essentialRatings||{}), [topic]:level}}));
+      setCqData(prev=>({...prev, ratings:{...prev.ratings, [topic]:level}}));
+      setPanelDot(true);
+      handleSend("I rated myself as " + level + " on " + topic + ". Let us discuss what that means.");
+    }} />;
+    if(a.type==="adapt_planner") return <ADAPTPlanner catalyst={catalyst} onComplete={vals=>{ setCqData(prev=>({...prev, adaptAnalyze:vals.analyze||"", adaptDescribe:vals.describe||"", adaptAcknowledge:vals.acknowledge||"", adaptPivot:vals.pivot||"", adaptTrack:vals.track||""})); handleSend("Here is my ADAPT plan: Analyze: " + vals.analyze + " | Describe: " + vals.describe + " | Acknowledge: " + vals.acknowledge + " | Pivot: " + vals.pivot + " | Track: " + vals.track); }} />;
+    if(a.type==="reflection") return <SectionReflection sectionTitle={a.section||"Section Reflection"} question1={a.q1||"What was your most important insight from this section?"} question2={a.q2||""} onSave={(section,q1,r1,q2,r2)=>{ setInsights(prev=>({...prev,reflections:[...(prev.reflections||[]),{section,q1,r1,q2,r2,date:new Date().toLocaleDateString()}]})); setPanelDot(true); handleSend("I just saved my reflection on " + section + ". My response was: " + r1 + (r2?" Also: "+r2:"")); }} />;
+    if(a.type==="teach_moment") return <PersonalizedTeachMoment
+      concept={a.concept}
+      forteData={forteData}
+      catalyst={catalystRef.current}
+      participantName={participantName}
+      level={level}
+      onComplete={(concept, teaching, styleAngle) => handleSend("I just read the personalized teaching on " + concept + ". My style angle is " + styleAngle + ". That landing for me -- let us continue.")}
+      onCoachTalk={(concept, teaching, styleAngle, catalyst) => handleSend("I just read the teaching on " + concept + ". It said: \"" + teaching.substring(0,120) + "...\" I want to talk about how this applies to my situation with my Catalyst.")}
+    />;
+    return null;
+  };
+
+  // Tab SVG icons
+  const TabIcon = ({id}) => {
+    if(id==="journey") return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>;
+    if(id==="coach")   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+    if(id==="practice")return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>;
+    if(id==="profile") return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>;
+    if(id==="insights")return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>;
+    return null;
+  };
+
+  const tabs = [
+    {id:"journey",  label:"Journey"},
+    {id:"coach",    label:"Coach"},
+    {id:"practice", label:"Practice"},
+    {id:"profile",  label:"Profile"},
+    {id:"insights", label:"Insights"},
+  ];
+
+  // Unified two-tier tab header
+  const accentColor = {coach:C.orange, journey:C.gold, practice:C.orange, profile:"#2E7D32", insights:C.blue}[activeTab];
+  const initials = participantName ? participantName.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2) : "??";
+  const modName = MOD_NAMES[currentModule] || "";
+  const unlockedCount = [3,3,3,4,5,5,5].filter(m=>currentModule>=m).length;
+  const remainingCount = 7 - unlockedCount;
+  const journeyPct = Math.round(((currentModule-1)/6)*100);
+
+  const TabHeaderRight = () => {
+    if(activeTab==="coach") return (
+      <div style={{textAlign:"right"}}>
+        <div style={{fontSize:11,fontWeight:800,color:C.white,lineHeight:1.3}}>Module {currentModule} &middot; {MOD_NAMES[currentModule]}</div>
+        <div style={{fontSize:10,color:"rgba(255,255,255,.5)",marginTop:1}}>{currentModule-1} of 6 complete</div>
+      </div>
+    );
+    if(activeTab==="journey") return (
+      <div style={{textAlign:"right"}}>
+        <div style={{fontSize:13,fontWeight:900,color:C.gold,lineHeight:1.2}}>{journeyPct}% Complete</div>
+        <div style={{fontSize:10,color:"rgba(255,255,255,.5)",marginTop:1}}>{6-(currentModule-1)} modules remaining</div>
+      </div>
+    );
+    if(activeTab==="practice") return (
+      <div style={{textAlign:"right"}}>
+        <div style={{display:"inline-block",background:C.orange,color:C.white,fontSize:10,fontWeight:900,borderRadius:20,padding:"2px 9px",marginBottom:3}}>{unlockedCount} Unlocked</div>
+        <div style={{fontSize:10,color:"rgba(255,255,255,.5)"}}>{remainingCount} activities remaining</div>
+      </div>
+    );
+    if(activeTab==="profile") {
+      // Mini 4-node 3-line Forte graph
+      const fd = forteData || FORTE_DATA;
+      const toY = (pct,h) => h - (pct/100)*(h-6) - 3;
+      const w=80, h=36;
+      const gPts = fd.green.pcts.map((p,i)=>`${(i/(3))*w},${toY(p,h)}`).join(" ");
+      const rPts = fd.red.pcts.map((p,i)=>`${(i/(3))*w},${toY(p,h)}`).join(" ");
+      const bPts = fd.blue.pcts.map((p,i)=>`${(i/(3))*w},${toY(p,h)}`).join(" ");
+      return (
+        <div style={{textAlign:"right"}}>
+          <div style={{fontSize:9,color:"rgba(255,255,255,.4)",marginBottom:4,fontWeight:700,letterSpacing:".08em",textTransform:"uppercase"}}>Primary · Adapting · Perceived</div>
+          <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{display:"block",marginLeft:"auto"}}>
+            <polyline points={gPts} fill="none" stroke="#4cd96b" strokeWidth="1.8" strokeLinejoin="round"/>
+            <polyline points={rPts} fill="none" stroke="#e05555" strokeWidth="1.8" strokeDasharray="3,2" strokeLinejoin="round"/>
+            <polyline points={bPts} fill="none" stroke="#7aadff" strokeWidth="1.8" strokeDasharray="1,2" strokeLinejoin="round"/>
+            {fd.green.pcts.map((p,i)=><circle key={i} cx={(i/3)*w} cy={toY(p,h)} r="2.5" fill="#4cd96b"/>)}
+          </svg>
+        </div>
+      );
+    }
+    if(activeTab==="insights") return (
+      <div style={{textAlign:"right"}}>
+        <div style={{fontSize:11,fontWeight:800,color:C.white,lineHeight:1.3}}>Module {currentModule}</div>
+        <div style={{fontSize:10,color:"rgba(255,255,255,.5)",marginTop:1}}>{modName}</div>
+      </div>
+    );
+    return null;
+  };
+
+  const tabCtxLabel = {
+    coach: `${participantName} \u00b7 CQ Coach Program`,
+    journey: `${participantName} \u00b7 Module ${currentModule} of 6`,
+    practice: `${participantName} \u00b7 Module ${currentModule} \u00b7 ${MOD_NAMES[currentModule]?.split(" ").slice(0,2).join(" ")||""}`,
+    profile: `${participantName} \u00b7 Communication Intelligence`,
+    insights: `${participantName} \u00b7 ${(insights.observations||[]).length + (insights.commitments||[]).length} sections captured`,
+  }[activeTab] || participantName;
+
+  return (
+    <div style={{flex:1,background:C.navy,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden"}}>
+      {/* Unified two-tier header */}
+      <div style={{flexShrink:0}}>
+        {/* Tier 1: dark status bar */}
+        <div style={{background:"#0e1c2f",padding:"6px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{fontSize:9,fontWeight:800,letterSpacing:".12em",textTransform:"uppercase",color:"rgba(255,255,255,.45)"}}>Your AI-Powered CQ Facilitator</div>
+          <div style={{display:"flex",alignItems:"center",gap:5}}>
+            <div style={{width:6,height:6,borderRadius:"50%",background:"#4cd96b",boxShadow:"0 0 0 0 rgba(76,217,107,.6)",animation:"hoopPulse 2s ease-in-out infinite"}}/>
+            <div style={{fontSize:9,fontWeight:800,letterSpacing:".1em",textTransform:"uppercase",color:"#4cd96b"}}>Hoop Active</div>
+            {activeTab==="coach" && started && <button onClick={()=>{if(window.confirm("Start a new session? Progress will be cleared."))onReset?.();}} style={{marginLeft:6,background:"rgba(255,255,255,.08)",border:"1px solid rgba(255,255,255,.12)",borderRadius:6,padding:"3px 8px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,.35)"}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>}
+          </div>
+        </div>
+        {/* Tier 2: main header */}
+        <div style={{background:C.navy,padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+          <div style={{width:36,height:36,borderRadius:9,background:["practice","profile","insights"].includes(activeTab)?accentColor:C.gold,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            {activeTab==="practice" && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>}
+            {activeTab==="profile" && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>}
+            {activeTab==="insights" && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="15" y2="18"/></svg>}
+            {!["practice","profile","insights"].includes(activeTab) && <span style={{fontSize:13,fontWeight:900,color:C.navy,letterSpacing:"-.02em"}}>{initials}</span>}
+          </div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:14,fontWeight:800,color:C.white,lineHeight:1.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+              {activeTab==="coach" ? participantName : activeTab==="journey" ? "Your CQ Journey" : activeTab==="practice" ? "Practice Activities" : activeTab==="profile" ? "Forte Profile" : "Your Insights Journal"}
+            </div>
+            <div style={{fontSize:10,color:"rgba(255,255,255,.45)",marginTop:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{tabCtxLabel}</div>
+          </div>
+          <TabHeaderRight/>
+        </div>
+        {/* Accent strip */}
+        <div style={{height:3,background:accentColor,flexShrink:0}}/>
+      </div>
+      <style>{`@keyframes hoopPulse{0%,100%{box-shadow:0 0 0 0 rgba(76,217,107,.5)}50%{box-shadow:0 0 0 4px rgba(76,217,107,0)}}`}</style>
+
+      {/* Tab content */}
+      <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
+        {activeTab==="journey" && <JourneyTab currentModule={currentModule} insights={insights} onGoToCoach={()=>setActiveTab("coach")} onRateEssential={(topic,level)=>{ setInsights(prev=>({...prev,essentialRatings:{...(prev.essentialRatings||{}),[topic]:level}})); setCqData(prev=>({...prev,ratings:{...prev.ratings,[topic]:level}})); setPanelDot(true); }} />}
+        {activeTab==="practice" && <PracticeTab currentModule={currentModule} forteData={forteData} catalyst={catalyst} onCoachTalk={(msg)=>{setActiveTab("coach");setTimeout(()=>handleSend(msg),300);}} onCqDataChange={(key,val)=>setCqData(prev=>({...prev,[key]:val}))} participantName={participantName} />}
+        {activeTab==="profile" && <ProfileTab forteData={forteData} />}
+        {activeTab==="insights" && <InsightsTab legacy={legacy} catalyst={catalyst} insights={insights} forteData={forteData} cqData={cqData} onRateEssential={(topic,level)=>{ setInsights(prev=>({...prev,essentialRatings:{...(prev.essentialRatings||{}),[topic]:level}})); setCqData(prev=>({...prev,ratings:{...prev.ratings,[topic]:level}})); setPanelDot(true); }} onCqDataChange={(key,val)=>setCqData(prev=>({...prev,[key]:val}))} participantName={participantName} />}
+        {activeTab==="coach" && !started && (()=>{
+          const LEVEL_INTRO={1:{headline:"Your CQ Journey Starts Now",tagline:"You are about to go through the Communication Intelligence program — built to help you develop the communication skills that build real influence, earn trust faster, and make every conversation count.",cqDesc:"Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to make every conversation more effective.",cqSub:"It is not about being a better talker. It is about being someone others feel genuinely heard by — and someone who builds the kind of trust and credibility that opens doors."},2:{headline:"Lead Every Conversation With Intention",tagline:"You are about to go through the Communication Intelligence program — built for leaders who want to close the gap between how they intend to show up and how their team actually experiences them.",cqDesc:"Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to make every conversation more effective.",cqSub:"For managers, that means fewer misreads, less friction, and a team that actually hears what you are trying to say. It is the skill that multiplies every other leadership capability you have."},3:{headline:"Close the Gap Between Intent and Impact",tagline:"You are about to go through the Communication Intelligence program — built for senior leaders who want to align their communication with the scale of their influence.",cqDesc:"Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt in real time to drive alignment, clarity, and organizational momentum.",cqSub:"At your level, communication is strategy. The patterns you model get replicated across your organization. This program helps you see those patterns — and shape them deliberately."},4:{headline:"Communication as a Strategic Capability",tagline:"You are about to go through the Communication Intelligence program — built for executives who understand that how they communicate determines what gets built, what gets aligned, and what gets done.",cqDesc:"Communication Intelligence — CQ — is the ability to understand your own communication style, read the styles of others, and adapt with precision to drive outcomes at scale.",cqSub:"This is not a training program. It is a diagnostic and development experience built around your specific profile, your key relationships, and the communication patterns that either accelerate or limit your impact."}};
+          const intro=LEVEL_INTRO[level]||LEVEL_INTRO[1];
+          return (
+            <div style={{flex:1,overflowY:"auto",background:C.navy,display:"flex",flexDirection:"column"}}>
+              <div style={{padding:"24px 24px 32px",display:"flex",flexDirection:"column",flex:1}}>
+                <div style={{marginBottom:28}}>
+                  <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".14em",textTransform:"uppercase",marginBottom:8}}>Welcome, {participantName||"there"}</div>
+                  <div style={{fontSize:26,fontWeight:900,color:C.white,lineHeight:1.2,marginBottom:12}}>{intro.headline}</div>
+                  <div style={{fontSize:13.5,color:"rgba(255,255,255,.65)",lineHeight:1.7}}>{intro.tagline}</div>
+                </div>
+                <div style={{background:"rgba(255,255,255,.07)",borderRadius:16,padding:"18px",marginBottom:20}}>
+                  <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>What is Communication Intelligence?</div>
+                  <div style={{fontSize:13.5,color:"rgba(255,255,255,.8)",lineHeight:1.7,marginBottom:12}}>{intro.cqDesc}</div>
+                  <div style={{fontSize:13,color:"rgba(255,255,255,.6)",lineHeight:1.65}}>{intro.cqSub}</div>
+                </div>
+                <div style={{background:"rgba(244,188,45,.12)",border:"1.5px solid rgba(244,188,45,.35)",borderRadius:16,padding:"18px",marginBottom:20}}>
+                  <div style={{fontSize:11,fontWeight:800,color:C.gold,letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>Before We Begin</div>
+                  <div style={{fontSize:14,fontWeight:700,color:C.white,lineHeight:1.45,marginBottom:8}}>Take a few minutes to explore your Journey tab.</div>
+                  <div style={{fontSize:13,color:"rgba(255,255,255,.65)",lineHeight:1.7}}>Tap <span style={{color:C.gold,fontWeight:700}}>Journey</span> at the bottom of the screen. Tap through all six modules and explore what is inside each one — the CQ Essentials, activities, and what this program holds for you. Come back here when you are ready to begin.</div>
+                </div>
+                <button onClick={()=>setStarted(true)} style={{width:"100%",padding:16,background:C.gold,color:C.navy,border:"none",borderRadius:14,fontSize:15,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 18px rgba(244,188,45,.3)"}}>
+                  I am ready to begin my journey
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+        {activeTab==="coach" && started && (
+        <div style={{flex:1,overflowY:"auto",padding:"0 0 16px",display:"flex",flexDirection:"column",background:C.cream}}>
+        <div style={{textAlign:"center",padding:"22px 0 14px",fontSize:10,fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",color:"rgba(36,65,105,.3)"}}>FIRST SESSION — TODAY</div>
+        {messages.map((msg,idx)=>{
+          const prevRole = idx > 0 ? messages[idx-1].role : null;
+          const isLast = idx === messages.length-1;
+          return (
+            <React.Fragment key={msg.id}>
+              {msg.text && msg.text.trim() && (
+                <Bubble role={msg.role} text={msg.text} prevRole={prevRole} isLast={isLast}/>
+              )}
+              {msg.artifact && renderArtifact(msg.artifact)}
+            </React.Fragment>
+          );
+        })}
+        {typing&&<TypingIndicator />}
+        {error&&<ErrorBanner msg={error} onDismiss={()=>setError(null)} />}
+        {quickReplies.length>0&&<QuickReplies opts={quickReplies} onSelect={opt=>{setQuickReplies([]);handleSend(opt);}} />}
+        {/* Questioning/Listening/Crisis now render inline via renderArtifact */}
+        <div ref={scrollRef} />
+      </div>
+        )}
+      </div>
+
+      {activeTab==="coach" && started && (
+        <div style={{padding:"8px 12px 10px",background:C.white,borderTop:"1px solid rgba(36,65,105,.08)",flexShrink:0,display:"flex",gap:8,alignItems:"flex-end"}}>
+          <MicButton onTranscript={setInput} />
+          <input value={input} onChange={e=>setInput(e.target.value)}
+            onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend(input);}}}
+            placeholder="Type or use mic..."
+            style={{flex:1,background:"rgba(36,65,105,.05)",border:"1.5px solid rgba(36,65,105,.12)",borderRadius:20,padding:"10px 15px",color:C.navy,fontSize:15,outline:"none",fontFamily:"inherit",lineHeight:1.4}} />
+          <button onClick={()=>handleSend(input)} disabled={typing} style={{height:44,width:44,borderRadius:"50%",background:typing?"rgba(36,65,105,.3)":C.navy,border:"none",cursor:typing?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+          </button>
+        </div>
+      )}
+
+      {/* 5-Tab Bottom Navigation */}
+      <div style={{background:C.white,borderTop:"1px solid rgba(36,65,105,.08)",flexShrink:0,display:"flex",padding:"6px 0 16px",boxShadow:"0 -2px 12px rgba(0,0,0,.06)"}}>
+        {tabs.map(t=>{
+          const isActive = activeTab===t.id;
+          const hasNotif = (t.id==="insights" && panelDot) || (t.id==="journey" && journeyDot);
+          return (
+            <button key={t.id} onClick={()=>{setActiveTab(t.id);if(t.id==="insights")setPanelDot(false);if(t.id==="journey")setJourneyDot(false);}}
+              style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,background:"none",border:"none",cursor:"pointer",padding:"4px 0",
+                color:isActive?C.orange:"rgba(36,65,105,.35)",position:"relative"}}>
+              {hasNotif && <div style={{position:"absolute",top:2,right:"calc(50% - 14px)",width:7,height:7,borderRadius:"50%",background:C.gold}} />}
+              <TabIcon id={t.id} />
+              <div style={{fontSize:9.5,fontWeight:isActive?800:600,letterSpacing:".02em"}}>{t.label}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      {bridgeData && (
+        <ModuleBridge
+          completedModule={bridgeData.module}
+          commitment={lastCommitment}
+          onContinue={()=>{
+            const nextMod = bridgeData.nextModule;
+            setBridgeData(null);
+            setLastCommitment("");
+            setJourneyDot(false); // clear dot — they just visited Journey via bridge
+            if(nextMod >= 7) { setProgramComplete(true); setActiveTab("insights"); }
+            else { setCurrentModule(nextMod); setActiveTab("coach"); }
+          }}
+        />
+      )}
+      {showForteUpload && (
+        <ForteUploadScreen
+          onComplete={(fd)=>{
+            setForteData(fd);
+            setShowForteUpload(false);
+            // Flash Profile tab so participant sees data populate
+            setActiveTab("profile");
+            setTimeout(()=>{
+              setActiveTab("coach");
+              // Guaranteed nav cue — not left to AI to organically include
+              setTimeout(()=>addMsg("coach","Your Communication Profile is now live in your Profile tab — you can check it any time during our session."),400);
+            }, 2200);
+            // Use a small delay to ensure state update commits before rendering graph
+            setTimeout(()=>{
+              setMessages(prev=>[...prev,{
+                id: Date.now()+Math.random(),
+                role:"coach",
+                text:"",
+                artifact:{type:"forte_all", forteData:fd}
+              }]);
+              // Dimension cards follow the graph so participant can explore each dimension visually
+              setTimeout(()=>{
+                setMessages(prev=>[...prev,{
+                  id: Date.now()+Math.random(),
+                  role:"coach",
+                  text:"Before I share my read of your full profile — tap through the four dimensions below. Each one tells part of your story.",
+                  artifact:{type:"forte_dimension_cards", forteData:fd}
+                }]);
+              },600);
+            },150);
+            // Then fire API for the first-reaction question — pass forteData directly
+            // in the user message content so it doesn't appear as a fake bubble
+            setTimeout(()=>{
+              const hist = [];
+              setMessages(prev=>{
+                hist.push(...prev.filter(m=>m.text&&m.text.trim()));
+                return prev;
+              });
+              const collapsed = hist
+                .map(m=>({role:m.role==="coach"?"assistant":"user", content:m.text.trim()}))
+                .filter(m=>m.content);
+              // Fix alternation
+              while(collapsed.length>0&&collapsed[0].role==="assistant") collapsed.shift();
+              const finalMsg = {role:"user",content:"I just entered my Forte profile scores and can see the graphs."};
+              fetch("/api/chat",{
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({
+                  model:"claude-sonnet-4-20250514",
+                  max_tokens:600,
+                  system:buildSystemPrompt({
+                    levelName: (LEVEL_DATA[level]||LEVEL_DATA[1]).name,
+                    levelCoaching: (LEVEL_DATA[level]||LEVEL_DATA[1]).coaching,
+                    participantName: participantName||"the participant",
+                    legacy: legacyRef.current,
+                    catalyst: catalystRef.current,
+                    forteData: "Primary Profile -- Dom:"+fd.green.scores[0]+", Ext:"+fd.green.scores[1]+", Pat:"+fd.green.scores[2]+", Con:"+fd.green.scores[3]+
+                               " | Adapting -- Dom:"+fd.red.scores[0]+", Ext:"+fd.red.scores[1]+", Pat:"+fd.red.scores[2]+", Con:"+fd.red.scores[3]+
+                               " | Perceiver -- Dom:"+fd.blue.scores[0]+", Ext:"+fd.blue.scores[1]+", Pat:"+fd.blue.scores[2]+", Con:"+fd.blue.scores[3],
+                    currentModule: 2,
+                  }),
+                  messages:[...collapsed, finalMsg]
+                })
+              }).then(r=>r.json()).then(json=>{
+                const aiText = json.content?.[0]?.text;
+                if(aiText){
+                  const {text:cleanText,artifacts:arts} = parseAIResponse(aiText);
+                  arts.forEach(a=>{
+                    if(a.type==="module_advance"){
+                      const completedMod = a.n - 1;
+                      if(completedMod >= 1 && completedMod <= 6) setBridgeData({module: completedMod, nextModule: a.n});
+                      if(a.n >= 7) setProgramComplete(true);
+                      else setCurrentModule(a.n);
+                    }
+                    if(a.type==="coach_insight") setInsights(prev=>({...prev,observations:[...prev.observations,a.value]}));
+                    if(a.type==="complete_action_plan") setInsights(prev=>({...prev,actionPlan:{legacy:a.legacy,catalystCommitment:a.catalystCommitment,dailyPractice:a.dailyPractice}}));
+                    if(a.type==="show_forte_graph") setTimeout(()=>setMessages(prev=>[...prev,{id:Date.now()+Math.random(),role:"coach",text:"",artifact:{type:"forte_graph_focused",tab:a.tab||"green",forteData:fd}}]),300);
+                  });
+                  const finalText = cleanText.trim();
+                  if(finalText) addMsg("coach",finalText);
+                }
+              }).catch(()=>{
+                addMsg("coach","Before I walk you through what I see -- when you looked at your results, what was your first reaction?");
+              });
+            },600);
+          }}
+          onSkip={()=>{ setShowForteUpload(false); addMsg("coach","No problem -- you can add your scores any time. Let us keep going."); }}
+        />
+      )}
+    </div>
+  );
+};
+
+// ?? DEV JUMP PANEL ????????????????????????????????????????????????????????????
+// Activate with: https://cq-app-smoky.vercel.app?dev=true
+// Injects realistic seed state so you can jump straight to any module
+const DEV_MODE = true; // Dev panel hidden behind triple-tap trigger
+
+const DEV_SEED_FORTE = {
+  green: { scores:["3","20","1","19"],  labels:["Non-Dominant","Strong Extrovert","Highly Impatient","Non-Conformist"],              pcts:[8,56,3,53]  },
+  red:   { scores:["12","4","11","3"],  labels:["Adapting Dominant","Adapting Withdrawn","Adapting Impatient","Adapting Conformist"], pcts:[33,11,31,8] },
+  blue:  { scores:["4","13","10","12"], labels:["Perceived Non-Dom","Perceived Extrovert","Perceived Impatient","Perceived Non-Conform"], pcts:[11,36,28,33] },
+};
+
+const DEV_MODULE_HISTORY = {
+  1: [
+    { id:1.1, role:"coach", text:"Mike — good to have you here. A Manager navigating the gap between what you intend and how your team actually experiences you. That gap is exactly where this program lives." },
+    { id:1.2, role:"coach", text:"Before we get into anything — think of a recent moment when you were completely on your game in a conversation. You walked away knowing you nailed it. What made that work?" },
+    { id:1.3, role:"user",  text:"Had a 1:1 with someone on my team who was about to quit. I just listened for the first 10 minutes without trying to fix anything. By the end they felt heard and we figured it out together." },
+    { id:1.4, role:"coach", text:"That is not a small thing. You made a choice most managers never make — you let the silence do the work. What was different about you in that moment versus a conversation that goes sideways?" },
+  ],
+  2: [
+    { id:2.1, role:"coach", text:"Mike — you have told me about Jordan — your direct report who shuts down in groups — and your legacy: creating space where people can say the hard thing. That is the thread we are following." },
+    { id:2.2, role:"coach", text:"Now I want to show you the data behind how you are actually wired. Your Forte profile is in. Let us start with what your Primary Profile is telling us." },
+    { id:2.3, role:"user",  text:"Okay I am looking at it. The extroversion score surprises me a little." },
+    { id:2.4, role:"coach", text:"That surprise is worth paying attention to. What does the gap between how you see yourself and what the profile shows tell you?" },
+  ],
+  3: [
+    { id:3.1, role:"coach", text:"Mike — you have seen your profile, you know your natural style, and you understand what Jordan is carrying into those group conversations. Now we start building the adaptive toolkit." },
+    { id:3.2, role:"coach", text:"The first skill — spotting communication strengths in others before you try to lead them. Tell me about the last time you noticed someone communicating in a style completely different from yours." },
+    { id:3.3, role:"user",  text:"My peer Sarah. Super methodical, never rushes, asks clarifying questions before she says anything. I used to find it frustrating but now I realize she just processes differently." },
+    { id:3.4, role:"coach", text:"You just did the thing. You named her behavior pattern without judging it. That is the foundation of adaptive communication. Let us take that lens into the generational layer now." },
+  ],
+  4: [
+    { id:4.1, role:"coach", text:"Mike — three modules in. You know your profile, you have started reading others, you have the ADAPT toolkit. Module 4 is where we zoom out and look at the full landscape -- your team, your clients, the people you lead or influence." },
+    { id:4.2, role:"coach", text:"On a scale of one to ten -- how engaged are you feeling in your work right now? Not performing, not coping. Genuinely engaged. What is driving that number?" },
+    { id:4.3, role:"user",  text:"Maybe a 6. I am doing the work but Jordan still drains me more than it should." },
+    { id:4.4, role:"coach", text:"That drain is data. Most disengagement starts with one relationship that never got resolved. The root cause is almost always communication -- people who do not feel heard, understood, or valued. Let us look at what actually drives motivation." },
+    { id:4.5, role:"coach", text:"Looking at your Forte report page 6 -- your motivators and demotivators. Your demotivators are your triggers. What surprises you most on that list?" },
+    { id:4.6, role:"user",  text:"Lack of autonomy is number one. I did not expect that." },
+    { id:4.7, role:"coach", text:"That tracks with your Non-Conformist profile. Now flip it -- do you actually know what motivates Jordan specifically? Not in general. Specifically." },
+    { id:4.8, role:"user",  text:"Honestly, not really. I assume recognition but I have never asked." },
+    { id:4.9, role:"coach", text:"That is the gap most managers never close. Let us look at the style pairing. Your Extrovert drive against Jordan's Introvert need for processing time -- where does that create friction?" },
+    { id:4.10, role:"user", text:"I think I move too fast for them. I want to talk it out in real time and they need to think first." },
+    { id:4.11, role:"coach", text:"Exactly. Now I want to put everything you have learned under pressure. This is the most energizing activity in the entire program." },
+  ],
+  5: [
+    { id:5.1, role:"coach", text:"Mike — Module 4 is done. You stress-tested your CQ under pressure and built a complete picture of your team and client dynamics. Module 5 is where we supercharge the skills that make everything else land: listening and feedback." },
+    { id:5.2, role:"coach", text:"Let us start with a baseline on questions." },
+    { id:5.3, role:"user",  text:"Ready." },
+    { id:5.4, role:"coach", text:"Your natural tendency as an Extrovert is to ask questions that move things forward -- but sometimes that means you skip the questions that would actually open things up. What is your default question style when Jordan comes to you with a problem?" },
+    { id:5.5, role:"user",  text:"I probably ask one or two clarifying questions and then start problem-solving before they have finished." },
+    { id:5.6, role:"coach", text:"That is the pattern. You are processing and responding simultaneously -- the Extrovert listening trap. The shift is from questions that close the loop to questions that open a door. Let me show you what that looks like in your profile." },
+  ],
+  6: [
+    { id:6.1, role:"coach", text:"Mike — this is the last module. Everything we have built — your profile, your Catalyst work with Jordan, your essential ratings — it all comes together into your personal action plan." },
+    { id:6.2, role:"coach", text:"Before we build the plan, I want to revisit your legacy statement. You said you wanted people to say you created space for real conversations. How close are you to that right now — honestly?" },
+    { id:6.3, role:"user",  text:"Maybe a 6 out of 10. I am better than I was but Jordan is still the gap. That relationship is the test case." },
+    { id:6.4, role:"coach", text:"Then Jordan is where we anchor the plan. Let us build it around that relationship as the proving ground. Ready?" },
+  ],
+};
+
+const DevJumpPanel = ({ onJump }) => {
+  const [open, setOpen] = React.useState(false);
+  const [selMod, setSelMod] = React.useState(3);
+  const [selLvl, setSelLvl] = React.useState(2);
+  const tapCount = React.useRef(0);
+  const tapTimer = React.useRef(null);
+
+  if (!DEV_MODE) return null;
+
+  const handleHiddenTap = () => {
+    tapCount.current += 1;
+    clearTimeout(tapTimer.current);
+    tapTimer.current = setTimeout(() => { tapCount.current = 0; }, 600);
+    if (tapCount.current >= 3) { tapCount.current = 0; setOpen(o => !o); }
+  };
+
+  const handleJump = () => {
+    const history = DEV_MODULE_HISTORY[selMod] || DEV_MODULE_HISTORY[1];
+    const jumpState = {
+      messages: history,
+      legacy: "I want people to say I made them feel like they could say the hard thing — that I was the kind of leader who created space for real conversations, not just managed ones",
+      catalyst: "my direct report Jordan — smart but shuts down in group settings and I cannot figure out why",
+      currentModule: selMod,
+      forteData: DEV_SEED_FORTE,
+      insights: {
+        observations: ["Mike shows high self-awareness around his extrovert pattern", "Jordan identified as key Catalyst relationship"],
+        commitments: [],
+        reflections: [],
+        essentialRatings: selMod >= 4 ? {"Balancing Empathy":6,"Earning Trust":7,"Non-Verbal Communication":5,"Virtual Communication":6,"Expanding Safe Spaces":4,"Got Questions":7,"Proactive Listening":6,"Feedback":5} : {},
+      },
+    };
+    onJump(selLvl, "Mike", jumpState);
+    setOpen(false);
+  };
+
+  const modLabels = ["","Commit","Unlock","Master","Transform","Supercharge","Action Plan"];
+
+  return (
+    <>
+      {/* Invisible 50x50 tap zone bottom-right — triple-tap to toggle dev panel */}
+      <div onClick={handleHiddenTap} style={{
+        position:"fixed",bottom:0,right:0,width:50,height:50,
+        zIndex:9999,cursor:"default",WebkitTapHighlightColor:"transparent",
+      }} />
+
+      {open && (
+        <div style={{
+          position:"fixed",bottom:16,right:16,zIndex:9999,
+          background:"#1e2a3a",borderRadius:16,padding:18,width:238,
+          boxShadow:"0 8px 32px rgba(0,0,0,.55)",
+          border:"1px solid rgba(255,255,255,.1)",
+          fontFamily:"-apple-system,'Segoe UI',Arial,sans-serif",
+        }}>
+          <div style={{fontSize:11,fontWeight:800,color:"#f4bc2d",letterSpacing:".1em",textTransform:"uppercase",marginBottom:14}}>
+            ? Dev Jump Panel
+          </div>
+
+          <div style={{marginBottom:12}}>
+            <div style={{fontSize:10,fontWeight:700,color:"rgba(255,255,255,.4)",letterSpacing:".08em",textTransform:"uppercase",marginBottom:6}}>Level</div>
+            <div style={{display:"flex",gap:5}}>
+              {[1,2,3,4].map(l=>(
+                <button key={l} onClick={()=>setSelLvl(l)} style={{
+                  flex:1,padding:"7px 0",border:"none",borderRadius:8,cursor:"pointer",
+                  fontSize:11,fontWeight:800,
+                  background:selLvl===l?"#f4bc2d":"rgba(255,255,255,.08)",
+                  color:selLvl===l?"#244169":"rgba(255,255,255,.45)",
+                }}>{l}</button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{marginBottom:14}}>
+            <div style={{fontSize:10,fontWeight:700,color:"rgba(255,255,255,.4)",letterSpacing:".08em",textTransform:"uppercase",marginBottom:6}}>Jump to Module</div>
+            <div style={{display:"flex",flexDirection:"column",gap:4}}>
+              {[1,2,3,4,5,6].map(m=>(
+                <button key={m} onClick={()=>setSelMod(m)} style={{
+                  padding:"7px 10px",border:"none",borderRadius:8,cursor:"pointer",
+                  textAlign:"left",fontSize:11,fontWeight:700,
+                  background:selMod===m?"rgba(244,188,45,.15)":"rgba(255,255,255,.05)",
+                  color:selMod===m?"#f4bc2d":"rgba(255,255,255,.45)",
+                  borderLeft:selMod===m?"2px solid #f4bc2d":"2px solid transparent",
+                }}>
+                  {selMod===m?"? ":"   "}M{m} — {modLabels[m]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{background:"rgba(255,255,255,.05)",borderRadius:8,padding:"8px 10px",marginBottom:12,fontSize:10.5,color:"rgba(255,255,255,.4)",lineHeight:1.6}}>
+            <span style={{color:"rgba(255,255,255,.6)",fontWeight:700}}>Participant:</span> Mike, L{selLvl}<br/>
+            <span style={{color:"rgba(255,255,255,.6)",fontWeight:700}}>Catalyst:</span> Jordan (direct report)<br/>
+            <span style={{color:"rgba(255,255,255,.6)",fontWeight:700}}>Forte:</span> Non-Dom á Extrovert á Impatient
+          </div>
+
+          <button onClick={handleJump} style={{
+            width:"100%",padding:10,background:"#f4bc2d",color:"#244169",
+            border:"none",borderRadius:10,fontSize:12,fontWeight:900,
+            cursor:"pointer",letterSpacing:".04em",
+          }}>
+            Jump to Module {selMod} ?
+          </button>
+        </div>
+      )}
+    </>
+  );
+};
+
+
 
 // ─── CQ LIQUID GLASS EXECUTIVE DESIGN SYSTEM ───────────────────────────────
 // Drop-in replacement for HomeScreen, LevelScreen, and App
