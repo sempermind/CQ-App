@@ -5343,34 +5343,19 @@ const DevJumpPanel = ({ onJump }) => {
 // All CoachScreen logic is unchanged — only visual wrapper updated
 // Font: Nunito Sans (loaded via Google Fonts in STYLES block extension)
 
-// ─── DESIGN TOKENS ──────────────────────────────────────────────────────────
 const CQ_DS = {
-  bg0:     "#07111f",   // deepest navy background
-  bg1:     "#0d1b2e",   // card background
-  bg2:     "rgba(255,255,255,0.045)", // glass surface
-  border:  "rgba(255,255,255,0.09)",
-  orange:  "#F08B35",
-  orangeL: "#f5a55c",
-  navy:    "#244169",
-  navyM:   "#385988",
-  blue:    "#5878BD",
-  white:   "#ffffff",
-  text0:   "rgba(255,255,255,0.92)",
-  text1:   "rgba(255,255,255,0.55)",
-  text2:   "rgba(255,255,255,0.3)",
-  text3:   "rgba(255,255,255,0.15)",
+  bg0:"#07111f", orange:"#F08B35", orangeL:"#f5a55c",
+  navy:"#244169", navyM:"#385988", blue:"#5878BD", white:"#ffffff",
+  canvas:"#F7F7F8", canvasBorder:"rgba(26,46,68,0.1)",
+  textDark:"#1a2e44", textMid:"#4a5e72", textSoft:"#8a9aaa",
 };
 
-// Extend STYLES with Nunito Sans + new animations
 const CQ_STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;600;700;800&display=swap');
   .cq-app { font-family: 'Nunito Sans', -apple-system, 'Segoe UI', sans-serif !important; }
   @keyframes cq-orb-pulse { 0%,100%{opacity:0.55} 50%{opacity:0.75} }
-  @keyframes cq-ring-spin { to{transform:rotate(360deg)} }
-  @keyframes cq-ring-spin-r { from{transform:rotate(360deg)} to{transform:rotate(0deg)} }
   @keyframes cq-fade-up { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
   @keyframes cq-scale-in { from{opacity:0;transform:scale(0.94)} to{opacity:1;transform:scale(1)} }
-  @keyframes cq-shimmer { 0%,100%{opacity:0.4} 50%{opacity:1} }
 `;
 
 // ─── SHARED GLASS COMPONENTS ────────────────────────────────────────────────
@@ -5386,29 +5371,8 @@ const CQBackground = () => (
 );
 
 const CQLogoMark = ({size=72}) => (
-  <div style={{position:"relative",width:size,height:size,margin:"0 auto"}}>
-    {/* Outer ring */}
-    <div style={{
-      position:"absolute",inset:-8,borderRadius:"50%",
-      border:"1px solid rgba(240,139,53,0.25)",
-      animation:"cq-ring-spin 14s linear infinite",
-    }}/>
-    {/* Inner ring */}
-    <div style={{
-      position:"absolute",inset:-16,borderRadius:"50%",
-      border:"1px solid rgba(88,120,189,0.14)",
-      animation:"cq-ring-spin-r 22s linear infinite",
-    }}/>
-    {/* Icon container */}
-    <div style={{
-      width:size,height:size,borderRadius:size*0.25,
-      background:"linear-gradient(135deg, rgba(240,139,53,0.28) 0%, rgba(36,65,105,0.65) 100%)",
-      border:"1px solid rgba(240,139,53,0.32)",
-      display:"flex",alignItems:"center",justifyContent:"center",
-      position:"relative",
-    }}>
-      <Logo size={size*0.52} />
-    </div>
+  <div style={{width:size,height:size,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"center"}}>
+    <img src="/cq-logo.png" style={{width:size,height:size,objectFit:"contain",display:"block"}} />
   </div>
 );
 
@@ -5421,6 +5385,18 @@ const CQCard = ({children, style={}}) => (
     borderTop:"1px solid rgba(255,255,255,0.18)",
     borderLeft:"1px solid rgba(255,255,255,0.14)",
     boxShadow:"0 24px 60px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.06) inset",
+    ...style,
+  }}>
+    {children}
+  </div>
+);
+
+const CQCardLight = ({children, style={}}) => (
+  <div style={{
+    background:CQ_DS.canvas,
+    borderRadius:20,
+    border:`1px solid ${CQ_DS.canvasBorder}`,
+    boxShadow:"0 20px 50px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.9)",
     ...style,
   }}>
     {children}
@@ -5478,44 +5454,17 @@ const HomeScreen = ({onStart}) => (
       alignItems:"center",padding:"40px 28px 48px",width:"100%",maxWidth:440,
       animation:"cq-fade-up 0.6s cubic-bezier(0.2,0.6,0.3,1) both",
     }}>
-      {/* Logo mark */}
-      <div style={{marginBottom:36}}>
-        <CQLogoMark size={76} />
-      </div>
-
-      {/* Hero headline */}
-      <div style={{textAlign:"center",marginBottom:36}}>
-        <h1 style={{
-          fontSize:33,fontWeight:200,color:"rgba(255,255,255,0.95)",
-          lineHeight:1.25,marginBottom:14,letterSpacing:"-0.02em",
-        }}>
-          Understand how<br/>you{" "}
-          <span style={{
-            fontWeight:800,
-            background:"linear-gradient(135deg, #F08B35, #f5a55c)",
-            WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
-            backgroundClip:"text",
-          }}>connect.</span><br/>
-          Transform how<br/>you{" "}
-          <span style={{
-            fontWeight:800,
-            background:"linear-gradient(135deg, #F08B35, #f5a55c)",
-            WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
-            backgroundClip:"text",
-          }}>lead.</span>
-        </h1>
-        <p style={{
-          fontSize:14,color:"rgba(255,255,255,0.42)",lineHeight:1.65,fontWeight:300,
-        }}>
-          Discover your communication archetype, recognize the styles of those around you, and adapt — one conversation at a time.
-        </p>
-      </div>
-
-      {/* Trust pills */}
-      <div style={{display:"flex",gap:10,marginBottom:36,flexWrap:"wrap",justifyContent:"center"}}>
-        <CQTrustPill dot="#4ade80" text="Science-backed framework" />
-        <CQTrustPill dot={CQ_DS.blue} text="5 min to get started" />
-      </div>
+        <div style={{marginBottom:52}}>
+          <div style={{marginBottom:28}}>
+            <CQLogoMark size={76} />
+          </div>
+          <div style={{
+            fontSize:26,fontWeight:300,letterSpacing:"0.18em",textTransform:"uppercase",
+            background:"linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.55) 100%)",
+            WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",
+            lineHeight:1.3,textAlign:"center",
+          }}>Communication<br/>Intelligence®</div>
+        </div>
 
       {/* CTAs */}
       <div style={{width:"100%",display:"flex",flexDirection:"column",gap:12}}>
@@ -5587,23 +5536,23 @@ const LevelScreen = ({onSelect, onBack}) => {
           </span>
         </div>
 
-        <CQCard style={{padding:"32px 28px"}}>
+        <CQCardLight style={{padding:"32px 28px"}}>
           {/* Eyebrow */}
           <div style={{
             fontSize:10,color:CQ_DS.orange,letterSpacing:"0.18em",
             textTransform:"uppercase",fontWeight:700,marginBottom:8,
           }}>Getting started</div>
           <h2 style={{
-            fontSize:22,fontWeight:700,color:"rgba(255,255,255,0.92)",marginBottom:6,
+            fontSize:22,fontWeight:700,color:CQ_DS.textDark,marginBottom:6,
           }}>Tell us about yourself</h2>
           <p style={{
-            fontSize:13,color:"rgba(255,255,255,0.38)",lineHeight:1.55,marginBottom:28,
+            fontSize:13,color:CQ_DS.textSoft,lineHeight:1.55,marginBottom:28,
           }}>This helps us personalize your CQ experience from the very first module.</p>
 
           {/* Name field */}
           <div style={{marginBottom:24}}>
             <div style={{
-              fontSize:11,color:"rgba(255,255,255,0.4)",letterSpacing:"0.1em",
+              fontSize:11,color:CQ_DS.textMid,letterSpacing:"0.1em",
               textTransform:"uppercase",marginBottom:8,fontWeight:600,
             }}>First name</div>
             <input
@@ -5613,59 +5562,58 @@ const LevelScreen = ({onSelect, onBack}) => {
               maxLength={30}
               style={{
                 width:"100%",padding:"13px 16px",
-                background:"rgba(255,255,255,0.06)",
-                border:"1px solid rgba(255,255,255,0.1)",
+                background:"#ffffff",
+                border:`1px solid ${CQ_DS.canvasBorder}`,
                 borderRadius:12,fontSize:14,
-                color:"rgba(255,255,255,0.88)",
+                color:CQ_DS.textDark,
                 fontFamily:"inherit",outline:"none",
                 transition:"border-color 0.2s",
               }}
-              onFocus={e=>e.target.style.borderColor="rgba(240,139,53,0.4)"}
-              onBlur={e=>e.target.style.borderColor="rgba(255,255,255,0.1)"}
+              onFocus={e=>e.target.style.borderColor="rgba(240,139,53,0.5)"}
+              onBlur={e=>e.target.style.borderColor=CQ_DS.canvasBorder}
             />
           </div>
 
           {/* Role selector */}
           <div style={{marginBottom:28}}>
             <div style={{
-              fontSize:11,color:"rgba(255,255,255,0.4)",letterSpacing:"0.1em",
+              fontSize:11,color:CQ_DS.textMid,letterSpacing:"0.1em",
               textTransform:"uppercase",marginBottom:8,fontWeight:600,
             }}>Your role</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              {levels.map(({n,title,desc,icon,iconBg,selectedBg,selectedBorder})=>{
+              {levels.map(({n,title,desc,icon,selectedBorder})=>{
                 const isSelected = sel===n;
                 return (
                   <div key={n} onClick={()=>setSel(n)} style={{
-                    background:isSelected?selectedBg:"rgba(255,255,255,0.04)",
-                    border:`1px solid ${isSelected?selectedBorder:"rgba(255,255,255,0.09)"}`,
+                    background:"#ffffff",
+                    border:`1px solid ${isSelected?selectedBorder:CQ_DS.canvasBorder}`,
                     borderRadius:14,padding:"14px 14px 12px",
                     cursor:"pointer",position:"relative",
                     transition:"all 0.15s",
+                    boxShadow:isSelected?"0 2px 12px rgba(0,0,0,0.08)":"none",
                   }}>
-                    {/* Check */}
                     <div style={{
                       position:"absolute",top:10,right:10,
                       width:16,height:16,borderRadius:"50%",
-                      border:isSelected?"none":"1.5px solid rgba(255,255,255,0.15)",
+                      border:isSelected?"none":`1.5px solid ${CQ_DS.canvasBorder}`,
                       background:isSelected?"#F08B35":"transparent",
                       display:"flex",alignItems:"center",justifyContent:"center",
                       transition:"all 0.15s",
                     }}>
                       {isSelected && <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3" stroke="white" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                     </div>
-                    {/* Icon */}
                     <div style={{
                       width:32,height:32,borderRadius:10,
-                      background:iconBg,
+                      background:"rgba(36,65,105,0.07)",
                       display:"flex",alignItems:"center",justifyContent:"center",
                       marginBottom:9,
                     }}>{icon}</div>
                     <div style={{
                       fontSize:12,fontWeight:700,marginBottom:3,
-                      color:isSelected?"#F08B35":"rgba(255,255,255,0.78)",
+                      color:isSelected?CQ_DS.orange:CQ_DS.textDark,
                       transition:"color 0.15s",
                     }}>{title}</div>
-                    <div style={{fontSize:10,color:"rgba(255,255,255,0.32)",lineHeight:1.4}}>{desc}</div>
+                    <div style={{fontSize:10,color:CQ_DS.textSoft,lineHeight:1.4}}>{desc}</div>
                   </div>
                 );
               })}
@@ -5675,7 +5623,7 @@ const LevelScreen = ({onSelect, onBack}) => {
           <CQButton disabled={!canProceed} onClick={()=>onSelect(sel, name.trim())}>
             Continue →
           </CQButton>
-        </CQCard>
+        </CQCardLight>
 
         <p style={{
           textAlign:"center",fontSize:11,color:"rgba(255,255,255,0.18)",
