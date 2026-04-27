@@ -5371,12 +5371,8 @@ const CQBackground = () => (
 );
 
 const CQLogoMark = ({size=72}) => (
-  <div style={{width:size,height:size,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"center",
-    background:"rgba(255,255,255,0.12)",borderRadius:size*0.2,
-    padding:size*0.1,
-  }}>
-    <img src="/cq-logo.png" style={{width:"100%",height:"100%",objectFit:"contain",display:"block"}} />
-  </div>
+  <img src="/cq-logo.png" style={{width:size,height:size,objectFit:"contain",display:"block",margin:"0 auto"}}
+    onError={e=>{e.target.src=LOGO_SM;}} />
 );
 
 const CQCard = ({children, style={}}) => (
