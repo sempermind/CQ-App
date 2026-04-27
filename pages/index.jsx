@@ -5371,8 +5371,11 @@ const CQBackground = () => (
 );
 
 const CQLogoMark = ({size=72}) => (
-  <div style={{width:size,height:size,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"center"}}>
-    <img src="/cq-logo.png" style={{width:size,height:size,objectFit:"contain",display:"block"}} />
+  <div style={{width:size,height:size,margin:"0 auto",display:"flex",alignItems:"center",justifyContent:"center",
+    background:"rgba(255,255,255,0.12)",borderRadius:size*0.2,
+    padding:size*0.1,
+  }}>
+    <img src="/cq-logo.png" style={{width:"100%",height:"100%",objectFit:"contain",display:"block"}} />
   </div>
 );
 
@@ -5456,7 +5459,7 @@ const HomeScreen = ({onStart}) => (
     }}>
         <div style={{marginBottom:52}}>
           <div style={{marginBottom:28}}>
-            <CQLogoMark size={76} />
+            <CQLogoMark size={120} />
           </div>
           <div style={{
             fontSize:26,fontWeight:300,letterSpacing:"0.18em",textTransform:"uppercase",
