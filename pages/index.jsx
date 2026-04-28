@@ -4271,10 +4271,13 @@ const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssen
             {label:"ADAPT — Acknowledge", value:cqData?.adaptAcknowledge},
             {label:"ADAPT — Pivot", value:cqData?.adaptPivot},
             {label:"ADAPT — Track", value:cqData?.adaptTrack},
+            {label:"What you learned about your Catalyst", value:cqData?.catalystLearning},
+            {label:"What you learned about yourself", value:cqData?.selfLearning},
             {label:"Your CQ Legacy", value:legacy||cqData?.legacyKnown},
             {label:"How insights deepened your legacy", value:cqData?.legacyRevisited},
             {label:"Switches & knobs to continue building", value:cqData?.legacySwitchKnob},
             {label:"CQ Essential to focus on first", value:cqData?.finalFocusEssential},
+            {label:"Commitment behavior this week", value:cqData?.finalCommitmentBehavior},
             {label:"Greatest insight from this program", value:cqData?.greatestInsight},
             {label:"CQ Legacy (Action Plan)", value:cqData?.actionPlan?.legacy},
             {label:"Catalyst Commitment", value:cqData?.actionPlan?.catalystCommitment},
@@ -4322,6 +4325,13 @@ const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssen
               </div>
             ))}
           </div>
+
+          <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
+
+          {/* ?? SELF-REFLECTION ?? */}
+          <div style={{fontSize:11,fontWeight:800,color:C.orange,letterSpacing:".08em",textTransform:"uppercase",marginBottom:10}}>Self-Reflection</div>
+          <IJ_TextField label="What did you learn about your Catalyst through this program?" fieldKey="catalystLearning" value={cqData?.catalystLearning} onChange={onCqDataChange} />
+          <IJ_TextField label="What did you learn about yourself?" fieldKey="selfLearning" value={cqData?.selfLearning} onChange={onCqDataChange} />
 
           <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
 
@@ -4377,6 +4387,7 @@ const InsightsTab = ({legacy, catalyst, insights, forteData, cqData, onRateEssen
             })}
           </div>
           <IJ_TextField label="Which CQ Essential will you focus on first?" hint="Choose the one area where intentional practice will have the biggest impact for you." fieldKey="finalFocusEssential" value={cqData?.finalFocusEssential} onChange={onCqDataChange} />
+          <IJ_TextField label="What is the one specific, observable behavior you are committing to practice this week?" hint="Not a vague intention — a concrete behavior, with a specific person, in a specific situation." fieldKey="finalCommitmentBehavior" value={cqData?.finalCommitmentBehavior} onChange={onCqDataChange} />
 
           <div style={{height:1,background:"rgba(36,65,105,.08)",margin:"4px 0 14px"}} />
 
@@ -4964,7 +4975,7 @@ Keep your response to 2-3 sentences maximum. One thought. No pivoting to the pro
 
   // Tab SVG icons
   const TabIcon = ({id}) => {
-    if(id==="journey") return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>;
+    if(id==="journey") return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><polygon points="12,5 14.5,12 12,10.5 9.5,12" fill="currentColor" stroke="none"/><polygon points="12,19 9.5,12 12,13.5 14.5,12" fill="currentColor" stroke="none" opacity="0.4"/></svg>;
     if(id==="coach")   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
     if(id==="practice")return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>;
     if(id==="profile") return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>;
