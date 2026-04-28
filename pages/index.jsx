@@ -5567,30 +5567,43 @@ const HomeScreen = ({onStart}) => (
       alignItems:"center",padding:"40px 28px 48px",width:"100%",maxWidth:440,
       animation:"cq-fade-up 0.6s cubic-bezier(0.2,0.6,0.3,1) both",
     }}>
-        <div style={{marginBottom:52}}>
-          <div style={{marginBottom:28}}>
-            <CQLogoMark size={120} />
+        <div style={{marginBottom:36}}>
+          <div style={{marginBottom:24}}>
+            <CQLogoMark size={180} />
           </div>
-          <div style={{
-            fontSize:26,fontWeight:300,letterSpacing:"0.18em",textTransform:"uppercase",
-            background:"linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.55) 100%)",
-            WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",
-            lineHeight:1.3,textAlign:"center",
-          }}>Communication<br/>Intelligence®</div>
+          <div style={{fontSize:28,fontWeight:700,lineHeight:1.25,textAlign:"center",marginBottom:14}}>
+            <span style={{color:"rgba(255,255,255,0.95)"}}>Understand how<br/>you </span>
+            <span style={{color:CQ_DS.orange}}>connect.</span>
+            <br/>
+            <span style={{color:"rgba(255,255,255,0.95)"}}>Transform how<br/>you </span>
+            <span style={{color:CQ_DS.orange}}>lead.</span>
+          </div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,0.85)",textAlign:"center",lineHeight:1.6,maxWidth:300,margin:"0 auto"}}>
+            Discover your communication archetype, recognize the styles of those around you, and adapt — one conversation at a time.
+          </div>
         </div>
 
       {/* CTAs */}
-      <div style={{width:"100%",display:"flex",flexDirection:"column",gap:12}}>
-        <CQButton onClick={()=>onStart("level")}>Start your CQ journey</CQButton>
-        <CQButton variant="ghost" onClick={()=>onStart("coach")}>I already have an account</CQButton>
+      <div style={{width:"100%",display:"flex",flexDirection:"column",gap:10}}>
+        <button onClick={()=>onStart("level")} style={{
+          width:"100%",border:"none",borderRadius:10,cursor:"pointer",fontFamily:"inherit",
+          fontSize:12,fontWeight:700,letterSpacing:"0.02em",padding:"10px 24px",
+          background:"linear-gradient(135deg, #F08B35, #e07020)",
+          color:CQ_DS.white,boxShadow:"0 6px 20px rgba(240,139,53,0.22)",
+        }}>Start your CQ journey</button>
+        <button onClick={()=>onStart("coach")} style={{
+          width:"100%",border:"1px solid rgba(255,255,255,0.12)",borderRadius:10,cursor:"pointer",
+          fontFamily:"inherit",fontSize:11,fontWeight:600,letterSpacing:"0.02em",padding:"8px 24px",
+          background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.5)",
+        }}>I already have an account</button>
       </div>
 
-      {/* Forte attribution */}
+      {/* Attribution */}
       <div style={{
         marginTop:32,fontSize:10,color:"rgba(255,255,255,0.15)",
         letterSpacing:"0.06em",textAlign:"center",
       }}>
-        © The Forte Institute · Communication Intelligence®
+        © Semper Mind · Communication Intelligence®
       </div>
     </div>
   </div>
